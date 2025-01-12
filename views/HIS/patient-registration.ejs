@@ -1,0 +1,203 @@
+<!doctype html>
+<html
+  lang="en"
+  class="light-style layout-menu-fixed layout-compact"
+  dir="ltr"
+  data-theme="theme-default"
+  data-assets-path="../assets/"
+  data-template="vertical-menu-template-free"
+  data-style="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+
+    <title>Patient Registration</title>
+
+  <%- include('../header') -%>
+          <!-- / Navbar -->
+		  <!-- Header and Menu ends here create a header ejs file -->
+
+          <!-- Content wrapper -->
+          <div class="content-wrapper">
+            <!-- Content -->
+            <style>.displaynone{display:none;}.bx-qr-scan{font-size:80px;}</style>
+            <div class="container-xxl flex-grow-1 container-p-y">
+              <div class="row">
+                <!-- Vertical & Horizontal Scrollbars -->
+                <div class="col-12">
+                  <div class="card overflow-hidden">
+                    <h5 class="card-header">Patient Registration</h5>
+                    <div class="card">
+                    <!-- Account -->
+                    <div class="card-body">
+					<div class="row border-bottom">
+					<div class="col-10 col-xs-12">
+                      <div class="d-flex align-items-start align-items-sm-center gap-6 pb-4">
+                        <img src="../images/1.png" alt="user-avatar" class="d-block w-px-100 h-px-100 rounded" id="uploadedAvatar">
+                        <div class="button-wrapper">
+                          <label data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" title="<span>Upload from local Storage</span>" for="upload" class="btn btn-primary me-3 mb-4" tabindex="0">
+                            <span class="bx bx-upload"></span>
+                            <input type="file" id="upload" class="account-file-input" hidden="" accept="image/png, image/jpeg">
+                          </label>
+						  <label data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" title="<span>Upload from Webcam</span>" for="upload" class="btn btn-primary me-3 mb-4" tabindex="0">
+							<span class="bx bxs-webcam"></span>
+                            <input type="file" id="upload" class="account-file-input" hidden="" accept="image/png, image/jpeg">
+                          </label>
+                          <button data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" title="<span>Reset</span>" type="button" class="btn btn-outline-secondary account-image-reset mb-4">
+                            <span class="bx bx-reset"></span>
+                          </button>
+
+                          <div>Allowed JPG, JPEG or PNG. Max size of 800K</div>
+                        </div>
+						</div>
+						
+                      </div>
+					  <div class="col-2 text-center d-none d-sm-block">
+						<i class='bx bx-qr-scan'></i>
+						<div>Scan to Register</div>
+					  </div>
+					</div>
+                    </div>
+                    <div class="card-body pt-4">
+                      <form id="PatientRegForm" method="post">
+                        <div class="row g-6">
+                          <div class="col-md-6">
+                            <label for="name" class="form-label">Name*</label>
+                            <input class="form-control" type="text" id="name" name="name" value="" autofocus="">
+                          </div>
+                          <div class="col-md-6">
+                            <label class="form-label" for="phoneNumber">Mobile Number*</label>
+                            <div class="input-group input-group-merge">
+                              <span class="input-group-text">IND (+91)</span>
+                              <input type="number" id="phoneNumber" name="phoneNumber" class="form-control" placeholder="">
+                            </div>
+                          </div>
+                          <div class="col-md-6">
+                            <label for="email" class="form-label">E-mail</label>
+                            <input class="form-control" type="text" id="email" name="email" value="" placeholder="">
+                          </div>
+                          <div class="col-md-3">
+                            <label for="language" class="form-label">Gender*</label>
+                            <select id="gender" class="select2 form-select">
+                              <option value="">Select</option>
+                              <option value="M">Male</option>
+                              <option value="F">Female</option>
+                              <option value="O">Other</option>
+                            </select>
+                          </div>
+                          <div class="col-md-3">
+                            <label for="address" class="form-label">Age*</label>
+                            <input type="number" class="form-control" id="age" name="age" placeholder="">
+                          </div>
+                          <div class="col-md-6">
+                            <label for="address" class="form-label">Address</label>
+                            <input type="text" class="form-control" id="address" name="address" placeholder="">
+                          </div>
+						  <div class="col-md-6">
+                            <label for="address" class="form-label">Other Details</label>
+                            <input type="text" class="form-control" id="otdetails" name="otdetails" placeholder="">
+                          </div>
+                          <div class="col-md-6">
+						  <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="defaultCheck3">
+                            <label class="form-check-label" for="defaultCheck3"> Book Appointment </label>
+						   </div>
+                          </div>
+						  <div id="markvisit" class="row g-4 displaynone">
+						  <div class="col-md-2">
+                            <label for="state" class="form-label">Weight in KG</label>
+                            <input class="form-control" type="number" id="weight" name="weight" placeholder="">
+                          </div>
+						  <div class="col-md-2">
+                            <label for="state" class="form-label">Height in Feet</label>
+                            <input class="form-control" type="number" id="height" name="height" placeholder="">
+                          </div>
+						  <div class="col-md-2">
+                            <label for="state" class="form-label">BMI</label>
+                            <input class="form-control" type="number" id="bmi" name="bmi" disabled>
+                          </div>
+						  
+						  <div class="col-md-2">
+                            <label for="state" class="form-label">Fever</label>
+                            <input class="form-control" type="number" id="fever" name="fever" placeholder="">
+                          </div>
+						  <div class="col-md-2">
+                            <label for="state" class="form-label">BP</label>
+                            <input class="form-control" type="number" id="bp" name="bp" placeholder="">
+                          </div>
+						  <div class="col-md-2">
+                            <label for="state" class="form-label">Sugar</label>
+                            <input class="form-control" type="number" id="sugar" name="sugar">
+                          </div>
+						  
+						  <div class="col-md-2">
+                            <label for="place" class="form-label">Place*</label>
+                            <select id="place" class="select2 form-select">
+                              <option value="">Select</option>
+                            </select>
+                          </div>
+						  
+						  <div class="col-md-2">
+                            <label for="doctor" class="form-label">Doctor*</label>
+                            <select id="doctor" class="select2 form-select">
+                              <option value="">Select</option>
+                            </select>
+                          </div>
+						  
+						  <div class="col-md-2">
+                            <label for="Time" class="form-label">Time*</label>
+                            <select id="drtime" class="select2 form-select">
+                              <option value="">Select</option>
+                            </select>
+                          </div>
+						  
+						  
+                        </div>
+						<!--Mark visit div close-->
+                        </div>
+                        <div class="mt-6">
+                          <button type="submit" id="subBtn" class="btn btn-primary me-3">Save</button>
+                          <button type="reset" class="btn btn-outline-secondary">Cancel</button>
+                        </div>
+                      </form>
+                    </div>
+                    <!-- /Account -->
+                  </div>
+                  </div>
+                </div>
+                <!--/ Vertical & Horizontal Scrollbars -->
+              </div>
+            </div>
+            <!-- / Content -->
+
+            <%- include('../footer') -%>
+
+            <!-- Extra Js for this Page-->
+<script>
+  $(document).ready(function () {
+  $("#defaultCheck3").on("change", function () {
+  if ($(this).is(":checked")) {
+  $("#markvisit").removeClass("displaynone"); // Show the element
+  } else {
+  $("#markvisit").addClass("displaynone"); // Hide the element
+  }
+  });
+  });
+
+  document.getElementById('subBtn').addEventListener('click', async () => {
+    try {
+        const response = await saveForm('PatientRegForm', '/api/submit-form');
+        console.log('Success:', response);
+        alert('Form submitted successfully!');
+    } catch (error) {
+        console.error('Error:', error);
+        alert(`Failed to submit the form: ${error.message || 'Unknown error'}`);
+    }
+});
+
+
+  </script>
+  <!-- Extra Js for this Page End-->
+  

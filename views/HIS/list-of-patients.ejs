@@ -1,0 +1,128 @@
+<!doctype html>
+<html
+  lang="en"
+  class="light-style layout-menu-fixed layout-compact"
+  dir="ltr"
+  data-theme="theme-default"
+  data-assets-path="../assets/"
+  data-template="vertical-menu-template-free"
+  data-style="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+
+    <title>List of Patients</title>
+
+  <%- include('../header') -%>
+
+          <!-- Content wrapper -->
+          <div class="content-wrapper">
+            <!-- Content -->
+            <div class="container-xxl flex-grow-1 container-p-y">
+              <!-- Basic Bootstrap Table -->
+              <div class="card">
+                <div class="row card-header flex-column flex-md-row pb-4">
+				<div class="d-md-flex justify-content-between align-items-center dt-layout-start col-md-auto me-auto mt-0">
+				<h5 class="card-title mb-0 text-md-start text-center">All Patient</h5></div>
+				<div class="d-md-flex justify-content-between align-items-center dt-layout-end col-md-auto ms-auto mt-0">
+				
+				<div class="dt-buttons btn-group flex-wrap mb-0"> 
+				
+				<div class="btn-group">
+				<input type="search" class="form-control ms-4" id="dt-search-1" placeholder="Search" aria-controls="DataTables_Table_1">
+				
+				<button class="btn buttons-collection btn-label-primary dropdown-toggle me-4" tabindex="0" aria-controls="DataTables_Table_0" type="button" aria-haspopup="dialog" aria-expanded="false"><span><span class="d-flex align-items-center gap-2"><i class="icon-base bx bx-export me-sm-1"></i> <span class="d-none d-sm-inline-block">Export</span></span></span></button></div> 
+				
+				<button class="btn create-new btn-primary" tabindex="0" aria-controls="DataTables_Table_0" type="button"><span><span class="d-flex align-items-center gap-2"><i class="icon-base bx bx-plus icon-sm"></i> <span class="d-none d-sm-inline-block">New Registration</span></span></span></button> 
+				  </div>
+				 </div>
+				</div>
+				
+                <div class="table-responsive text-nowrap">
+                  <table class="table">
+                    <thead>
+                      <tr>
+                        <th>UHID</th>
+                        <th>Name</th>
+                        <th>Mobile</th>
+                        <th>Appointment</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody class="table-border-bottom-0">
+                      <tr>
+                        <td>PT001</td>
+                        <td>
+						
+						<img width="30" src="../images/5.png" alt="Avatar" class="rounded-circle" /> Bharat Singh</td>
+                        <td>
+                          880000000
+						</td>
+                        <td><div class="d-flex flex-column">
+                  <span class="emp_name text-truncate text-heading">Dr. Sahil</span>
+                  <small class="emp_post text-truncate">Mon, 22 Jan, 10:30AM</small>
+                </div></td>
+                        <td>
+                          <a href="javascript:;" class="btn btn-icon item-edit"><i class="icon-base bx bx-edit icon-sm"></i></a>
+                        </td>
+                      </tr>
+					  <tr>
+                        <td>PT001</td>
+                        <td>
+						
+						<img width="30" src="../images/5.png" alt="Avatar" class="rounded-circle" /> Bharat Singh</td>
+                        <td>
+                          880000000
+						</td>
+                        <td><div class="d-flex flex-column">
+                  <span class="emp_name text-truncate text-heading">Dr. Sahil</span>
+                  <small class="emp_post text-truncate">Mon, 22 Jan, 10:30AM</small>
+                </div></td>
+                        <td>
+                          <a href="javascript:;" class="btn btn-icon item-edit"><i class="icon-base bx bx-edit icon-sm"></i></a>
+                        </td>
+                      </tr>
+					  <tr>
+                        <td>PT001</td>
+                        <td>
+						
+						<img width="30" src="../images/5.png" alt="Avatar" class="rounded-circle" /> Bharat Singh</td>
+                        <td>
+                          880000000
+						</td>
+                        <td><div class="d-flex flex-column">
+                  <span class="emp_name text-truncate text-heading">Dr. Sahil</span>
+                  <small class="emp_post text-truncate">Mon, 22 Jan, 10:30AM</small>
+                </div></td>
+                        <td>
+                          <a href="javascript:;" class="btn btn-icon item-edit"><i class="icon-base bx bx-edit icon-sm"></i></a>
+                        </td>
+                      </tr>
+					  <tr>
+                        <td>PT001</td>
+                        <td>
+						
+						<img width="30" src="../images/5.png" alt="Avatar" class="rounded-circle" /> Bharat Singh</td>
+                        <td>
+                          880000000
+						</td>
+                        <td><div class="d-flex flex-column">
+                  <span class="emp_name text-truncate text-heading">Dr. Sahil</span>
+                  <small class="emp_post text-truncate">Mon, 22 Jan, 10:30AM</small>
+                </div></td>
+                        <td>
+                          <a href="javascript:;" class="btn btn-icon item-edit"><i class="icon-base bx bx-edit icon-sm"></i></a>
+                        </td>
+                      </tr>
+                      
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <!--/ Basic Bootstrap Table -->
+            </div>
+            <!-- / Content -->
+
+          <%- include('../footer') -%>
