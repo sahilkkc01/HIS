@@ -1,0 +1,252 @@
+<!doctype html>
+
+<html
+  lang="en"
+  class="light-style layout-wide customizer-hide"
+  dir="ltr"
+  data-theme="theme-default"
+  data-assets-path="../assets/"
+  data-template="vertical-menu-template-free"
+  data-style="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+
+    <title>Login</title>
+
+    <meta name="description" content="" />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="./img/favicon.ico" />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap"
+      rel="stylesheet" />
+
+    <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" />
+
+    <!-- Core CSS -->
+    <link rel="stylesheet" href="../stylesheets/core.css" class="template-customizer-core-css" />
+    <link rel="stylesheet" href="../stylesheets/theme-default.css" class="template-customizer-theme-css" />
+    <link rel="stylesheet" href="../stylesheets/demo.css" />
+
+    <!-- Vendors CSS -->
+    <link rel="stylesheet" href="../stylesheets/perfect-scrollbar.css" />
+
+    <!-- Page CSS -->
+    <!-- Page -->
+    <link rel="stylesheet" href="../stylesheets/page-auth.css" />
+
+    <!-- Helpers -->
+    <script src="../javascripts/helpers.js"></script>
+    <!--! Template customizer & Theme config files MUST be included after core stylesheets and helpers.js in the <head> section -->
+    <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
+    <script src="../javascripts/config.js"></script>
+  </head>
+
+  <body>
+    <!-- Content -->
+
+    <div class="container-xxl">
+      <div class="authentication-wrapper authentication-basic container-p-y">
+        <div class="authentication-inner">
+          <!-- Register -->
+          <div class="card px-sm-6 px-0">
+            <div class="card-body">
+              <!-- Logo -->
+              <div class="app-brand justify-content-center">
+                <a href="index.html" class="app-brand-link gap-2">
+                  <span class="app-brand-logo demo">
+    
+                  </span>
+                  <span class="app-brand-text demo text-heading fw-bold">HIS</span>
+                </a>
+              </div>
+              <!-- /Logo -->
+              <h4 class="mb-1">Welcome to HIS!</h4>
+              <p class="mb-6">Fill details to sign-in to your account</p>
+
+              <form id="loginForm" class="mb-6" action="#">
+                <div id="errorDiv"></div>
+                <div class="mb-6">
+                  <label for="email" class="form-label">Username</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="username"
+                    name="username"
+                    placeholder="Enter your username"
+                    autofocus />
+                </div>
+                <div class="mb-6 form-password-toggle">
+                  <label class="form-label" for="password">Password</label>
+                  <div class="input-group input-group-merge">
+                    <input
+                      type="password"
+                      id="password"
+                      class="form-control"
+                      name="password"
+                      placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;"
+                      aria-describedby="password" />
+                    <span class="input-group-text cursor-pointer"><i class="bx bx-hide"></i></span>
+                  </div>
+                </div>
+                <div class="Log-out-div" id="logOutbtnDiv" style="display: none;">
+                  <button id="logoutBtn" type="button" class="btn btn-danger btn-sm">
+                    <i class="fa-solid fa-power-off"></i> Log Out From Everywhere
+                  </button>
+                </div>
+                <div class="mb-8">
+                  <div class="d-flex justify-content-between mt-8">
+                    <div class="form-check mb-0 ms-2">
+                      <input class="form-check-input" type="checkbox" id="remember-me" />
+                      <label class="form-check-label" for="remember-me"> Remember Me </label>
+                    </div>
+                  </div>
+                </div>
+               
+                <div class="mb-6">
+                  <button class="btn btn-primary d-grid w-100" type="submit">Login</button>
+                </div>
+                <div id="loadingIndicator"></div>
+              </form>
+            </div>
+          </div>
+          <!-- /Register -->
+        </div>
+      </div>
+    </div>
+
+    <!-- / Content -->
+
+    <!-- Core JS -->
+    <!-- build:js assets/vendor/js/core.js -->
+
+    <script src="../javascripts/jquery.js"></script>
+    <script src="../javascripts/popper.js"></script>
+    <script src="../javascripts/bootstrap.js"></script>
+    <script src="../javascripts/perfect-scrollbar.js"></script>
+    <script src="../javascripts/menu.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <!-- endbuild -->
+
+    <!-- Vendors JS -->
+
+    <!-- Main JS -->
+    <script src="../javascripts/main.js"></script>
+
+    <!-- Page JS -->
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        const loginForm = document.getElementById('loginForm');
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        const errorDiv = document.getElementById('errorDiv');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const logOutDiv = document.getElementById('logOutbtnDiv');
+        let preAuthenticatedUser = null;
+    
+        // Handle login form submission
+        loginForm.addEventListener('submit', function (event) {
+          event.preventDefault(); // Prevent default form submission
+          handlePreAuthentication();
+        });
+    
+        // Function to handle pre-authentication
+        async function handlePreAuthentication() {
+          const formData = {
+            username: loginForm.username.value,
+            password: loginForm.password.value,
+          };
+    
+          toggleLoading(true);
+          hideError();
+    
+          try {
+            const response = await axios.post('/login', formData);
+    
+            // On successful login, redirect to patient registration
+            window.location.href = '/patient-registration';
+          } catch (error) {
+            handleLoginError(error);
+          } finally {
+            toggleLoading(false);
+          }
+        }
+    
+        // Function to handle login errors
+        function handleLoginError(error) {
+          console.error('Login Error:', error);
+    
+          if (error.response && error.response.data) {
+            const errorMsg = error.response.data.msg;
+            errorDiv.textContent = errorMsg;
+    
+            if (errorMsg === 'User is already logged in elsewhere.') {
+              preAuthenticatedUser = error.response.data.username;
+              logOutDiv.style.display = 'block';
+            }
+          } else {
+            errorDiv.textContent = 'Failed to log in. Please try again.';
+          }
+    
+          showError();
+        }
+    
+        // Handle logout button click
+        logoutBtn.addEventListener('click', async () => {
+          if (!preAuthenticatedUser) {
+            alert('No user data available for logout.');
+            return;
+          }
+    
+          try {
+            const response = await axios.post('/logoutFromEverywhere', { username: preAuthenticatedUser });
+    
+            if (response.status === 200 && response.data.msg === 'Logout successful') {
+              resetUIAfterLogout();
+              alert('Logged out from all sessions.');
+            } else {
+              console.error('Unexpected response:', response);
+              alert('An unexpected error occurred. Please try again.');
+            }
+          } catch (error) {
+            console.error('Logout Error:', error);
+            alert('Failed to log out. Please try again.');
+          }
+        });
+    
+        // Utility functions
+        function toggleLoading(show) {
+          loadingIndicator.style.display = show ? 'block' : 'none';
+          loadingIndicator.textContent = show ? 'Loading...' : '';
+        }
+    
+        function hideError() {
+          errorDiv.style.display = 'none';
+        }
+    
+        function showError() {
+          errorDiv.style.display = 'block';
+        }
+    
+        function resetUIAfterLogout() {
+          errorDiv.style.display = 'none';
+          logOutDiv.style.display = 'none';
+          loginForm.username.removeAttribute('readonly');
+          loginForm.password.removeAttribute('readonly');
+        }
+      });
+    </script>
+    
+
+    <!-- Place this tag before closing body tag for github widget button. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+  </body>
+</html>

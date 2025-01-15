@@ -51,3 +51,47 @@ function validateForm(formId) {
 
     return { isValid, errorMessage }; // Return only validation results
 }
+
+function restrictInput(fieldId, maxLength) {
+    const field = document.getElementById(fieldId);
+    if (field) {
+        field.addEventListener("input", function() {
+            if (field.value.length > maxLength) {
+                field.value = field.value.slice(0, maxLength); // Trim the value to the max length
+            }
+        });
+    }
+}
+
+function validateFileInput(fileInputId, allowedTypes, maxSizeKB) {
+    const fileInput = document.getElementById(fileInputId);
+    const file = fileInput.files[0];
+
+    if (!file) return false;
+
+    const fileSizeInKB = file.size / 1024; // Convert bytes to KB
+    const fileType = file.type;
+    const fileName = file.name.toLowerCase();
+
+    // Check if the file is of allowed type and not .jfif
+    const isAllowedType = allowedTypes.includes(fileType);
+    const isNotJFIF = !fileName.endsWith('.jfif'); // Exclude .jfif files by extension
+
+    if (!isAllowedType || !isNotJFIF) {
+        alert('Invalid file type. Only ' + allowedTypes.join(', ') + ' files are allowed.');
+        fileInput.value = ''; // Reset the file input
+        return false;
+    }
+
+    // Check if file size exceeds the limit
+    if (fileSizeInKB > maxSizeKB) {
+        alert('File size exceeds the allowed limit of ' + maxSizeKB + ' KB.');
+        fileInput.value = ''; // Reset the file input
+        return false;
+    }
+
+    return true; // Validation passed
+}
+
+
+

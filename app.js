@@ -5,7 +5,8 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const { con } = require("./db");
 
-var his = require('./routes/his');
+var his = require('./routes/HisRoutes');
+const { verifyToken } = require('./controllers/HisControllers');
 
 var app = express();
 
@@ -15,9 +16,23 @@ app.set('view engine', 'ejs');
 
 app.use(logger('dev'));
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+
+app.use((req, res, next) => {
+  // Allow POST requests to /logoutFromEverywhere and all requests to /login
+  if (
+    (req.method === 'POST' && req.path === '/logoutFromEverywhere') || 
+    req.path === '/login'
+  ) {
+    return next();
+  }
+
+  // For all other routes, verify the token
+  return verifyToken(req, res, next);
+});
 
 
 app.use('/', his);

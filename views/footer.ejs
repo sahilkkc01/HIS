@@ -61,15 +61,40 @@ class="btn btn-danger btn-buy-now"
 <script src="../javascripts/popper.js"></script>
 <script src="../javascripts/bootstrap.js"></script>
 <script src="../javascripts/menu.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
 
 <script src="../javascripts/main.js"></script>
 <script src="../javascripts/SaveFormData.js"></script>
 <script src="../javascripts/Validation.js"></script>
+<script src="../javascripts/ExtraFunctions.js"></script>
+<script>
+  $('input, select,textarea').on("input", function() { 
+    $(this).removeClass('is-invalid');   
+    });
+</script>
 
 
 
 <!-- Place this tag before closing body tag for github widget button. -->
 <script async defer src="https://buttons.github.io/buttons.js"></script>
+<script>
+  document.getElementById('logoutBtn').addEventListener('click', function() {
+ 
+    // Send an Axios POST request to /logout
+    axios.post('/logout')
+      .then(response => {
+        if (response.status === 200) {
+          // Redirect to /login upon successful logout
+          window.location.href = '/login';
+        }
+      })
+      .catch(error => {
+        console.error('Logout failed:', error.response?.data || error.message);
+        alert('An error occurred while logging out. Please try again.');
+      });
+  });
+</script>
 
 </body>
 </html>

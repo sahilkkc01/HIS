@@ -1,0 +1,376 @@
+<!doctype html>
+<html
+  lang="en"
+  class="light-style layout-menu-fixed layout-compact"
+  dir="ltr"
+  data-theme="theme-default"
+  data-assets-path="../assets/"
+  data-template="vertical-menu-template-free"
+  data-style="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+
+    <title>Hospital Registration</title>
+
+ <%- include('../header') -%>
+
+          <!-- Content wrapper -->
+          <div class="content-wrapper">
+            <!-- Content -->
+            <div class="container-xxl flex-grow-1 container-p-y">
+              <div class="row">
+                <!-- Vertical & Horizontal Scrollbars -->
+                <div class="col-12">
+                  <div class="card overflow-hidden">
+                    <h5 class="card-header">Appointment Calender</h5>
+                    <div class="card">
+                    <!-- Account -->
+                    <div class="card-body pt-4">
+                      <form id="formAccountSettings" method="POST" onsubmit="return false">
+                        <div class="row g-6">
+                    <div class="col-lg-12 mb-12 mb-xl-0">
+                      <small class="text-light fw-medium">Doctors</small>
+                      <div class="mt-4">
+                        <div class="row">
+                          <div class="col-md-3 col-12 mb-6 mb-md-0">
+                            <div class="list-group">
+                              <a
+                                class="list-group-item list-group-item-action active"
+                                id="list-home-list"
+                                data-bs-toggle="list"
+                                href="#list-home"
+                                >Dr. X(Cardiologist)</a
+                              >
+                              <a
+                                class="list-group-item list-group-item-action"
+                                id="list-profile-list"
+                                data-bs-toggle="list"
+                                href="#list-profile"
+                                >Dr. Y(Ortho)</a
+                              >
+                              <a
+                                class="list-group-item list-group-item-action"
+                                id="list-messages-list"
+                                data-bs-toggle="list"
+                                href="#list-messages"
+                                >Dr. Z(Dentist)</a
+                              >
+                              <a
+                                class="list-group-item list-group-item-action"
+                                id="list-settings-list"
+                                data-bs-toggle="list"
+                                href="#list-settings"
+                                >Dr. O(Gyne)</a
+                              >
+                            </div>
+                          </div>
+                          <div class="col-md-9 col-12">
+                            <div class="tab-content p-0">
+                              <div class="tab-pane fade show active" id="list-home">
+                    <div class="table-responsive text-nowrap">
+                    <table class="table table-bordered">
+                      <thead class="table-light">
+                        <tr>
+                          <th></th>
+						  <th>Jan 14</th>
+                          <th>Jan 15</th>
+                          <th>Jan 16</th>
+                          <th>Jan 17</th>
+                          <th>Jan 18</th>
+						  <th>Jan 19</th>
+						  <th>Jan 20</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>09:00AM</td>
+                          <td></td>
+						  <td></td>
+                          <td></td>
+                          <td><span class="badge bg-label-primary me-1">Bharat, 28, M</span></td>
+                          <td></td>
+						  <td></td>
+						  <td></td>
+                        </tr>
+						<tr>
+                          <td>09:15AM</td>
+                          <td></td>
+						  <td></td>
+                          <td></td>
+                          <td></td>
+                          <td><span class="badge bg-label-primary me-1">Shweta, 21, F</span></td>
+						  <td></td>
+						  <td></td>
+                        </tr>
+						<tr>
+                          <td>09:30AM</td>
+                          <td></td>
+						  <td><span class="badge bg-label-primary me-1">Sagar, 42, M</span></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+						  <td></td>
+						  <td></td>
+                        </tr>
+						<tr>
+                          <td>09:45AM</td>
+                          <td></td>
+						  <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+						  <td></td>
+						  <td><span class="badge bg-label-primary me-1">Geeta, 18, F</span></td>
+                        </tr>
+						<tr>
+                          <td>10:00AM</td>
+                          <td></td>
+						  <td><span class="badge bg-label-primary me-1">Anuj, 26, M</span></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+						  <td></td>
+						  <td></td>
+                        </tr>
+                        
+                      </tbody>
+                    </table>
+                  </div>
+                              </div>
+                              <div class="tab-pane fade" id="list-profile">
+                               <div class="table-responsive text-nowrap">
+                    <table class="table table-bordered">
+                      <thead class="table-light">
+                        <tr>
+                          <th></th>
+						  <th>Jan 14</th>
+                          <th>Jan 15</th>
+                          <th>Jan 16</th>
+                          <th>Jan 17</th>
+                          <th>Jan 18</th>
+						  <th>Jan 19</th>
+						  <th>Jan 20</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>09:00AM</td>
+                          <td></td>
+						  <td></td>
+                          <td></td>
+                          <td><span class="badge bg-label-primary me-1">Sanu, 28, M</span></td>
+                          <td></td>
+						  <td></td>
+						  <td></td>
+                        </tr>
+						<tr>
+                          <td>09:15AM</td>
+                          <td></td>
+						  <td></td>
+                          <td></td>
+                          <td></td>
+                          <td><span class="badge bg-label-primary me-1">Shweta, 21, F</span></td>
+						  <td></td>
+						  <td></td>
+                        </tr>
+						<tr>
+                          <td>09:30AM</td>
+                          <td></td>
+						  <td><span class="badge bg-label-primary me-1">Sagar, 42, M</span></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+						  <td></td>
+						  <td></td>
+                        </tr>
+						<tr>
+                          <td>09:45AM</td>
+                          <td></td>
+						  <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+						  <td></td>
+						  <td><span class="badge bg-label-primary me-1">Geeta, 18, F</span></td>
+                        </tr>
+						<tr>
+                          <td>10:00AM</td>
+                          <td></td>
+						  <td><span class="badge bg-label-primary me-1">Anuj, 26, M</span></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+						  <td></td>
+						  <td></td>
+                        </tr>
+                        
+                      </tbody>
+                    </table>
+                  </div>
+                              </div>
+                              <div class="tab-pane fade" id="list-messages">
+                                <div class="table-responsive text-nowrap">
+                    <table class="table table-bordered">
+                      <thead class="table-light">
+                        <tr>
+                          <th></th>
+						  <th>Jan 14</th>
+                          <th>Jan 15</th>
+                          <th>Jan 16</th>
+                          <th>Jan 17</th>
+                          <th>Jan 18</th>
+						  <th>Jan 19</th>
+						  <th>Jan 20</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>09:00AM</td>
+                          <td></td>
+						  <td></td>
+                          <td></td>
+                          <td><span class="badge bg-label-primary me-1">Sahil, 28, M</span></td>
+                          <td></td>
+						  <td></td>
+						  <td></td>
+                        </tr>
+						<tr>
+                          <td>09:15AM</td>
+                          <td></td>
+						  <td></td>
+                          <td></td>
+                          <td></td>
+                          <td><span class="badge bg-label-primary me-1">Shweta, 21, F</span></td>
+						  <td></td>
+						  <td></td>
+                        </tr>
+						<tr>
+                          <td>09:30AM</td>
+                          <td></td>
+						  <td><span class="badge bg-label-primary me-1">Sagar, 42, M</span></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+						  <td></td>
+						  <td></td>
+                        </tr>
+						<tr>
+                          <td>09:45AM</td>
+                          <td></td>
+						  <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+						  <td></td>
+						  <td><span class="badge bg-label-primary me-1">Geeta, 18, F</span></td>
+                        </tr>
+						<tr>
+                          <td>10:00AM</td>
+                          <td></td>
+						  <td><span class="badge bg-label-primary me-1">Anuj, 26, M</span></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+						  <td></td>
+						  <td></td>
+                        </tr>
+                        
+                      </tbody>
+                    </table>
+                  </div>
+                              </div>
+                              <div class="tab-pane fade" id="list-settings">
+                               <div class="table-responsive text-nowrap">
+                    <table class="table table-bordered">
+                      <thead class="table-light">
+                        <tr>
+                          <th></th>
+						  <th>Jan 14</th>
+                          <th>Jan 15</th>
+                          <th>Jan 16</th>
+                          <th>Jan 17</th>
+                          <th>Jan 18</th>
+						  <th>Jan 19</th>
+						  <th>Jan 20</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>09:00AM</td>
+                          <td></td>
+						  <td></td>
+                          <td></td>
+                          <td><span class="badge bg-label-primary me-1">Lakshay, 28, M</span></td>
+                          <td></td>
+						  <td></td>
+						  <td></td>
+                        </tr>
+						<tr>
+                          <td>09:15AM</td>
+                          <td></td>
+						  <td></td>
+                          <td></td>
+                          <td></td>
+                          <td><span class="badge bg-label-primary me-1">Shweta, 21, F</span></td>
+						  <td></td>
+						  <td></td>
+                        </tr>
+						<tr>
+                          <td>09:30AM</td>
+                          <td></td>
+						  <td><span class="badge bg-label-primary me-1">Sagar, 42, M</span></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+						  <td></td>
+						  <td></td>
+                        </tr>
+						<tr>
+                          <td>09:45AM</td>
+                          <td></td>
+						  <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+						  <td></td>
+						  <td><span class="badge bg-label-primary me-1">Geeta, 18, F</span></td>
+                        </tr>
+						<tr>
+                          <td>10:00AM</td>
+                          <td></td>
+						  <td><span class="badge bg-label-primary me-1">Anuj, 26, M</span></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+						  <td></td>
+						  <td></td>
+                        </tr>
+                        
+                      </tbody>
+                    </table>
+                  </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                        </div>
+
+                      </form>
+                    </div>
+                    <!-- /Account -->
+                  </div>
+                  </div>
+                </div>
+                <!--/ Vertical & Horizontal Scrollbars -->
+              </div>
+            </div>
+            <!-- / Content -->
+					  
+
+            <%- include('../footer') -%>
