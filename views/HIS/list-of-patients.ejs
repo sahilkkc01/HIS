@@ -31,17 +31,17 @@
 				<div class="dt-buttons btn-group flex-wrap mb-0"> 
 				
 				<div class="btn-group">
-				<input type="search" class="form-control ms-4" id="dt-search-1" placeholder="Search" aria-controls="DataTables_Table_1">
+				<input type="search" class="form-control ms-4" id="searchBox" placeholder="Search" aria-controls="DataTables_Table_1">
 				
 				<button class="btn buttons-collection btn-label-primary dropdown-toggle me-4" tabindex="0" aria-controls="DataTables_Table_0" type="button" aria-haspopup="dialog" aria-expanded="false"><span><span class="d-flex align-items-center gap-2"><i class="icon-base bx bx-export me-sm-1"></i> <span class="d-none d-sm-inline-block">Export</span></span></span></button></div> 
 				
-				<button class="btn create-new btn-primary" tabindex="0" aria-controls="DataTables_Table_0" type="button"><span><span class="d-flex align-items-center gap-2"><i class="icon-base bx bx-plus icon-sm"></i> <span class="d-none d-sm-inline-block">New Registration</span></span></span></button> 
+				<button class="btn create-new btn-primary" tabindex="0" onclick=" window.location.href = '/patient-registration'" aria-controls="DataTables_Table_0" type="button"><span><span class="d-flex align-items-center gap-2"><i class="icon-base bx bx-plus icon-sm"></i> <span class="d-none d-sm-inline-block">New Registration</span></span></span></button> 
 				  </div>
 				 </div>
 				</div>
 				
                 <div class="table-responsive text-nowrap">
-                  <table class="table">
+                  <table class="table" id="tblid">
                     <thead>
                       <tr>
                         <th>UHID</th>
@@ -51,74 +51,12 @@
                         <th>Actions</th>
                       </tr>
                     </thead>
-                    <tbody class="table-border-bottom-0">
-                      <tr>
-                        <td>PT001</td>
-                        <td>
-						
-						<img width="30" src="../images/5.png" alt="Avatar" class="rounded-circle" /> Bharat Singh</td>
-                        <td>
-                          880000000
-						</td>
-                        <td><div class="d-flex flex-column">
-                  <span class="emp_name text-truncate text-heading">Dr. Sahil</span>
-                  <small class="emp_post text-truncate">Mon, 22 Jan, 10:30AM</small>
-                </div></td>
-                        <td>
-                          <a href="javascript:;" class="btn btn-icon item-edit"><i class="icon-base bx bx-edit icon-sm"></i></a>
-                        </td>
-                      </tr>
-					  <tr>
-                        <td>PT001</td>
-                        <td>
-						
-						<img width="30" src="../images/5.png" alt="Avatar" class="rounded-circle" /> Bharat Singh</td>
-                        <td>
-                          880000000
-						</td>
-                        <td><div class="d-flex flex-column">
-                  <span class="emp_name text-truncate text-heading">Dr. Sahil</span>
-                  <small class="emp_post text-truncate">Mon, 22 Jan, 10:30AM</small>
-                </div></td>
-                        <td>
-                          <a href="javascript:;" class="btn btn-icon item-edit"><i class="icon-base bx bx-edit icon-sm"></i></a>
-                        </td>
-                      </tr>
-					  <tr>
-                        <td>PT001</td>
-                        <td>
-						
-						<img width="30" src="../images/5.png" alt="Avatar" class="rounded-circle" /> Bharat Singh</td>
-                        <td>
-                          880000000
-						</td>
-                        <td><div class="d-flex flex-column">
-                  <span class="emp_name text-truncate text-heading">Dr. Sahil</span>
-                  <small class="emp_post text-truncate">Mon, 22 Jan, 10:30AM</small>
-                </div></td>
-                        <td>
-                          <a href="javascript:;" class="btn btn-icon item-edit"><i class="icon-base bx bx-edit icon-sm"></i></a>
-                        </td>
-                      </tr>
-					  <tr>
-                        <td>PT001</td>
-                        <td>
-						
-						<img width="30" src="../images/5.png" alt="Avatar" class="rounded-circle" /> Bharat Singh</td>
-                        <td>
-                          880000000
-						</td>
-                        <td><div class="d-flex flex-column">
-                  <span class="emp_name text-truncate text-heading">Dr. Sahil</span>
-                  <small class="emp_post text-truncate">Mon, 22 Jan, 10:30AM</small>
-                </div></td>
-                        <td>
-                          <a href="javascript:;" class="btn btn-icon item-edit"><i class="icon-base bx bx-edit icon-sm"></i></a>
-                        </td>
-                      </tr>
-                      
-                    </tbody>
+                    <tbody id="patientTbody" class="table-border-bottom-0">
+
+                   </tbody>
+                 
                   </table>
+                  <div id="paginationControls"></div>
                 </div>
               </div>
               <!--/ Basic Bootstrap Table -->
@@ -126,3 +64,66 @@
             <!-- / Content -->
 
           <%- include('../footer') -%>
+
+          
+          <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                axios.get("/patients-with-appointments") // Call the API
+                    .then(response => {
+                        const patients = response.data.patients;
+                        const tbody = document.getElementById("patientTbody"); // Use correct ID
+                        tbody.innerHTML = ""; // Clear existing content
+            
+                        patients.forEach(patient => {
+                            const appointment = patient.latestAppointment;
+            
+                            // Format appointment details
+                            const doctorName = appointment ? appointment.doctor : "No Appointment";
+                            const appointmentDate = appointment ? new Date(appointment.date).toDateString() : "N/A";
+                            const appointmentTime = appointment ? appointment.time : "N/A";
+            
+                            // Get patient image, if available, otherwise use a placeholder
+                            const imageUrl = patient.patientImage 
+                                ? `../MyUploads/${patient.patientImage}` // Adjust based on actual image path
+                                : "../images/5.png"; // Placeholder image
+            
+                            // Create table row
+                            const row = `
+                                <tr data-patient-id="${patient.id}">
+                                    <td>${patient.uhid}</td>
+                                    <td>
+                                        <img width="30" src="${imageUrl}" alt="Avatar" class="rounded-circle" />
+                                        ${patient.name}
+                                    </td>
+                                    <td>${patient.mobile}</td>
+                                    <td>
+                                        <div class="d-flex flex-column">
+                                            <span class="emp_name text-truncate text-heading">${doctorName}</span>
+                                            <small class="emp_post text-truncate">${appointmentDate}, ${appointmentTime}</small>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <button id="action" href="javascript:;" class="btn btn-icon item-edit">
+                                            <i class="icon-base bx bx-edit icon-sm"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            `;
+            
+                            tbody.innerHTML += row;
+                        });
+                        pagi_search('#searchBox','#tblid','#paginationControls')
+                    })
+                    .catch(error => {
+                        console.error("Error fetching patient data:", error);
+                    });
+
+                    $('#tblid').on('click', '#action', function() {
+                        const id=$(this).closest('tr').data('patient-id')
+                        const route='Patient-registration'
+                          ViewBtn(route,id)
+                         });
+            });
+            
+            </script>
+            

@@ -3,9 +3,25 @@ var router = express.Router();
 const multer = require('multer');
 const path = require('path');
 const jwt = require("jsonwebtoken");
+const sjcl = require("sjcl");
 const JWT_SECRET = "Sahilkkc01";
-const { savePatientData, login, saveClinicData, logout, logoutFromEverywhere } = require('../controllers/HisControllers');
-const { UserTokens } = require('../models/HisSchema');
+const { savePatientData, login, saveClinicData, logout, logoutFromEverywhere, saveDoctorData,  addSpecialization, getDataFromField, getAvailableSlots, getAllPatientsWithLatestAppointment, getPatientData } = require('../controllers/HisControllers');
+const { UserTokens, Patient } = require('../models/HisSchema');
+
+
+// Decryption function
+function decryptData(encodedEncryptedData, secretKey) {
+  try {
+    // Decode the Base64-encoded data from the URL
+    const encryptedData = atob(decodeURIComponent(encodedEncryptedData));
+
+    // Decrypt using SJCL and return the result
+    return sjcl.decrypt(secretKey, encryptedData);
+  } catch (error) {
+    console.error("Decryption error:", error.message);
+    return null; // Handle or return as needed
+  }
+}
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -44,8 +60,18 @@ router.get("/login", async (req, res) => {
 });
 
 
-router.get('/Patient-Registration', function(req, res, next) {
-  res.render('HIS/patient-registration')
+router.get('/Patient-Registration',async function(req, res, next) {
+  const { id } = req.query;
+  console.log(id);
+
+  if (id) {
+    const decryptedId = decryptData(decodeURIComponent(id), "his");
+    console.log(decryptedId)
+    const data = await Patient.findByPk(decryptedId);
+    const values = data ? data.get({ plain: true }) : {};
+    res.render('HIS/patient-registration',{patient:values})
+  }
+  res.render('HIS/patient-registration',{patient:{}})
 });
 router.get('/PatientQrReg', function(req, res, next) {
   res.render('HIS/PatientQrReg')
@@ -71,6 +97,7 @@ router.post('/login',login)
 router.post('/logout',logout)
 router.post('/logoutFromEverywhere',logoutFromEverywhere)
 router.post('/patient-reg',upload.single('patientImage'),savePatientData)
+router.post('/doctor-reg',upload.single('doctorImage'),saveDoctorData)
 router.post('/hospital-reg', 
   upload.fields([
       { name: 'logo', maxCount: 1 },
@@ -79,6 +106,10 @@ router.post('/hospital-reg',
   ]), 
   saveClinicData
 );
-
+router.post('/addSpec',addSpecialization)
+router.get('/getDataFromField',getDataFromField)
+router.get('/patients-with-appointments',getAllPatientsWithLatestAppointment)
+router.post('/getAvailableSlots',getAvailableSlots)
+router.get('/patient/:patientId', getPatientData);
 
 module.exports = router;

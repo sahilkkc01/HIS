@@ -6,12 +6,19 @@ const Patient = sequelize.define('patients', {
         type: DataTypes.INTEGER,
         allowNull: false,
     },
+    uhid: {
+        type: DataTypes.STRING,
+      
+    },
     name: {
         type: DataTypes.STRING,
         allowNull: false,
         validate: {
             notEmpty: true,
         },
+    },
+    patientImage: {
+        type: DataTypes.STRING,
     },
     mobile: {
         type: DataTypes.STRING,
@@ -23,10 +30,6 @@ const Patient = sequelize.define('patients', {
     },
     email: {
         type: DataTypes.STRING,
-        allowNull: true,
-        validate: {
-            isEmail: true,
-        },
     },
     gender: {
         type: DataTypes.ENUM('M', 'F', 'O'),
@@ -45,6 +48,81 @@ const Patient = sequelize.define('patients', {
     alter:true,
     tableName: "patients", 
 });
+
+const PatientDetails=sequelize.define('PatientDetails',{
+    patient_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+    },
+    address: {
+        type: DataTypes.TEXT, 
+    },
+    otdetails: {
+        type: DataTypes.TEXT,
+    }, 
+},
+{
+    timestamps: true,
+    alter:true,
+    tableName: "patientdetails", 
+})
+
+const Appointment = sequelize.define('Appointment', {
+    clinic_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    patient_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    weight: {
+      type: DataTypes.FLOAT,
+      
+    },
+    height: {
+      type: DataTypes.FLOAT,
+      
+    },
+    bmi: {
+      type: DataTypes.FLOAT,
+      
+    },
+    fever: {
+      type: DataTypes.STRING,
+      
+    },
+    BP: {
+      type: DataTypes.STRING,
+      
+    },
+    Suger: {
+      type: DataTypes.STRING,
+      
+    },
+    clinic: {
+      type: DataTypes.STRING,
+      
+    },
+    doctor_id: {
+        type: DataTypes.INTEGER,
+      },
+    doctor: {
+        type: DataTypes.STRING,
+        
+      },
+    date: {
+      type: DataTypes.DATEONLY,
+      allowNull: false
+    },
+    time: {
+      type: DataTypes.STRING,
+      allowNull: false
+    }
+  }, {
+    tableName: 'appointments', // Name of the table in the database
+    timestamps: true // Adds createdAt and updatedAt fields
+  });
 
 const User = sequelize.define('User', {
     clinic_id: {
@@ -79,6 +157,10 @@ const User = sequelize.define('User', {
 });
 
 const Clinic = sequelize.define('Clinic', {
+    clinic_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+    },
     name: {
         type: DataTypes.STRING,
         allowNull: false,
@@ -169,5 +251,111 @@ const UserTokens = sequelize.define(
     }
   );
 
+  const Doctor = sequelize.define('doctors', {
+    clinic_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+    },
+    name: {
+        type: DataTypes.STRING,
+        allowNull: false,
+       
+    },
+    doctorImage: {
+        type: DataTypes.STRING,
+       
+    },
+    phoneNumber: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+            isNumeric: true,
+            len: [10, 15],
+        },
+    },
+    email: {
+        type: DataTypes.STRING,
+        allowNull: true,
+    },
+    gender: {
+        type: DataTypes.ENUM('M', 'F', 'O'),
+        allowNull: false,
+    },
+    practicingSince: {
+        type: DataTypes.STRING,
+        
+    },
+    qualification: {
+        type: DataTypes.STRING,
+        
+        
+    },
+    specialization: {
+        type: DataTypes.STRING,
+        
+       
+    },
+    regNo: {
+        type: DataTypes.STRING,
+        
+        
+    },
+    consultationFees: {
+        type: DataTypes.DECIMAL(10, 2),
+        
+    },
+    ipd: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
+    },
+    opd: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
+    },
+    otherDetails: {
+        type: DataTypes.TEXT,
+        
+    },
+    appointmentCalendar: {
+        type: DataTypes.JSON,
+        
+    },
+    timeslot: {
+        type: DataTypes.INTEGER,
+    },
+}, {
+    timestamps: true,
+    alter: true,
+    tableName: "doctors",
+});
+
+const Specialization = sequelize.define('Specialization', {
+    clinic_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+    },
+    name: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    },
+  
+}, {
+    timestamps: true,
+    alter: true,
+    tableName: "specialization",
+});
+
+
+
 // sequelize.sync()
-module.exports = { Patient,User,UserTokens,Clinic};
+module.exports = { 
+    Patient,
+    User,
+    UserTokens,
+    Clinic,
+    Doctor,
+    Specialization,
+    Appointment,
+    PatientDetails};

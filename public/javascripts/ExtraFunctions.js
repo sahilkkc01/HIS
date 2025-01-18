@@ -1,3 +1,21 @@
+function ViewBtn(route, id){
+
+  axios.get(`/${route}`, {
+      params: {
+        id: id 
+      }
+    })
+    .then(response => {
+      // console.log('Success:', response.data);
+      window.open(`/${route}?id=${id}`, '_blank');
+  
+     
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    });
+  }
+
 function BMI(heightId, weightId, bmiId) {
     const height = parseFloat(document.getElementById(heightId).value);
     const weight = parseFloat(document.getElementById(weightId).value);
@@ -46,7 +64,55 @@ function previewImage(event, previewId, removeBtnId) {
     removeBtn.style.display = 'none'; // Hide the remove button
   }
   
-  
+
+  const loadDropdown = (elementId, key, selectedValue = null) => {
+    // Append elementId to the URL as a query parameter
+    const modifiedUrl = `getDataFromField?elementId=${elementId}`;
+
+    fetch(modifiedUrl)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Error fetching data from ${modifiedUrl}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log(data);
+            const dropdown = document.getElementById(elementId);
+            dropdown.innerHTML = '<option value="">Select</option>'; // Clear existing options and add a default one
+
+            // Loop through the data to create options
+            data.data.forEach(item => {
+                const option = document.createElement('option');
+                
+                // If elementId is "Doctor", set value as item.id, otherwise use item[key]
+                option.value = (elementId === "Doctor") ? item.id : item[key];
+                option.textContent = item[key]; // Display text remains the same
+                option.setAttribute("data-id", item.id); // Set data-id attribute
+                
+                dropdown.appendChild(option);
+            });
+
+            // Add "Add New" option **only if elementId is "Specialization"**
+            if (elementId === "Specialization") {
+                const addNewOption = document.createElement('option');
+                addNewOption.value = "add-new";
+                addNewOption.textContent = "Add New";
+                dropdown.appendChild(addNewOption);
+            }
+
+            // Set the value after the dropdown has been populated
+            if (selectedValue) {
+                dropdown.value = selectedValue;
+            }
+        })
+        .catch(error => console.error(`Error fetching ${elementId} details:`, error));
+};
+
+
+
+
+
 
 
 

@@ -30,6 +30,7 @@
                   <div class="card overflow-hidden">
                     <h5 class="card-header">Patient Registration</h5>
                     <form id="PatientRegForm" method="post" enctype="multipart/form-data">
+                      <input type="hidden" id="patientId" name="patientId">
                     <div class="card">
                     <!-- Account -->
                  
@@ -62,11 +63,7 @@
               </div>
           
               <!-- Video and Canvas for Webcam -->
-              <div id="webcamContainer" class="mt-3" style="display: none;">
-                  <video id="video" width="320" height="240" autoplay></video>
-                  <canvas id="canvas" width="320" height="240" style="display:none;"></canvas>
-                  <button id="captureBtn" type="button" class="btn btn-success mt-3">Capture</button>
-              </div>
+              
           </div>
           
 						
@@ -111,11 +108,11 @@
                           </div>
                           <div class="col-md-6">
                             <label for="address" class="form-label">Address</label>
-                            <input type="text" class="form-control" id="address" name="address" placeholder="">
+                            <input type="text" class="form-control" id="address" name="address" placeholder="" data-validation>
                           </div>
 						  <div class="col-md-6">
                             <label for="address" class="form-label">Other Details</label>
-                            <input type="text" class="form-control" id="otdetails" name="otdetails" placeholder="">
+                            <input type="text" class="form-control" id="otdetails" name="otdetails" placeholder="" data-validation>
                           </div>
                           <div class="col-md-6">
 						  <div class="form-check">
@@ -126,47 +123,53 @@
 						  <div id="markvisit" class="row g-4 displaynone">
 						  <div class="col-md-2">
                             <label for="state" class="form-label">Weight (KG)</label>
-                            <input class="form-control" type="number" id="weight" name="weight" placeholder="">
+                            <input class="form-control" type="number" id="weight" name="weight" step="any" placeholder="">
                           </div>
 						  <div class="col-md-2">
                             <label for="state" class="form-label">Height (Feet)</label>
-                            <input class="form-control" type="number" id="height" name="height" placeholder="">
+                            <input class="form-control" type="number" id="height" name="height" step="any" placeholder="">
                           </div>
 						  <div class="col-md-2">
                             <label for="state" class="form-label">BMI</label>
-                            <input class="form-control" type="number" id="bmi" name="bmi" disabled>
+                            <input class="form-control" type="number" id="bmi" name="bmi" step="any" readonly>
                           </div>
 						  
 						  <div class="col-md-2">
-                            <label for="state" class="form-label">Fever °C</label>
-                            <input class="form-control" type="number" id="fever" name="fever" placeholder="">
+                            <label for="state" class="form-label">Fever °F</label>
+                            <input class="form-control" type="number" id="fever" name="fever" step="any" placeholder="">
                           </div>
 						  <div class="col-md-2">
                             <label for="state" class="form-label">BP (mm Hg)</label>
-                            <input class="form-control" type="text" id="bp" name="bp" placeholder="">
+                            <input class="form-control" type="text" id="bp" name="bp"  placeholder="">
                           </div>
 						  <div class="col-md-2">
                             <label for="state" class="form-label">Sugar (mg/dL)</label>
-                            <input class="form-control" type="number" id="sugar" name="sugar">
+                            <input class="form-control" type="number" id="sugar" step="any" name="sugar">
                           </div>
 						  
 						  <div class="col-md-2">
-                            <label for="place" class="form-label">Place*</label>
-                            <select id="place" class="select2 form-select">
+                            <label for="clinic" class="form-label">Clinic*</label>
+                            <select id="Clinic" name="Clinic" class="select2 form-select">
                               <option value="">Select</option>
                             </select>
                           </div>
 						  
 						  <div class="col-md-2">
                             <label for="doctor" class="form-label">Doctor*</label>
-                            <select id="doctor" class="select2 form-select">
+                            <select id="Doctor" name="doctor" class="select2 form-select">
                               <option value="">Select</option>
                             </select>
                           </div>
 						  
 						  <div class="col-md-2">
+                            <label for="Date" class="form-label">Date*</label>
+                            <input type="date" id="date" name="date" class="form-control">
+                              
+                            
+                          </div>
+						  <div class="col-md-2">
                             <label for="Time" class="form-label">Time*</label>
-                            <select id="drtime" class="select2 form-select">
+                            <select id="time" name="time" class="select2 form-select">
                               <option value="">Select</option>
                             </select>
                           </div>
@@ -177,8 +180,9 @@
                         </div>
                         <div id="loadingIndicator"></div>
                         <div class="mt-6">
+                          <button type="button"  id="mod-btn" style="display: none !important;" onclick="updateQuery()" class="btn btn-primary me-3">Modify</button>
                           <button type="submit" id="subBtn" class="btn btn-primary me-3">Save</button>
-                          <button type="reset" class="btn btn-outline-secondary">Cancel</button>
+                          <button type="reset" onclick="window.location.href='/Patient-list'" class="btn btn-outline-secondary">Cancel</button>
                         </div>
                      
                     </div>
@@ -194,7 +198,27 @@
               </div>
             </div>
             <!-- / Content -->
-
+            <div class="modal fade" id="WebcamModal" tabindex="-1" aria-hidden="true">
+              <div class="modal-dialog modal-sm" role="document">
+                  <div class="modal-content">
+                      <div class="modal-header">
+                          <h5 class="modal-title" id="exampleModalLabel2">Webcam</h5>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body">
+                         
+                          <!-- Webcam Section -->
+                          <div id="webcamContainer" class="mt-3" style="display: none;">
+                              <video id="video" width="320" height="240" autoplay></video>
+                              <canvas id="canvas" width="320" height="240" style="display:none;"></canvas>
+                              <button id="captureBtn" type="button" class="btn btn-success mt-3">Capture</button>
+                          </div>
+                      </div>
+                      
+                  </div>
+              </div>
+          </div>
+          
             <%- include('../footer') -%>
 
             <!-- Extra Js for this Page-->
@@ -203,10 +227,10 @@
   $("#defaultCheck3").on("change", function () {
     if ($(this).is(":checked")) {
     $("#markvisit").removeClass("displaynone"); // Show the element
-    $("#doctor, #place, #drtime").attr("data-validation", "required"); // Add required validation
+    $("#Doctor, #Clinic, #time ,#date").attr("data-validation", "required"); // Add required validation
   } else {
     $("#markvisit").addClass("displaynone"); // Hide the element
-    $("#doctor, #place, #drtime").removeAttr("data-validation"); // Remove required validation
+    $("#Doctor, #Clinic, #time ,#date").removeAttr("data-validation"); // Remove required validation
   }
   });
   });
@@ -224,7 +248,13 @@
 document.getElementById("weight").addEventListener("input", function() {
     BMI("height", "weight", "bmi");
 });
- 
+loadDropdown('Doctor', 'name', '');
+loadDropdown('Clinic', 'name', '');
+  document.addEventListener("DOMContentLoaded", function () {
+    const dateField = document.getElementById("date");
+    const today = new Date().toISOString().split("T")[0]; 
+    dateField.setAttribute("min", today);
+  });
 
 $(document).ready(function () {
     console.log("Document is ready");
@@ -260,7 +290,101 @@ $(document).ready(function () {
     });
 });
 
+
+document.addEventListener("DOMContentLoaded", function () {
+    const doctorSelect = document.getElementById("Doctor");
+    const dateInput = document.getElementById("date");
+    const timeSelect = document.getElementById("time");
+
+    // Function to fetch available time slots
+    const fetchAvailableSlots = () => {
+        const selectedOption = doctorSelect.selectedOptions[0]; // Get selected option
+        const doctor_id = doctorSelect.value;
+        const date = dateInput.value;
+        
+
+        console.log("Doctor ID:", doctor_id); // Debugging
+        if (!doctor_id || !date) {
+            timeSelect.innerHTML = '<option value="">Select</option>';
+            return;
+        }
+
+        axios.post("/getAvailableSlots", { doctor_id, date })
+            .then(response => {
+                console.log(response);
+                const availableSlots = response.data.availableSlots;
+
+                timeSelect.innerHTML = '<option value="">Select</option>'; // Reset dropdown
+
+                if (availableSlots.length === 0) {
+                    timeSelect.innerHTML += '<option value="">No slots available</option>';
+                } else {
+                    availableSlots.forEach(slot => {
+                        const option = document.createElement("option");
+                        option.value = slot;
+                        option.textContent = slot;
+                        timeSelect.appendChild(option);
+                    });
+                }
+            })
+            .catch(error => {
+                console.error("Error fetching available slots:", error);
+                alert("Failed to load available slots.");
+            });
+    };
+
+    // Event Listeners
+    doctorSelect.addEventListener("change", fetchAvailableSlots);
+    dateInput.addEventListener("change", fetchAvailableSlots);
+});
+
   </script>
+
+<script>
+  function loadPatientData(patientId) {
+    $.ajax({
+        url: `/patient/${patientId}`,
+        type: "GET",
+        success: function (data) {
+          console.log(data)
+            $("#patientId").val(data.patient.id);
+            $("#name").val(data.patient.name);
+            $("#mobile").val(data.patient.mobile);
+            $("#email").val(data.patient.email);
+            $("#gender").val(data.patient.gender).trigger("change");
+            $("#age").val(data.patient.age);
+            $("#address").val(data.patient.address);
+            $("#otdetails").val(data.patient.otdetails);
+           
+
+             // Show patient image if exists
+             if (data.patient.patientImage) {
+                $("#uploadedAvatar").attr("src", `/Myuploads/${data.patient.patientImage}`);
+            } else {
+                $("#uploadedAvatar").attr("src", "../images/1.png"); // Default image
+            }
+            // Show modify button, hide save button
+            $("#mod-btn").show();
+            $('#subBtn').prop('disabled', true);
+            $('#defaultCheck3').prop('disabled', true);
+        },
+        error: function (err) {
+            console.error("Error fetching patient data", err);
+        }
+    });
+}
+
+if('<%= patient.id %>'!==''){
+  loadPatientData('<%= patient.id %>')
+  $('input[data-validation], select').prop('readonly', true);
+}
+function updateQuery(){
+       $('#mod-btn').prop('disabled', true);   
+       $('input, select').prop('readonly', false);
+       $('#subBtn').prop('disabled', false);
+     }
+            
+</script>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -315,6 +439,7 @@ document.addEventListener('DOMContentLoaded', function() {
         patientImageInput.files = dataTransfer.files; // Update the file input with the captured file
 
         stopWebcam(); // Stop the webcam after capturing the image
+        $('#WebcamModal').modal('hide');
     });
 
     // Stop the webcam
@@ -328,6 +453,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Open webcam when clicking the "Upload from Webcam" button
     webcamBtn.addEventListener('click', function() {
+      $('#WebcamModal').modal('show');
         startWebcam();
     });
 
@@ -336,6 +462,11 @@ document.addEventListener('DOMContentLoaded', function() {
         uploadedAvatar.src = "../images/1.png"; // Reset to default image
         patientImageInput.value = ''; // Clear local file input
         stopWebcam(); // Stop webcam if active
+    });
+
+          // Stop webcam when the modal is closed
+          $('#WebcamModal').on('hidden.bs.modal', function () {
+        stopWebcam(); // Stop the webcam when the modal is closed
     });
 
     // Convert DataURL to a File object
