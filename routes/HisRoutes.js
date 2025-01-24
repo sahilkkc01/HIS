@@ -5,7 +5,7 @@ const path = require('path');
 const jwt = require("jsonwebtoken");
 const sjcl = require("sjcl");
 const JWT_SECRET = "Sahilkkc01";
-const { savePatientData, login, saveClinicData, logout, logoutFromEverywhere, saveDoctorData,  addSpecialization, getDataFromField, getAvailableSlots, getAllPatientsWithLatestAppointment, getPatientData } = require('../controllers/HisControllers');
+const { savePatientData, login, saveClinicData, logout, logoutFromEverywhere, saveDoctorData,  addSpecialization, getDataFromField, getAvailableSlots, getAllPatientsWithLatestAppointment, getPatientData, getDoctorAppointments } = require('../controllers/HisControllers');
 const { UserTokens, Patient } = require('../models/HisSchema');
 
 
@@ -63,15 +63,10 @@ router.get("/login", async (req, res) => {
 router.get('/Patient-Registration',async function(req, res, next) {
   const { id } = req.query;
   console.log(id);
-
   if (id) {
-    const decryptedId = decryptData(decodeURIComponent(id), "his");
-    console.log(decryptedId)
-    const data = await Patient.findByPk(decryptedId);
-    const values = data ? data.get({ plain: true }) : {};
-    res.render('HIS/patient-registration',{patient:values})
+    res.render('HIS/patient-registration',{patient:id})
   }
-  res.render('HIS/patient-registration',{patient:{}})
+  res.render('HIS/patient-registration',{patient:null})
 });
 router.get('/PatientQrReg', function(req, res, next) {
   res.render('HIS/PatientQrReg')
@@ -87,6 +82,9 @@ router.get('/Hospital-Registration', function(req, res, next) {
 });
 router.get('/calender', function(req, res, next) {
   res.render('HIS/calender')
+});
+router.get('/add-item', function(req, res, next) {
+  res.render('HIS/add-item')
 });
 
 
@@ -111,5 +109,6 @@ router.get('/getDataFromField',getDataFromField)
 router.get('/patients-with-appointments',getAllPatientsWithLatestAppointment)
 router.post('/getAvailableSlots',getAvailableSlots)
 router.get('/patient/:patientId', getPatientData);
+router.get('/getDoctorAppointments', getDoctorAppointments);
 
 module.exports = router;

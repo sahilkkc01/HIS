@@ -183,143 +183,184 @@ exports.logoutFromEverywhere = async (req,res)=>{
     }
   }
 
+
   exports.savePatientData = async (req, res) => {
-    console.log(req.body);
-    console.log(req.file);
+      console.log(req.body);
+      console.log(req.file);
   
-    const clinicId = req.user?.clinic_id; 
+      const clinicId = req.user?.clinic_id;
   
-    if (!clinicId) {
-      return res.status(401).json({ message: 'Unauthorized: Please log in' });
-    }
-  
-    const transaction = await sequelize.transaction(); // Start a DB transaction
-  
-    try {
-      const {
-        name,
-        mobile,
-        email,
-        gender,
-        age,
-        address,
-        otdetails,
-        weight,
-        height,
-        bmi,
-        fever,
-        bp,
-        sugar,
-        Clinic,
-        doctor, // doctor_id for appointment
-        date, // appointment date
-        time, // appointment time slot
-      } = req.body;
-  
-      if (!name || !mobile || !gender || !age) {
-        return res.status(400).json({ message: 'Name, mobile, gender, and age are required.' });
+      if (!clinicId) {
+          return res.status(401).json({ message: 'Unauthorized: Please log in' });
       }
   
-      const existingPatient = await Patient.findOne({ where: { mobile, clinic_id: clinicId } });
-      if (existingPatient) {
-        return res.status(409).json({ message: 'A patient with this mobile number already exists.' });
+      const transaction = await sequelize.transaction(); // Start a DB transaction
+  
+      try {
+          const {
+              patientId, // For updating an existing patient
+              name,
+              mobile,
+              email,
+              gender,
+              age,
+              address,
+              otdetails,
+              weight,
+              height,
+              bmi,
+              fever,
+              bp,
+              sugar,
+              Clinic,
+              doctor, // doctor_id for appointment
+              date, // appointment date
+              time, // appointment time slot
+          } = req.body;
+  
+          if (!name || !mobile || !gender || !age) {
+              return res.status(400).json({ message: 'Name, mobile, gender, and age are required.' });
+          }
+  
+          const patientImage = req.file?.path ? path.basename(req.file.path) : null;
+          let patient;
+          let isNewPatient = false;
+  
+          if (patientId) {
+              // Update existing patient
+              const decryptedId = decryptData(decodeURIComponent(patientId), "his");
+              patient = await Patient.findOne({ where: { id: decryptedId, clinic_id: clinicId } });
+  
+              if (!patient) {
+                  return res.status(404).json({ message: 'Patient not found' });
+              }
+  
+              await patient.update(
+                  {
+                      name,
+                      patientImage: patientImage || patient.patientImage, // Keep existing image if not provided
+                      mobile,
+                      email,
+                      gender,
+                      age,
+                  },
+                  { transaction }
+              );
+  
+              // Update or create patient details
+              let patientDetails = await PatientDetails.findOne({ where: { patient_id: decryptedId } });
+  
+              if (patientDetails) {
+                  await patientDetails.update(
+                      { address: address || null, otdetails: otdetails || null },
+                      { transaction }
+                  );
+              } else {
+                  await PatientDetails.create(
+                      { patient_id: patientId, address: address || null, otdetails: otdetails || null },
+                      { transaction }
+                  );
+              }
+          } else {
+              // Create new patient record
+              const existingPatient = await Patient.findOne({ where: { mobile, clinic_id: clinicId } });
+  
+              if (existingPatient) {
+                  return res.status(409).json({ message: 'A patient with this mobile number already exists.' });
+              }
+  
+              isNewPatient = true;
+              patient = await Patient.create(
+                  {
+                      clinic_id: clinicId,
+                      name,
+                      patientImage,
+                      mobile,
+                      email,
+                      gender,
+                      age,
+                  },
+                  { transaction }
+              );
+  
+              // Generate UHID: UHID{clinicId}{YYYYMMDD}{patient_id}
+              const todayDate = moment().format('YYYYMMDD');
+              const uhid = `UHID${clinicId}${todayDate}${patient.id}`;
+  
+              await patient.update({ uhid }, { transaction });
+  
+              // Create patient details if provided
+              if (address || otdetails) {
+                  await PatientDetails.create(
+                      { patient_id: patient.id, address: address || null, otdetails: otdetails || null },
+                      { transaction }
+                  );
+              }
+          }
+  
+          let appointment = null;
+  
+          // Only create an appointment for new patients
+          if (isNewPatient && doctor && date && time) {
+              // Validate if doctor exists
+              const doctorExists = await Doctor.findOne({ where: { id: doctor, clinic_id: clinicId } });
+              if (!doctorExists) {
+                  throw new Error('Invalid doctor ID');
+              }
+  
+              const appointmentDate = moment(date, 'YYYY-MM-DD', true);
+              if (!appointmentDate.isValid()) {
+                  throw new Error('Invalid date format. Use YYYY-MM-DD');
+              }
+  
+              // Check if the same patient already has an appointment with the same doctor at the same time
+              const existingAppointment = await Appointment.findOne({
+                  where: { patient_id: patient.id, doctor_id: doctor, date: appointmentDate, time },
+              });
+  
+              if (existingAppointment) {
+                  throw new Error('An appointment already exists for this patient with the same doctor at this time.');
+              }
+  
+              appointment = await Appointment.create(
+                  {
+                      clinic_id: clinicId,
+                      patient_id: patient.id,
+                      doctor_id: doctor,
+                      doctor: doctorExists.name,
+                      clinic: Clinic,
+                      date: appointmentDate.toDate(),
+                      time,
+                      weight: weight ? parseFloat(weight) : null,
+                      height: height ? parseFloat(height) : null,
+                      bmi: bmi ? parseFloat(bmi) : null,
+                      fever: fever || null,
+                      BP: bp || null,
+                      Suger: sugar || null,
+                  },
+                  { transaction }
+              );
+          }
+  
+          // Commit transaction
+          await transaction.commit();
+  
+          return res.status(201).json({
+              message: isNewPatient
+                  ? (appointment ? 'Patient and appointment data saved successfully' : 'Patient data saved successfully')
+                  : 'Patient data updated successfully',
+              patient,
+              ...(appointment ? { appointment } : {}), // Include appointment only if created
+          });
+      } catch (error) {
+          console.error('Error saving patient data:', error);
+  
+          await transaction.rollback(); // Rollback transaction on failure
+          return res.status(500).json({ message: error.message || 'Failed to save patient data' });
       }
-  
-      const patientImage = req.file?.path ? path.basename(req.file.path) : null;
-  
-      // Create new patient record
-      const newPatient = await Patient.create(
-        {
-          clinic_id: clinicId,
-          name,
-          patientImage,
-          mobile,
-          email,
-          gender,
-          age,
-        },
-        { transaction }
-      );
-  
-      // Generate UHID: UHID{clinicId}{YYYYMMDD}{patient_id}
-      const todayDate = moment().format('YYYYMMDD');
-      const uhid = `UHID${clinicId}${todayDate}${newPatient.id}`;
-  
-      // Update the patient record with UHID
-      await newPatient.update({ uhid }, { transaction });
-  
-      // Save patient details if address or otdetails exist
-      if (address || otdetails) {
-        await PatientDetails.create(
-          {
-            patient_id: newPatient.id,
-            address: address || null,
-            otdetails: otdetails || null,
-          },
-          { transaction }
-        );
-      }
-  
-      let appointment = null;
-  
-      if (doctor && date && time) {
-        // Validate if doctor exists
-        const doctorExists = await Doctor.findOne({ where: { id: doctor, clinic_id: clinicId } });
-        if (!doctorExists) {
-          throw new Error('Invalid doctor ID');
-        }
-  
-        const appointmentDate = moment(date, 'YYYY-MM-DD', true);
-        if (!appointmentDate.isValid()) {
-          throw new Error('Invalid date format. Use YYYY-MM-DD');
-        }
-  
-        // Check if the same patient already has an appointment with the same doctor at the same time
-        const existingAppointment = await Appointment.findOne({
-          where: { patient_id: newPatient.id, doctor_id: doctor, date: appointmentDate, time },
-        });
-  
-        if (existingAppointment) {
-          throw new Error('An appointment already exists for this patient with the same doctor at this time.');
-        }
-  
-        appointment = await Appointment.create(
-          {
-            clinic_id: clinicId,
-            patient_id: newPatient.id,
-            doctor_id: doctor,
-            doctor:doctorExists.name,
-            clinic: Clinic,
-            date: appointmentDate.toDate(),
-            time,
-            weight: weight ? parseFloat(weight) : null,
-            height: height ? parseFloat(height) : null,
-            bmi: bmi ? parseFloat(bmi) : null,
-            fever: fever || null,
-            BP: bp || null,
-            Suger: sugar || null,
-          },
-          { transaction }
-        );
-      }
-  
-      // Commit transaction
-      await transaction.commit();
-  
-      return res.status(201).json({
-        message: appointment
-          ? 'Patient and appointment data saved successfully'
-          : 'Patient data saved successfully',
-        patient: newPatient,
-        ...(appointment ? { appointment } : {}), // Include appointment only if created
-      });
-    } catch (error) {
-      console.error('Error saving patient data:', error);
-  
-      await transaction.rollback(); // Rollback transaction on failure
-      return res.status(500).json({ message: error.message || 'Failed to save patient data' });
-    }
   };
+  
+
 
 exports.saveDoctorData = async (req, res) => {
   console.log(req.body);
@@ -484,7 +525,7 @@ exports.addSpecialization = async (req, res) => {
 exports.getDataFromField = async (req, res) => {
   const { elementId } = req.query;  // Schema name passed in the URL
   const clinicId = req.user.clinic_id;  // Get clinic_id from session or token
-
+  
   // Check if clinic_id exists
   if (!clinicId) {
     return res.status(400).send({ msg: 'Please login' });
@@ -518,8 +559,6 @@ exports.getDataFromField = async (req, res) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 };
-
-
 
 exports.getAvailableSlots = async (req, res) => {
   try {
@@ -661,11 +700,12 @@ exports.getPatientData = async (req, res) => {
   if (!clinicId) {
     return res.status(401).json({ message: 'Unauthorized: Please log in' });
   }
-
+  const decryptedId = decryptData(decodeURIComponent(patientId), "his");
+    console.log(decryptedId)
   try {
     // Fetch patient record
     const patient = await Patient.findOne({
-      where: { id: patientId, clinic_id: clinicId },
+      where: { id: decryptedId, clinic_id: clinicId },
     });
 
     if (!patient) {
@@ -674,19 +714,74 @@ exports.getPatientData = async (req, res) => {
 
     // Fetch patient details separately using patient_id
     const patientDetails = await PatientDetails.findOne({
-      where: { patient_id: patientId },
+      where: { patient_id: decryptedId },
     });
 
     // Combine patient data with details manually
     const patientData = {
       ...patient.toJSON(),
+      id: patientId,  // Replace the patient id with the encrypted version
       address: patientDetails?.address || null,
       otdetails: patientDetails?.otdetails || null,
-    };
+  };
 
     return res.status(200).json({ patient: patientData });
   } catch (error) {
     console.error('Error fetching patient data:', error);
     return res.status(500).json({ message: 'Failed to fetch patient data' });
+  }
+};
+
+
+exports.getDoctorAppointments = async (req, res) => {
+  try {
+      const { doctorId } = req.query;
+      console.log("Fetching appointments for Doctor ID:", doctorId);
+
+      if (!doctorId) {
+          return res.status(400).json({ error: "Doctor ID is required" });
+      }
+
+      // Fetch all appointments for the doctor
+      const appointments = await Appointment.findAll({
+          where: { doctor_id: doctorId },
+          order: [['date', 'ASC'], ['time', 'ASC']]
+      });
+
+      if (appointments.length === 0) {
+          return res.json([]); // Return empty array if no appointments
+      }
+
+      // Extract unique patient IDs
+      const patientIds = appointments.map(app => app.patient_id);
+
+      // Fetch patient details separately (avoid associations)
+      const patients = await Patient.findAll({
+          where: { id: { [Op.in]: patientIds } },
+          attributes: ['id', 'name', 'age', 'gender']
+      });
+
+      // Convert patients list to a map for quick lookup
+      const patientMap = {};
+      patients.forEach(patient => {
+          patientMap[patient.id] = patient;
+      });
+
+      // Format the final response
+      const formattedAppointments = appointments.map(app => {
+          const patient = patientMap[app.patient_id] || {};
+          return {
+              date: app.date,
+              time: app.time,
+              patientName: patient.name || "Unknown",
+              age: patient.age || null,
+              gender: patient.gender || null
+          };
+      });
+
+      res.json(formattedAppointments);
+  } catch (error) {
+      console.error("Error fetching doctor appointments:", error);
+      res.status(500).json({ error: "Internal Server Error" });
   }
 };

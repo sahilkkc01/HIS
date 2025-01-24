@@ -283,6 +283,7 @@ $(document).ready(function () {
                 $(errorDivId).removeClass('alert-success').addClass('alert-danger').text(` ${error.message || 'Unknown error'}`).show();
             } finally {
                 $(loadingDiv).hide(); // Hide loading indicator after submission
+                window.location.href='/Patient-list'
             }
         } else {
             $(errorDivId).removeClass('alert-success').addClass('alert-danger').text(errorMessage).show();
@@ -374,8 +375,8 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 }
 
-if('<%= patient.id %>'!==''){
-  loadPatientData('<%= patient.id %>')
+if('<%= patient %>'!==''){
+  loadPatientData('<%= patient %>')
   $('input[data-validation], select').prop('readonly', true);
 }
 function updateQuery(){

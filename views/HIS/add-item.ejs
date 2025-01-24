@@ -1,0 +1,146 @@
+<!doctype html>
+<html
+  lang="en"
+  class="light-style layout-menu-fixed layout-compact"
+  dir="ltr"
+  data-theme="theme-default"
+  data-assets-path="../assets/"
+  data-template="vertical-menu-template-free"
+  data-style="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+
+    <title>Add Item/Medicine</title>
+
+  <%- include('../header') -%>
+
+          <!-- Content wrapper -->
+          <div class="content-wrapper">
+            <!-- Content -->
+            <style>.displaynone{display:none;}.bx-qr-scan{font-size:80px;}</style>
+            <div class="container-xxl flex-grow-1 container-p-y">
+              <div class="row">
+                <!-- Vertical & Horizontal Scrollbars -->
+                <div class="col-12">
+                  <div class="card overflow-hidden">
+                    <h5 class="card-header">Add Medicine</h5>
+                    <div class="card">
+                    <!-- Account -->
+                    <div class="card-body pt-4">
+                      <form id="formAccountSettings" method="POST" onsubmit="return false">
+                        <div class="row g-6">
+                          <div class="col-md-6">
+                            <label for="name" class="form-label">Medicine Name*</label>
+                            <input class="form-control" type="text" id="name" name="name" value="" autofocus="">
+                          </div>
+                          <div class="col-md-6">
+                            <label class="form-label" for="genericName">Generic Name</label>
+                            <div class="input-group">
+                              <input type="text" id="genericName" name="genericName" class="form-control" placeholder="">
+                            </div>
+                          </div>
+						  <div class="col-md-3">
+                            <label for="language" class="form-label">Brand Name</label>
+                            <select id="brandName" name="brandName" class="select2 form-select">
+                              <option value="">Select</option>
+                              <option value="add-new">Add New</option>
+                            </select>
+                          </div>
+						  <div class="col-md-3">
+                            <label for="language" class="form-label">Dosage Form</label>
+                            <select id="dosageForm" name="dosageForm" class="select2 form-select">
+                              <option value="">Select</option>
+							  <option value="Tablet">Tablet</option>
+							  <option value="Capsule">Capsule</option>
+							  <option value="Injection">Injection</option>
+							  <option value="Syrup">Syrup</option>
+                              <option value="add-new">Add New</option>
+                            </select>
+                          </div>
+						  
+                          <div class="col-md-3">
+                            <label for="language" class="form-label">Strength</label>
+                            <input class="form-control" type="text" id="strength" name="strength" value="" placeholder="">
+                          </div>
+						  <div class="col-md-3">
+                            <label for="language" class="form-label">Manufacturer</label>
+                            <select id="manufacturer" name="manufacturer" class="select2 form-select">
+                              <option value="">Select</option>
+                              <option value="add-new">Add New</option>
+                            </select>
+                          </div>
+                          <!-- <div class="col-md-3">
+                                        <label for="language" class="form-label">Strength</label>
+                                        <input class="form-control" type="text" id="email" name="email" value="" placeholder="">
+                                      </div> -->
+						  <div class="col-md-3">
+                            <label for="language" class="form-label">Batch Number</label>
+                            <input class="form-control" type="text" id="batchNum" name="batchNum" value="" placeholder="">
+                          </div>
+						  <div class="col-md-3">
+                            <label for="language" class="form-label">Expiration Date</label>
+                            <input class="form-control" type="date" id="expDate" name="expDate" value="" placeholder="">
+                          </div>
+						  <div class="col-md-3">
+                            <label for="language" class="form-label">Buying Price</label>
+                            <input class="form-control" type="number" id="buyPrice" name="buyPrice" value="" placeholder="">
+                          </div>
+						  <div class="col-md-3">
+                            <label for="language" class="form-label">Selling Price</label>
+                            <input class="form-control" type="number" id="sellPrice" name="sellPrice" value="" placeholder="">
+                          </div>
+						  <div class="col-md-3">
+                            <label for="language" class="form-label">Storage Conditions</label>
+                            <input class="form-control" type="text" id="storageCond" name="storageCond" value="" placeholder="">
+                          </div>
+						  <div class="col-md-3">
+                            <label for="language" class="form-label">Prescription Required</label>
+                            <select id="prescReq" name="prescReq" class="select2 form-select">
+                              <option value="">Select</option>
+                              <option value="Yes">Yes</option>
+							  <option value="No">No</option>
+                            </select>
+                          </div>
+						  
+						  <div class="col-md-3">
+                            <label for="language" class="form-label">Interactions</label>
+                            <input class="form-control" type="text" id="interaction" name="interaction" value="" placeholder="">
+                          </div>
+						  
+						  <div class="col-md-3">
+                            <label for="language" class="form-label">Category</label>
+                            <select id="category" name="category" class="select2 form-select">
+                              <option value="">Select</option>
+                              <option value="Antibiotic">Antibiotic</option>
+							  <option value="Analgesic">Analgesic</option>
+							  <option value="Antipyretic">Antipyretic</option>
+							  <option value="add-new">Add New</option>
+                            </select>
+                          </div>
+						  
+						  <div class="col-md-4">
+                           <label for="formFile" class="form-label">Item Image</label>
+                           <input class="form-control" type="file" id="itemImage" name="itemImage" accept="image/png, image/jpeg">
+                          </div>
+                        </div>
+
+                        <div class="mt-6">
+                          <button type="submit" class="btn btn-primary me-3">Save</button>
+                          <button type="reset" class="btn btn-outline-secondary">Cancel</button>
+                        </div>
+                      </form>
+                    </div>
+                    <!-- /Account -->
+                  </div>
+                  </div>
+                </div>
+                <!--/ Vertical & Horizontal Scrollbars -->
+              </div>
+            </div>
+            <!-- / Content -->
+					  
+
+            <%- include('../footer') -%>

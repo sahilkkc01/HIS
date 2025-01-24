@@ -13,7 +13,7 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
 
-    <title>Hospital Registration</title>
+    <title>Appointment Calender</title>
 
  <%- include('../header') -%>
 
@@ -36,325 +36,14 @@
                       <div class="mt-4">
                         <div class="row">
                           <div class="col-md-3 col-12 mb-6 mb-md-0">
-                            <div class="list-group">
-                              <a
-                                class="list-group-item list-group-item-action active"
-                                id="list-home-list"
-                                data-bs-toggle="list"
-                                href="#list-home"
-                                >Dr. X(Cardiologist)</a
-                              >
-                              <a
-                                class="list-group-item list-group-item-action"
-                                id="list-profile-list"
-                                data-bs-toggle="list"
-                                href="#list-profile"
-                                >Dr. Y(Ortho)</a
-                              >
-                              <a
-                                class="list-group-item list-group-item-action"
-                                id="list-messages-list"
-                                data-bs-toggle="list"
-                                href="#list-messages"
-                                >Dr. Z(Dentist)</a
-                              >
-                              <a
-                                class="list-group-item list-group-item-action"
-                                id="list-settings-list"
-                                data-bs-toggle="list"
-                                href="#list-settings"
-                                >Dr. O(Gyne)</a
-                              >
-                            </div>
+                            <div class="list-group" id="doctorList">
+                              </div>
                           </div>
-                          <div class="col-md-9 col-12">
-                            <div class="tab-content p-0">
-                              <div class="tab-pane fade show active" id="list-home">
-                    <div class="table-responsive text-nowrap">
-                    <table class="table table-bordered">
-                      <thead class="table-light">
-                        <tr>
-                          <th></th>
-						  <th>Jan 14</th>
-                          <th>Jan 15</th>
-                          <th>Jan 16</th>
-                          <th>Jan 17</th>
-                          <th>Jan 18</th>
-						  <th>Jan 19</th>
-						  <th>Jan 20</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr>
-                          <td>09:00AM</td>
-                          <td></td>
-						  <td></td>
-                          <td></td>
-                          <td><span class="badge bg-label-primary me-1">Bharat, 28, M</span></td>
-                          <td></td>
-						  <td></td>
-						  <td></td>
-                        </tr>
-						<tr>
-                          <td>09:15AM</td>
-                          <td></td>
-						  <td></td>
-                          <td></td>
-                          <td></td>
-                          <td><span class="badge bg-label-primary me-1">Shweta, 21, F</span></td>
-						  <td></td>
-						  <td></td>
-                        </tr>
-						<tr>
-                          <td>09:30AM</td>
-                          <td></td>
-						  <td><span class="badge bg-label-primary me-1">Sagar, 42, M</span></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-						  <td></td>
-						  <td></td>
-                        </tr>
-						<tr>
-                          <td>09:45AM</td>
-                          <td></td>
-						  <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-						  <td></td>
-						  <td><span class="badge bg-label-primary me-1">Geeta, 18, F</span></td>
-                        </tr>
-						<tr>
-                          <td>10:00AM</td>
-                          <td></td>
-						  <td><span class="badge bg-label-primary me-1">Anuj, 26, M</span></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-						  <td></td>
-						  <td></td>
-                        </tr>
-                        
-                      </tbody>
-                    </table>
-                  </div>
-                              </div>
-                              <div class="tab-pane fade" id="list-profile">
-                               <div class="table-responsive text-nowrap">
-                    <table class="table table-bordered">
-                      <thead class="table-light">
-                        <tr>
-                          <th></th>
-						  <th>Jan 14</th>
-                          <th>Jan 15</th>
-                          <th>Jan 16</th>
-                          <th>Jan 17</th>
-                          <th>Jan 18</th>
-						  <th>Jan 19</th>
-						  <th>Jan 20</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr>
-                          <td>09:00AM</td>
-                          <td></td>
-						  <td></td>
-                          <td></td>
-                          <td><span class="badge bg-label-primary me-1">Sanu, 28, M</span></td>
-                          <td></td>
-						  <td></td>
-						  <td></td>
-                        </tr>
-						<tr>
-                          <td>09:15AM</td>
-                          <td></td>
-						  <td></td>
-                          <td></td>
-                          <td></td>
-                          <td><span class="badge bg-label-primary me-1">Shweta, 21, F</span></td>
-						  <td></td>
-						  <td></td>
-                        </tr>
-						<tr>
-                          <td>09:30AM</td>
-                          <td></td>
-						  <td><span class="badge bg-label-primary me-1">Sagar, 42, M</span></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-						  <td></td>
-						  <td></td>
-                        </tr>
-						<tr>
-                          <td>09:45AM</td>
-                          <td></td>
-						  <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-						  <td></td>
-						  <td><span class="badge bg-label-primary me-1">Geeta, 18, F</span></td>
-                        </tr>
-						<tr>
-                          <td>10:00AM</td>
-                          <td></td>
-						  <td><span class="badge bg-label-primary me-1">Anuj, 26, M</span></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-						  <td></td>
-						  <td></td>
-                        </tr>
-                        
-                      </tbody>
-                    </table>
-                  </div>
-                              </div>
-                              <div class="tab-pane fade" id="list-messages">
-                                <div class="table-responsive text-nowrap">
-                    <table class="table table-bordered">
-                      <thead class="table-light">
-                        <tr>
-                          <th></th>
-						  <th>Jan 14</th>
-                          <th>Jan 15</th>
-                          <th>Jan 16</th>
-                          <th>Jan 17</th>
-                          <th>Jan 18</th>
-						  <th>Jan 19</th>
-						  <th>Jan 20</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr>
-                          <td>09:00AM</td>
-                          <td></td>
-						  <td></td>
-                          <td></td>
-                          <td><span class="badge bg-label-primary me-1">Sahil, 28, M</span></td>
-                          <td></td>
-						  <td></td>
-						  <td></td>
-                        </tr>
-						<tr>
-                          <td>09:15AM</td>
-                          <td></td>
-						  <td></td>
-                          <td></td>
-                          <td></td>
-                          <td><span class="badge bg-label-primary me-1">Shweta, 21, F</span></td>
-						  <td></td>
-						  <td></td>
-                        </tr>
-						<tr>
-                          <td>09:30AM</td>
-                          <td></td>
-						  <td><span class="badge bg-label-primary me-1">Sagar, 42, M</span></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-						  <td></td>
-						  <td></td>
-                        </tr>
-						<tr>
-                          <td>09:45AM</td>
-                          <td></td>
-						  <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-						  <td></td>
-						  <td><span class="badge bg-label-primary me-1">Geeta, 18, F</span></td>
-                        </tr>
-						<tr>
-                          <td>10:00AM</td>
-                          <td></td>
-						  <td><span class="badge bg-label-primary me-1">Anuj, 26, M</span></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-						  <td></td>
-						  <td></td>
-                        </tr>
-                        
-                      </tbody>
-                    </table>
-                  </div>
-                              </div>
-                              <div class="tab-pane fade" id="list-settings">
-                               <div class="table-responsive text-nowrap">
-                    <table class="table table-bordered">
-                      <thead class="table-light">
-                        <tr>
-                          <th></th>
-						  <th>Jan 14</th>
-                          <th>Jan 15</th>
-                          <th>Jan 16</th>
-                          <th>Jan 17</th>
-                          <th>Jan 18</th>
-						  <th>Jan 19</th>
-						  <th>Jan 20</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr>
-                          <td>09:00AM</td>
-                          <td></td>
-						  <td></td>
-                          <td></td>
-                          <td><span class="badge bg-label-primary me-1">Lakshay, 28, M</span></td>
-                          <td></td>
-						  <td></td>
-						  <td></td>
-                        </tr>
-						<tr>
-                          <td>09:15AM</td>
-                          <td></td>
-						  <td></td>
-                          <td></td>
-                          <td></td>
-                          <td><span class="badge bg-label-primary me-1">Shweta, 21, F</span></td>
-						  <td></td>
-						  <td></td>
-                        </tr>
-						<tr>
-                          <td>09:30AM</td>
-                          <td></td>
-						  <td><span class="badge bg-label-primary me-1">Sagar, 42, M</span></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-						  <td></td>
-						  <td></td>
-                        </tr>
-						<tr>
-                          <td>09:45AM</td>
-                          <td></td>
-						  <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-						  <td></td>
-						  <td><span class="badge bg-label-primary me-1">Geeta, 18, F</span></td>
-                        </tr>
-						<tr>
-                          <td>10:00AM</td>
-                          <td></td>
-						  <td><span class="badge bg-label-primary me-1">Anuj, 26, M</span></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-						  <td></td>
-						  <td></td>
-                        </tr>
-                        
-                      </tbody>
-                    </table>
-                  </div>
-                              </div>
+                          <div class="col-md-9">
+                            <div id="appointmentCalendarContainer">
+                                <!-- Calendar will be updated dynamically -->
                             </div>
-                          </div>
+                        </div>
                         </div>
                       </div>
                     </div>
@@ -374,3 +63,183 @@
 					  
 
             <%- include('../footer') -%>
+
+            <script>
+              async function loadDoctors() {
+                  try {
+                      const elementId = 'Doctor';
+                      const response = await axios.get(`/getDataFromField?elementId=${elementId}`);
+                      const doctors = response.data.data;
+                      console.log(doctors);
+          
+                      const doctorListContainer = document.getElementById('doctorList');
+                      doctorListContainer.innerHTML = ''; // Clear existing items
+          
+                      doctors.forEach(doctor => {
+                          const doctorItem = document.createElement('button');
+                          doctorItem.classList.add('list-group-item', 'list-group-item-action');
+                          doctorItem.setAttribute('data-id', doctor.id);
+                          doctorItem.textContent = `${doctor.name} (${doctor.specialization})`;
+          
+                          // Attach event listener
+                          doctorItem.addEventListener('click', () => loadAppointmentCalendar(doctor));
+          
+                          doctorListContainer.appendChild(doctorItem);
+                      });
+          
+                  } catch (error) {
+                      console.error("Error fetching doctors:", error);
+                  }
+              }
+          
+              async function loadAppointmentCalendar(doctor) {
+    const container = document.getElementById('appointmentCalendarContainer');
+    container.innerHTML = `<h4>Loading ${doctor.name}'s appointments...</h4>`;
+
+    try {
+        const appointmentResponse = await axios.get(`/getDoctorAppointments?doctorId=${doctor.id}`);
+        const appointments = appointmentResponse.data; // Array of booked appointments
+        console.log("Appointments:", appointments);
+
+        const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        const today = new Date();
+        let dateHeaders = "";
+        let dates = [];
+
+        for (let i = 0; i < 7; i++) {
+            let date = new Date();
+            date.setDate(today.getDate() + i);
+            dates.push(date);
+            dateHeaders += `<th>${date.toLocaleString('en-US', { month: 'short', day: 'numeric' })}</th>`;
+        }
+
+        const todayName = daysOfWeek[today.getDay()];
+        const availableSlots = doctor.appointmentCalendar[todayName] || [];
+
+        if (availableSlots.length === 0) {
+            container.innerHTML = `<h4>${doctor.name}'s Appointment Calendar</h4><p>No available slots today.</p>`;
+            return;
+        }
+
+        let minStartTime = Math.min(...availableSlots.map(slot => parseTime(slot.fromTime)));
+        let maxEndTime = Math.max(...availableSlots.map(slot => parseTime(slot.toTime)));
+
+        let startTime = new Date();
+        startTime.setHours(Math.floor(minStartTime / 60), minStartTime % 60, 0, 0);
+        let endTime = new Date();
+        endTime.setHours(Math.floor(maxEndTime / 60), maxEndTime % 60, 0, 0);
+
+        let timeSlotMinutes = doctor.timeslot || 15;
+        let tableRows = "";
+
+        while (startTime < endTime) {
+            let timeStr = startTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
+            let rowCells = `<td>${timeStr}</td>`;
+
+            dates.forEach(date => {
+                let dayName = daysOfWeek[date.getDay()];
+                let slots = doctor.appointmentCalendar[dayName] || [];
+                let isAvailable = slots.some(slot => isTimeInRange(timeStr, slot.fromTime, slot.toTime));
+
+                let bookedAppointments = appointments.filter(app => 
+                    app.date === formatDate(date) && isTimeInRange(timeStr, app.time)
+                );
+
+                if (bookedAppointments.length > 0) {
+                    bookedAppointments.forEach(bookedAppointment => {
+                        rowCells += `<td><span class="badge bg-label-primary">${bookedAppointment.patientName}, ${bookedAppointment.age}, ${bookedAppointment.gender}</span></td>`;
+                    });
+                } else {
+                    rowCells += `<td>${isAvailable ? "" : ""}</td>`;
+                }
+            });
+
+            tableRows += `<tr>${rowCells}</tr>`;
+            startTime.setMinutes(startTime.getMinutes() + timeSlotMinutes);
+        }
+
+        container.innerHTML = `
+            <h4>Appointment Calendar for ${doctor.name}</h4>
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Time</th>
+                            ${dateHeaders}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${tableRows}
+                    </tbody>
+                </table>
+            </div>
+        `;
+    } catch (error) {
+        console.error("Error fetching appointments:", error);
+        container.innerHTML = `<h4>Failed to load appointments for ${doctor.name}</h4>`;
+    }
+}
+
+// Helper function to check if a time is within a given range
+function isTimeInRange(slotTime, appointmentTimeRange) {
+    // Ensure the appointmentTimeRange is defined and properly formatted
+    if (!appointmentTimeRange || !appointmentTimeRange.includes('-')) {
+        console.warn('Invalid appointment time range:', appointmentTimeRange);
+        return false; // Return false for invalid or undefined time ranges
+    }
+
+    const [startTime, endTime] = appointmentTimeRange.split('-').map(t => t.trim());
+
+    // Convert both times to 24-hour format for accurate comparison
+    const startTime24 = convertTo24Hour(startTime);
+    const endTime24 = convertTo24Hour(endTime);
+    const slotTime24 = convertTo24Hour(slotTime);
+
+    // Check if the slotTime is between the startTime and endTime
+    return slotTime24 >= startTime24 && slotTime24 < endTime24; 
+}
+
+// Convert 12-hour or 24-hour time to 24-hour time (e.g., '5:00 PM' -> '17:00' or '10:01' -> '10:01')
+function convertTo24Hour(time) {
+    // Ensure time is defined and correctly formatted
+    if (!time || !time.includes(':')) {
+        console.warn('Invalid time format:', time);
+        return 0; // Return 0 for invalid time format
+    }
+
+    // Check if the time includes AM/PM
+    const is12HourFormat = time.match(/[APMapm]{2}$/);
+
+    if (is12HourFormat) {
+        // Handle 12-hour time format with AM/PM
+        const [timePart, period] = time.split(' ').map(t => t.trim());
+        const [hour, minute] = timePart.split(':').map(Number);
+
+        let adjustedHour = hour;
+        if (period === 'PM' && hour < 12) adjustedHour += 12;  // Convert PM to 24-hour time
+        if (period === 'AM' && hour === 12) adjustedHour = 0;  // Convert 12 AM to 00:00
+
+        return adjustedHour * 60 + minute;  // Return minutes since midnight
+    } else {
+        // Handle 24-hour time format (e.g., '10:01')
+        const [hour, minute] = time.split(':').map(Number);
+        return hour * 60 + minute;  // Return minutes since midnight
+    }
+}
+
+             // Convert HH:MM to minutes since midnight for easy comparison
+              function parseTime(t) {
+                  let [hours, minutes] = t.split(':').map(Number);
+                  return hours * 60 + minutes;
+              }
+          
+              // Format date as YYYY-MM-DD for comparison
+              function formatDate(date) {
+                  return date.toISOString().split('T')[0];
+              }
+          
+              // Load doctors when the page loads
+              document.addEventListener("DOMContentLoaded", loadDoctors);
+          </script>
+          
+          

@@ -251,7 +251,7 @@ const UserTokens = sequelize.define(
     }
   );
 
-  const Doctor = sequelize.define('doctors', {
+  const Doctor = sequelize.define('Doctor', {
     clinic_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
