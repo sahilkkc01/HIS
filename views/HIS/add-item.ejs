@@ -30,7 +30,7 @@
                     <div class="card">
                     <!-- Account -->
                     <div class="card-body pt-4">
-                      <form id="formAccountSettings" method="POST" onsubmit="return false">
+                      <form id="addItemForm"  method="post" enctype="multipart/form-data">
                         <div class="row g-6">
                           <div class="col-md-6">
                             <label for="name" class="form-label">Medicine Name*</label>
@@ -144,3 +144,41 @@
 					  
 
             <%- include('../footer') -%>
+<script>
+  
+  $(document).ready(function () {
+              console.log("Document is ready");
+          
+              const formId = '#addItemForm';
+              const errorDivId = '#errordiv';
+          
+              $(formId).on('submit', async function (event) {
+                  event.preventDefault(); // Prevent the form from submitting
+          
+                  const { isValid, errorMessage } = validateForm(formId);
+          
+                  if (isValid) {
+                      const url = '/chnage';
+                      const loadingDiv = '#loadingIndicator';
+          
+                      try {
+                          $(loadingDiv).show(); // Show loading indicator
+          
+                          const response = await saveForm(formId, url); // Perform the form submission
+          
+                          console.log('Success:', response);
+                          $(errorDivId).removeClass('alert-danger').addClass('alert-success').text(response.message).show();
+                      } catch (error) {
+                          console.error('Error:', error);
+                          $(errorDivId).removeClass('alert-success').addClass('alert-danger').text(` ${error.message || 'Unknown error'}`).show();
+                      } finally {
+                          $(loadingDiv).hide(); // Hide loading indicator after submission
+                          window.location.href='/Patient-list'
+                      }
+                  } else {
+                      $(errorDivId).removeClass('alert-success').addClass('alert-danger').text(errorMessage).show();
+                  }
+              });
+          });
+          
+</script>
