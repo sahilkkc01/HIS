@@ -1,13 +1,28 @@
-var express = require('express');
+var express = require("express");
 var router = express.Router();
-const multer = require('multer');
-const path = require('path');
+const multer = require("multer");
+const path = require("path");
 const jwt = require("jsonwebtoken");
 const sjcl = require("sjcl");
 const JWT_SECRET = "Sahilkkc01";
-const { savePatientData, login, saveClinicData, logout, logoutFromEverywhere, saveDoctorData,  addSpecialization, getDataFromField, getAvailableSlots, getAllPatientsWithLatestAppointment, getPatientData, getDoctorAppointments } = require('../controllers/HisControllers');
-const { UserTokens, Patient } = require('../models/HisSchema');
-
+const {
+  savePatientData,
+  login,
+  saveClinicData,
+  logout,
+  logoutFromEverywhere,
+  saveDoctorData,
+  addSpecialization,
+  getDataFromField,
+  getAvailableSlots,
+  getAllPatientsWithLatestAppointment,
+  getPatientData,
+  getDoctorAppointments,
+  saveItems,
+  saveService,
+  savePackage,
+} = require("../controllers/HisControllers");
+const { UserTokens, Patient } = require("../models/HisSchema");
 
 // Decryption function
 function decryptData(encodedEncryptedData, secretKey) {
@@ -25,14 +40,13 @@ function decryptData(encodedEncryptedData, secretKey) {
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, path.join(__dirname, '../public/MyUploads')); 
+    cb(null, path.join(__dirname, "../public/MyUploads"));
   },
   filename: function (req, file, cb) {
-      cb(null, Date.now() + path.extname(file.originalname)); // Append timestamp to file name
-  }
+    cb(null, Date.now() + path.extname(file.originalname)); // Append timestamp to file name
+  },
 });
 const upload = multer({ storage: storage });
-
 
 router.get("/login", async (req, res) => {
   const token = req.cookies.token; // Retrieve the JWT token from cookies
@@ -42,7 +56,7 @@ router.get("/login", async (req, res) => {
       // Verify the token
       const decoded = jwt.verify(token, JWT_SECRET);
       const user = await UserTokens.findOne({ where: { jwtToken: token } });
-      console.log(user)
+      console.log(user);
       if (user) {
         return res.redirect("/Patient-Registration");
       } else {
@@ -59,56 +73,69 @@ router.get("/login", async (req, res) => {
   res.render("HIS/login");
 });
 
-
-router.get('/Patient-Registration',async function(req, res, next) {
+router.get("/Patient-Registration", async function (req, res, next) {
   const { id } = req.query;
   console.log(id);
   if (id) {
-    res.render('HIS/patient-registration',{patient:id})
+    const decryptedId = decryptData(decodeURIComponent(id), "his");
+    console.log(decryptedId);
+    const data = await Patient.findByPk(decryptedId);
+    const values = data ? data.get({ plain: true }) : {};
+    res.render("HIS/patient-registration", { patient: values });
   }
-  res.render('HIS/patient-registration',{patient:null})
+  res.render("HIS/patient-registration", { patient: {} });
 });
-router.get('/PatientQrReg', function(req, res, next) {
-  res.render('HIS/PatientQrReg')
+router.get("/PatientQrReg", function (req, res, next) {
+  res.render("HIS/PatientQrReg");
 });
-router.get('/Doctor-Registration', function(req, res, next) {
-  res.render('HIS/doctor-registration')
+router.get("/Doctor-Registration", function (req, res, next) {
+  res.render("HIS/doctor-registration");
 });
-router.get('/Patient-List', function(req, res, next) {
-  res.render('HIS/list-of-patients')
+router.get("/Patient-List", function (req, res, next) {
+  res.render("HIS/list-of-patients");
 });
-router.get('/Hospital-Registration', function(req, res, next) {
-  res.render('HIS/hospital-registration')
+router.get("/Hospital-Registration", function (req, res, next) {
+  res.render("HIS/hospital-registration");
 });
-router.get('/calender', function(req, res, next) {
-  res.render('HIS/calender')
-});
-router.get('/add-item', function(req, res, next) {
-  res.render('HIS/add-item')
+router.get("/calender", function (req, res, next) {
+  res.render("HIS/calender");
 });
 
+router.get("/add-item", function (req, res, next) {
+  res.render("HIS/add-item");
+});
 
-
-
-
-router.post('/login',login)
-router.post('/logout',logout)
-router.post('/logoutFromEverywhere',logoutFromEverywhere)
-router.post('/patient-reg',upload.single('patientImage'),savePatientData)
-router.post('/doctor-reg',upload.single('doctorImage'),saveDoctorData)
-router.post('/hospital-reg', 
+router.post("/login", login);
+router.post("/logout", logout);
+router.post("/logoutFromEverywhere", logoutFromEverywhere);
+router.post("/patient-reg", upload.single("patientImage"), savePatientData);
+router.post("/doctor-reg", upload.single("doctorImage"), saveDoctorData);
+router.post(
+  "/hospital-reg",
   upload.fields([
-      { name: 'logo', maxCount: 1 },
-      { name: 'header_image', maxCount: 1 },
-      { name: 'footer_image', maxCount: 1 }
-  ]), 
+    { name: "logo", maxCount: 1 },
+    { name: "header_image", maxCount: 1 },
+    { name: "footer_image", maxCount: 1 },
+  ]),
   saveClinicData
 );
-router.post('/addSpec',addSpecialization)
-router.get('/getDataFromField',getDataFromField)
-router.get('/patients-with-appointments',getAllPatientsWithLatestAppointment)
-router.post('/getAvailableSlots',getAvailableSlots)
-router.get('/patient/:patientId', getPatientData);
-router.get('/getDoctorAppointments', getDoctorAppointments);
+router.post("/addSpec", addSpecialization);
+router.get("/getDataFromField", getDataFromField);
+router.get("/patients-with-appointments", getAllPatientsWithLatestAppointment);
+router.post("/getAvailableSlots", getAvailableSlots);
+router.get("/patient/:patientId", getPatientData);
+router.get("/getDoctorAppointments", getDoctorAppointments);
+
+router.get("/add-package", function (req, res, next) {
+  res.render("HIS/add-package");
+});
+
+router.get("/add-service", function (req, res, next) {
+  res.render("HIS/add-services");
+});
+
+router.post("/save-item", upload.single("itemImage"), saveItems);
+router.post("/save-service", saveService);
+router.post("/save-package", savePackage);
 
 module.exports = router;

@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="en" class="light-style layout-menu-fixed layout-compact" dir="ltr" data-theme="theme-default"
+  data-assets-path="../assets/" data-template="vertical-menu-template-free" data-style="light">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+
+  <title>Add Package</title>
+
+  <!-- <meta name="description" content="" /> -->
+  <%- include('../header') -%>
+    <!-- / Navbar -->
+    <!-- Header and Menu ends here create a header ejs file -->
+
+    <!-- Content wrapper -->
+    <div class="content-wrapper">
+      <!-- Content -->
+      <style>
+        .displaynone {
+          display: none;
+        }
+
+        .bx-qr-scan {
+          font-size: 80px;
+        }
+      </style>
+      <div class="container-xxl flex-grow-1 container-p-y">
+        <div class="row">
+          <!-- Vertical & Horizontal Scrollbars -->
+          <div class="col-12">
+            <div class="card overflow-hidden">
+              <h5 class="card-header">Add Package</h5>
+              <div class="card">
+                <!-- Account -->
+                <div class="card-body pt-4">
+                  <form id="formAccountSettings" method="POST" enctype="multipart/form-data">
+                    <div class="row g-6">
+                      <div class="col-md-6">
+                        <label for="package_Code" class="form-label">Package Code*</label>
+                        <input class="form-control" type="text" id="package_Code" name="package_code" value=""
+                          autofocus="">
+                      </div>
+                      <div class="col-md-6">
+                        <label for="package_Name" class="form-label">Package Name*</label>
+                        <input class="form-control" type="text" id="package_Name" name="package_name" value=""
+                          autofocus="">
+                      </div>
+                      <div class="col-md-6">
+                        <label for="package_Validity" class="form-label">Package Validity*</label>
+                        <input class="form-control" type="date" id="package_Validity" name="package_validity" value=""
+                          autofocus="">
+                      </div>
+                      <div class="col-md-6">
+                        <label for="total_Cost" class="form-label">Total Package Cost*</label>
+                        <input class="form-control" type="number" id="total_Cost" name="cost" value="" autofocus="">
+                      </div>
+                      <div class="col-md-3">
+                        <label for="service_Component" class="form-label" data-bs-toggle="tooltip" data-bs-offset="0,4"
+                          data-bs-placement="top" data-bs-html="true"
+                          title="<span>Cost of the service amount from Pacakge</span>">Service Component
+                          Cost</label>
+                        <input class="form-control" type="number" id="service_Component" name="service_cost" value=""
+                          autofocus="">
+                      </div>
+                      <div class="col-md-3">
+                        <label for="pharmacy_Cost" class="form-label" data-bs-toggle="tooltip" data-bs-offset="0,4"
+                          data-bs-placement="top" data-bs-html="true"
+                          title="<span>Cost of the Pharmacy amount from Pacakge</span>">Pharmacy Cost</label>
+                        <input class="form-control" type="number" id="pharmacy_Cost" name="medicine_cost" value=""
+                          autofocus="">
+                      </div>
+                      <div class="col-md-3">
+                        <label for="tax" class="form-label">Tax(%)</label>
+                        <input class="form-control" type="number" id="tax" name="tax" value="" autofocus="">
+                      </div>
+                      <div class="col-md-3">
+                        <label for="discount" class="form-label">Discount</label>
+                        <input class="form-control" type="number" id="discount" name="discount" value="" autofocus="">
+                      </div>
+
+
+                      <div class="col-md-12">
+                        <label class="form-label" for="phoneNumber">Terms & Conditions</label>
+                        <textarea id="basic-default-message" name="terms_conditions" class="form-control"
+                          placeholder=""></textarea>
+                      </div>
+
+                      <div id="schedule" class="col-6">
+                        <div class="accordion" id="scheduleAccordion">
+
+                          <div class="accordion-item" id="">
+                            <h2 class="accordion-header">
+                              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#collapse-0" aria-expanded="false">
+                                <span class="day-name">Add Services</span>
+                              </button>
+                            </h2>
+                            <div class="accordion-collapse collapse" id="collapse-0">
+                              <div class="accordion-body">
+                                <div class="schedule-slots service">
+                                  <div class="slot mb-3 d-flex align-items-center">
+                                    <input type="text" name="service" class="form-control me-2" placeholder="Service">
+                                    <input type="number" name="quantity" class="form-control me-2" placeholder="Qty">
+                                    <input type="number" name="price" class="form-control me-2" placeholder="Price">
+                                    <button class="btn btn-danger btn-sm remove-slot"><i
+                                        class='bx bxs-trash'></i></button>
+                                  </div>
+                                </div>
+                                <button type="button" class="btn btn-success btn-sm add-slot" id="new_service">+ Add
+                                  New</button>
+
+                                <div class="d-flex justify-content-between align-items-center mt-3 service">
+                                  <h5>
+                                    Total:
+                                  </h5>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div id="medicine" class="col-6">
+                        <div class="accordion" id="scheduleAccordion">
+                          <div class="accordion-item" id="">
+                            <h2 class="accordion-header">
+                              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#collapse-1" aria-expanded="false">
+                                <span class="day-name">Add Medicine</span>
+                              </button>
+                            </h2>
+                            <div class="accordion-collapse collapse" id="collapse-1">
+                              <div class="accordion-body">
+                                <div class="schedule-slots medicine">
+                                  <div class="slot mb-3 d-flex align-items-center">
+                                    <input type="text" name="medicine" class="form-control me-2" placeholder="Medicine">
+                                    <input type="number" name="quantity" class="form-control me-2" placeholder="Qty">
+                                    <input type="number" name="price" class="form-control me-2" placeholder="Price">
+                                    <button type="button" class="btn btn-danger btn-sm remove-slot"><i
+                                        class='bx bxs-trash'></i></button>
+                                  </div>
+                                </div>
+                                <button type="button" class="btn btn-success btn-sm add-slot" id="new_med">+ Add
+                                  New</button>
+
+                                <div class="d-flex justify-content-between align-items-center mt-3 medicine">
+                                  <h5>
+                                    Total:
+                                  </h5>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="mt-6">
+                        <button type="submit" class="btn btn-primary me-3">Save</button>
+                        <button type="reset" class="btn btn-outline-secondary">Cancel</button>
+                      </div>
+                  </form>
+                </div>
+                <!-- /Account -->
+              </div>
+            </div>
+          </div>
+          <!--/ Vertical & Horizontal Scrollbars -->
+        </div>
+      </div>
+      <!-- / Content -->
+
+      <%- include('../footer') -%>
+        <script>
+
+          $(document).ready(function () {
+            console.log("Document is ready");
+
+            function addNewService(name) {
+              const scheduleSlots = document.querySelector(`.${name}`);
+
+              // Create the service input row
+              const newSlot = document.createElement('div');
+              newSlot.classList.add('slot', 'mb-3', 'd-flex', 'align-items-center');
+              newSlot.innerHTML = `
+    <input type="text" name="${name}" class="form-control me-2" placeholder="${name}">
+    <input type="number" name="quantity" class="form-control me-2" placeholder="Qty">
+    <input type="number" name="price" class="form-control me-2" placeholder="Price">
+    <button type="button" class="btn btn-danger btn-sm remove-slot"><i class='bx bxs-trash'></i></button>
+  `;
+
+              // Add event listener to remove button
+              newSlot.querySelector('input[name="quantity"]').addEventListener("input", () => updateTotal(name));
+              newSlot.querySelector('input[name="price"]').addEventListener("input", () => updateTotal(name));
+              newSlot.querySelector('.remove-slot').addEventListener('click', () => {
+                newSlot.remove();
+                updateTotal(name); // Recalculate total after removing a row
+              });
+
+              scheduleSlots.appendChild(newSlot);
+            }
+
+            function extractServices(name) {
+              const slots = document.querySelectorAll(`.${name} .slot`);
+              const services = [];
+
+              slots.forEach(slot => {
+                const service = slot.querySelector(`input[name="${name}"]`).value.trim();
+                const quantity = slot.querySelector('input[name="quantity"]').value.trim();
+                const price = slot.querySelector('input[name="price"]').value.trim();
+
+                if (service || quantity || price) {
+                  services.push({
+                    [name]: service,
+                    quantity: Number(quantity),
+                    price: Number(price),
+                  });
+                }
+              });
+
+              return services;
+            }
+
+            function updateTotal(name) {
+              const services = extractServices(name);
+              const total = services.reduce((sum, item) => {
+                const itemTotal = (item.quantity || 0) * (item.price || 0);
+                return sum + itemTotal;
+              }, 0);
+
+              // Update the Total display
+              const totalElement = document.querySelector(`.${name} h5`);
+              totalElement.textContent = `Total: ${total}`;
+            }
+
+            document.getElementById("new_service").addEventListener("click", () => {
+              addNewService("service");
+            })
+
+            document.getElementById("new_med").addEventListener("click", () => {
+              addNewService("medicine");
+            })
+
+            document.querySelector('.medicine .slot input[name="quantity"]').addEventListener("input", () => {
+              updateTotal("medicine");
+            })
+            document.querySelector('.medicine .slot input[name="price"]').addEventListener("input", () => {
+              updateTotal("medicine");
+            })
+
+            document.querySelector('.service .slot input[name="quantity"]').addEventListener("input", () => {
+              updateTotal("service");
+            })
+            document.querySelector('.service .slot input[name="price"]').addEventListener("input", () => {
+              updateTotal("service");
+            })
+
+            const formId = '#formAccountSettings';
+            const errorDivId = '#errordiv';
+            $(formId).on('submit', async function (event) {
+              event.preventDefault(); // Prevent the form from submitting
+
+              const { isValid, errorMessage } = validateForm(formId);
+
+              if (isValid) {
+                const url = '/save-package';
+                const loadingDiv = '#loadingIndicator';
+
+                try {
+                  $(loadingDiv).show(); // Show loading indicator
+                  const services = extractServices("service");
+                  const medicines = extractServices("medicine");
+                  const response = await saveJsonForm(formId, url, [{ services, medicines }]); // Perform the form submission
+
+                  console.log('Success:', response);
+                  $(errorDivId).removeClass('alert-danger').addClass('alert-success').text(response.message).show();
+                } catch (error) {
+                  console.error('Error:', error);
+                  $(errorDivId).removeClass('alert-success').addClass('alert-danger').text(` ${error.message || 'Unknown error'}`).show();
+                } finally {
+                  $(loadingDiv).hide(); // Hide loading indicator after submission
+                  // window.location.href = '/Patient-list'
+                }
+              } else {
+                $(errorDivId).removeClass('alert-success').addClass('alert-danger').text(errorMessage).show();
+              }
+            });
+          });
+
+        </script>

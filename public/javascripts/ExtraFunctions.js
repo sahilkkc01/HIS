@@ -135,3 +135,48 @@ const generateQRCodeInDiv = (divId, route, clinicId) => {
     console.error("No div found with the ID:", divId);
   }
 };
+
+async function saveJsonForm(formId, endpoint, arrayObj = null) {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const form = document.getElementById(formId.substring(1));
+      if (!form) throw new Error(`Form with ID '${formId}' not found.`);
+
+      // Collect form data as a JSON object
+      const formData = new FormData(form);
+      const jsonData = {};
+      for (let [key, value] of formData.entries()) {
+        jsonData[key] = value;
+      }
+
+      // Merge arrayObj into jsonData if provided
+      if (arrayObj && Array.isArray(arrayObj)) {
+        arrayObj.forEach((item) => {
+          for (let key in item) {
+            if (item.hasOwnProperty(key)) {
+              // If the key already exists, append data; otherwise, set it
+              if (Array.isArray(jsonData[key])) {
+                jsonData[key] = [...jsonData[key], ...item[key]];
+              } else {
+                jsonData[key] = item[key];
+              }
+            }
+          }
+        });
+      }
+
+      console.log("Form data as JSON after adding arrayObj:", jsonData);
+
+      // Submit the JSON data using axios
+      const response = await axios.post(endpoint, jsonData, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      resolve(response.data);
+    } catch (error) {
+      console.error("Error submitting the JSON form:", error);
+      reject(error.response ? error.response.data : error);
+    }
+  });
+}

@@ -351,6 +351,175 @@ const Specialization = sequelize.define(
   }
 );
 
+const Package = sequelize.define(
+  "Package",
+  {
+    clinic_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    package_code: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    package_name: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+    },
+    package_validity: {
+      type: DataTypes.DATE,
+      allowNull: false,
+    },
+    cost: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    services: {
+      type: DataTypes.JSON,
+      allowNull: true,
+    },
+    medicines: {
+      type: DataTypes.JSON,
+      allowNull: true,
+    },
+    service_cost: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    medicine_cost: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    tax: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    discount: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    terms_conditions: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
+  },
+  {
+    timestamps: true,
+    alter: true,
+    tableName: "package",
+  }
+);
+
+const Service = sequelize.define(
+  "Service",
+  {
+    clinic_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    service_name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    service_category: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    cost: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    special_inst: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
+  },
+  {
+    timestamps: true,
+    alter: true,
+    tableName: "service",
+  }
+);
+
+const Items = sequelize.define(
+  "Items",
+  {
+    clinic_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    medicine_name: {
+      type: DataTypes.STRING,
+    },
+    generic_name: {
+      type: DataTypes.STRING,
+    },
+    expiration_date: {
+      type: DataTypes.DATE,
+    },
+    sell_price: {
+      type: DataTypes.INTEGER,
+    },
+  },
+  {
+    timestamps: true,
+    alter: true,
+    tableName: "items",
+  }
+);
+
+const ItemDetails = sequelize.define(
+  "ItemDetails",
+  {
+    item_id: {
+      type: DataTypes.INTEGER,
+    },
+    brand_name: {
+      type: DataTypes.STRING,
+    },
+    dosage_form: {
+      type: DataTypes.STRING,
+    },
+    strength: {
+      type: DataTypes.STRING,
+    },
+    manufacturer: {
+      type: DataTypes.STRING,
+    },
+    batch_number: {
+      type: DataTypes.STRING,
+    },
+    buy_price: {
+      type: DataTypes.INTEGER,
+    },
+    storage_condition: {
+      type: DataTypes.STRING,
+    },
+    prescription_req: {
+      type: DataTypes.BOOLEAN,
+    },
+    interactions: {
+      type: DataTypes.TEXT,
+    },
+    category: {
+      type: DataTypes.STRING,
+    },
+    item_img: {
+      type: DataTypes.STRING,
+    },
+  },
+  {
+    timestamps: true,
+    alter: true,
+    tableName: "itemdetails",
+  }
+);
+
+// Package.sync({ alter: true });
+// Items.sync({ alter: true });
+// ItemDetails.sync({ alter: true });
+// Service.sync({ alter: true });
+
 // sequelize.sync();
 module.exports = {
   Patient,
@@ -361,4 +530,8 @@ module.exports = {
   Specialization,
   Appointment,
   PatientDetails,
+  Package,
+  Service,
+  Items,
+  ItemDetails,
 };
