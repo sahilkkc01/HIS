@@ -105,6 +105,16 @@ router.get("/add-item", function (req, res, next) {
   res.render("HIS/add-item");
 });
 
+router.get("/add-package", function (req, res, next) {
+  res.render("HIS/add-package");
+});
+
+router.get("/add-service", function (req, res, next) {
+  res.render("HIS/add-services");
+});
+
+
+// Put all render routes above this
 router.post("/login", login);
 router.post("/logout", logout);
 router.post("/logoutFromEverywhere", logoutFromEverywhere);
@@ -126,13 +136,7 @@ router.post("/getAvailableSlots", getAvailableSlots);
 router.get("/patient/:patientId", getPatientData);
 router.get("/getDoctorAppointments", getDoctorAppointments);
 
-router.get("/add-package", function (req, res, next) {
-  res.render("HIS/add-package");
-});
 
-router.get("/add-service", function (req, res, next) {
-  res.render("HIS/add-services");
-});
 
 router.post("/save-item", upload.single("itemImage"), saveItems);
 router.post("/save-service", saveService);

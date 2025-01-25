@@ -875,6 +875,7 @@ exports.saveItems = async (req, res) => {
     if (!clinicId) {
       return res.status(401).json({ message: "Unauthorized: Please log in" });
     }
+
     const {
       medicine_name,
       generic_name,
@@ -892,7 +893,18 @@ exports.saveItems = async (req, res) => {
       category,
     } = req.body;
     const itemImage = req.file?.path ? path.basename(req.file.path) : null;
-    const prqst = prescription_req == "Yes" ? true : false;
+    const prqst = prescription_req === "Yes"; // Simplified condition for prescription requirement
+
+    // Check if the item with the same medicine_name already exists in the clinic
+    const existingItem = await Items.findOne({
+      where: { clinic_id: clinicId, medicine_name },
+    });
+
+    if (existingItem) {
+      return res.status(400).json({ message: "Item with the same medicine name already exists" });
+    }
+
+    // Create a new item since there is no duplicate
     const newItem = await Items.create({
       clinic_id: clinicId,
       medicine_name,
@@ -900,6 +912,8 @@ exports.saveItems = async (req, res) => {
       expiration_date,
       sell_price,
     });
+
+    // Create the associated ItemDetails record
     await ItemDetails.create({
       item_id: newItem.id,
       brand_name,
@@ -914,12 +928,15 @@ exports.saveItems = async (req, res) => {
       category,
       item_img: itemImage,
     });
+
     res.status(200).json(newItem);
   } catch (error) {
     console.error("Error saving items:", error);
     res.status(500).json({ error: "Failed to save items" });
   }
 };
+
+
 
 exports.saveService = async (req, res) => {
   try {
@@ -928,8 +945,17 @@ exports.saveService = async (req, res) => {
     if (!clinicId) {
       return res.status(401).json({ message: "Unauthorized: Please log in" });
     }
-    console.log(req.body);
 
+    // Check if a service with the same service_name already exists in the clinic
+    const existingService = await Service.findOne({
+      where: { clinic_id: clinicId, service_name },
+    });
+
+    if (existingService) {
+      return res.status(400).json({ message: "Service with the same name already exists" });
+    }
+
+    // Create a new service since there is no duplicate
     const newService = await Service.create({
       clinic_id: clinicId,
       service_name,
@@ -937,6 +963,7 @@ exports.saveService = async (req, res) => {
       cost,
       special_inst,
     });
+
     res.status(200).json(newService);
   } catch (error) {
     console.error("Error saving services:", error);
@@ -963,6 +990,17 @@ exports.savePackage = async (req, res) => {
     if (!clinicId) {
       return res.status(401).json({ message: "Unauthorized: Please log in" });
     }
+
+    // Check if a package with the same package_name or package_code already exists in the clinic
+    const existingPackage = await Package.findOne({
+      where: { clinic_id: clinicId, [Op.or]: [{ package_name }, { package_code }] },
+    });
+
+    if (existingPackage) {
+      return res.status(400).json({ message: "Package name or package code already exists" });
+    }
+
+    // Create a new package since there is no duplicate
     const newPackage = await Package.create({
       clinic_id: clinicId,
       package_code,
@@ -977,9 +1015,11 @@ exports.savePackage = async (req, res) => {
       discount,
       terms_conditions,
     });
+
     res.status(200).json(newPackage);
   } catch (error) {
     console.error("Error saving packages:", error);
     res.status(500).json({ error: "Failed to save packages" });
   }
 };
+
