@@ -350,6 +350,24 @@ const Specialization = sequelize.define(
     tableName: "specialization",
   }
 );
+const Department = sequelize.define(
+  "Department",
+  {
+    clinic_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+  },
+  {
+    timestamps: true,
+    alter: true,
+    tableName: "department",
+  }
+);
 
 const Package = sequelize.define(
   "Package",
@@ -515,10 +533,93 @@ const ItemDetails = sequelize.define(
   }
 );
 
-// Package.sync({ alter: true });
-// Items.sync({ alter: true });
-// ItemDetails.sync({ alter: true });
-// Service.sync({ alter: true });
+const Employee = sequelize.define(
+  "Employee",
+  {
+    clinic_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    empId: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
+    },
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    dob: {
+      type: DataTypes.DATEONLY,
+      allowNull: true,
+    },
+    gender: {
+      type: DataTypes.ENUM("M", "F", "O"),
+      allowNull: false,
+    },
+    phoneNumber: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        isNumeric: true,
+        len: [10, 15],
+      },
+    },
+    email: {
+      type: DataTypes.STRING,
+    },
+    address: {
+      type: DataTypes.STRING,
+    
+    },
+    dept: {
+      type: DataTypes.STRING,
+    
+    },
+    desg: {
+      type: DataTypes.STRING,
+    
+    },
+    doj: {
+      type: DataTypes.DATEONLY,
+      allowNull: true,
+    
+    },
+    qualification: {
+      type: DataTypes.STRING,
+    
+    },
+    exp: {
+      type: DataTypes.STRING,
+    
+    },
+    specialization: {
+      type: DataTypes.STRING,
+    
+    },
+    shiftTimming: {
+      type: DataTypes.STRING,
+    
+    },
+    emerCont: {
+      type: DataTypes.STRING,
+    
+    },
+    emerContMobile: {
+      type: DataTypes.STRING,
+    },
+    empImage: {
+      type: DataTypes.STRING,
+    
+    },
+  },
+  {
+    timestamps: true,
+    alter: true,
+    tableName: "employees",
+  }
+);
+
 
 // sequelize.sync();
 module.exports = {
@@ -534,4 +635,6 @@ module.exports = {
   Service,
   Items,
   ItemDetails,
+  Department,
+  Employee
 };

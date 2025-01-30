@@ -90,13 +90,13 @@ const loadDropdown = (elementId, key, selectedValue = null) => {
       });
 
       // Add "Add New" option **only if elementId is "Specialization"**
-      if (elementId === "Specialization") {
+      if (elementId === "Specialization" || "Department") {
         const addNewOption = document.createElement("option");
         addNewOption.value = "add-new";
         addNewOption.textContent = "Add New";
         dropdown.appendChild(addNewOption);
       }
-
+      
       // Set the value after the dropdown has been populated
       if (selectedValue) {
         dropdown.value = selectedValue;

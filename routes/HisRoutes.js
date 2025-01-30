@@ -21,6 +21,8 @@ const {
   saveItems,
   saveService,
   savePackage,
+  addDepartment,
+  saveEmployeeData,
 } = require("../controllers/HisControllers");
 const { UserTokens, Patient } = require("../models/HisSchema");
 
@@ -112,6 +114,12 @@ router.get("/add-package", function (req, res, next) {
 router.get("/add-service", function (req, res, next) {
   res.render("HIS/add-services");
 });
+router.get("/add-employee", function (req, res, next) {
+  res.render("HIS/add-employee");
+});
+router.get("/purchase-order", function (req, res, next) {
+  res.render("HIS/PurchaseOrder");
+});
 
 
 // Put all render routes above this
@@ -120,6 +128,7 @@ router.post("/logout", logout);
 router.post("/logoutFromEverywhere", logoutFromEverywhere);
 router.post("/patient-reg", upload.single("patientImage"), savePatientData);
 router.post("/doctor-reg", upload.single("doctorImage"), saveDoctorData);
+router.post("/emp-reg", upload.single("empImage"), saveEmployeeData);
 router.post(
   "/hospital-reg",
   upload.fields([
@@ -130,6 +139,7 @@ router.post(
   saveClinicData
 );
 router.post("/addSpec", addSpecialization);
+router.post("/addDept", addDepartment);
 router.get("/getDataFromField", getDataFromField);
 router.get("/patients-with-appointments", getAllPatientsWithLatestAppointment);
 router.post("/getAvailableSlots", getAvailableSlots);

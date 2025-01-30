@@ -43,6 +43,8 @@ const {
   Service,
   ItemDetails,
   Package,
+  Department,
+  Employee,
 } = require("../models/HisSchema");
 
 exports.verifyToken = async (req, res, next) => {
@@ -590,6 +592,46 @@ exports.addSpecialization = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+exports.addDepartment = async (req, res) => {
+  const { dept } = req.body;
+  const clinicId = req.user.clinic_id; // Get clinic_id from session
+
+  // Check if clinicId is available
+  if (!clinicId) {
+    return res.status(400).send({ msg: "Please login" });
+  }
+
+  // Validate if specialty name is provided
+  if (!dept) {
+    return res.status(400).json({ message: "Department is required" });
+  }
+
+  try {
+    // Check if the specialization already exists for the clinic
+    const existingDepartment = await Department.findOne({
+      where: { name: dept, clinic_id: clinicId },
+    });
+
+    if (existingDepartment) {
+      return res
+        .status(400)
+        .json({ message: "Department already exists for this clinic" });
+    }
+
+    // Create new specialty if it doesn't exist
+    const newDepartment = await Department.create({
+      name: dept,
+      clinic_id: clinicId,
+    });
+    res.status(200).json({
+      message: "Department added successfully",
+      dept: newDepartment,
+    });
+  } catch (error) {
+    console.error("Error adding department:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
 
 exports.getDataFromField = async (req, res) => {
   const { elementId } = req.query; // Schema name passed in the URL
@@ -1023,3 +1065,78 @@ exports.savePackage = async (req, res) => {
   }
 };
 
+exports.saveEmployeeData = async (req, res) => {
+  console.log(req.body);
+  console.log(req.file);
+  
+  const clinicId = req.user.clinic_id; // Get clinic_id from session
+  if (clinicId == null) {
+    return res.status(400).send({ msg: "Please login" });
+  }
+
+  try {
+    const {
+      empId,
+      name,
+      dob,
+      gender,
+      phoneNumber,
+      email,
+      address,
+      dept,
+      desg,
+      doj,
+      qualification,
+      exp,
+      specialization,
+      shiftTimming,
+      emerCont,
+      emerContMobile,
+    } = req.body;
+
+    // Validate required fields
+    if (!empId || !name || !phoneNumber) {
+      return res.status(400).json({ message: "Employee ID, name, and phone number are required." });
+    }
+
+    const existingEmployee = await Employee.findOne({
+      where: { empId, clinic_id: clinicId },
+    });
+    if (existingEmployee) {
+      return res.status(400).json({ message: "An employee with this ID already exists." });
+    }
+
+    const empImage = req.file ? path.basename(req.file.path) : null;
+
+    // Convert empty date values to null
+    const formattedDob = dob && dob.trim() !== "" ? dob : null;
+    const formattedDoj = doj && doj.trim() !== "" ? doj : null;
+
+    // Create new employee record
+    const newEmployee = await Employee.create({
+      clinic_id: clinicId,
+      empId,
+      name,
+      dob: formattedDob,
+      gender,
+      phoneNumber,
+      email,
+      address,
+      dept,
+      desg,
+      doj: formattedDoj,
+      qualification,
+      exp,
+      specialization,
+      shiftTimming,
+      emerCont,
+      emerContMobile,
+      empImage,
+    });
+
+    return res.status(201).json({ message: "Employee data saved successfully", employee: newEmployee });
+  } catch (error) {
+    console.error("Error saving employee data:", error);
+    return res.status(500).json({ message: "Failed to save employee data" });
+  }
+};
