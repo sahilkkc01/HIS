@@ -508,7 +508,7 @@
               try {
                 const response = await axios.post('/addSpec', { spec: newSpec });
                 $('#smallModal').modal('hide');
-                loadDropdown('Specialization', 'name', '');
+                loadDropdown('Specialization', 'Specialization','name', '');
                 document.getElementById('newSpec').value = '';
               } catch (error) {
                 console.log(error)
@@ -518,7 +518,7 @@
               alert('Please enter a specialty');
             }
           });
-          loadDropdown('Specialization', 'name', '');
+          loadDropdown('Specialization', 'Specialization','name', '');
 
 
         </script>

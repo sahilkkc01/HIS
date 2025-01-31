@@ -61,9 +61,9 @@ function removeImage(inputId, previewId, removeBtnId) {
   removeBtn.style.display = "none"; // Hide the remove button
 }
 
-const loadDropdown = (elementId, key, selectedValue = null) => {
+const loadDropdown = (elementId, FieldId ,key , selectedValue = null) => {
   // Append elementId to the URL as a query parameter
-  const modifiedUrl = `getDataFromField?elementId=${elementId}`;
+  const modifiedUrl = `getDataFromField?elementId=${FieldId}`;
 
   fetch(modifiedUrl)
     .then((response) => {
@@ -181,7 +181,7 @@ async function saveJsonForm(formId, endpoint, arrayObj = null) {
   });
 }
 
-function createSmallModal(id, name, path, sId) {
+function createSmallModal(id, name, path, sId,elmtId) {
   const modal = document.createElement("div");
   modal.className = "modal fade";
   modal.id = id;
@@ -206,7 +206,7 @@ function createSmallModal(id, name, path, sId) {
           <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
             Close
           </button>
-          <button type="button" id="save${id}" onclick="saveModalData('${id}','${path}','${sId}','${name}')" class="btn btn-primary">Save</button>
+          <button type="button" id="save${id}" onclick="saveModalData('${id}','${path}','${sId}','${name}','${elmtId}')" class="btn btn-primary">Save</button>
         </div>
       </div>
     </div>
@@ -216,7 +216,8 @@ function createSmallModal(id, name, path, sId) {
   $(`#${id}`).modal("show");
 }
 
-async function saveModalData(id, path, sid, name) {
+async function saveModalData(id, path, sid, name,elmtId) {
+
   const inputValue = document.getElementById(`input${id}`).value;
   if (inputValue) {
     try {
@@ -225,7 +226,7 @@ async function saveModalData(id, path, sid, name) {
         tableName: sid,
       });
       $(`#${id}`).modal("hide");
-      loadDropdown(sid, "name", "");
+      loadDropdown(elmtId,sid, "name", "");
       document.getElementById(`input${id}`).value = "";
     } catch (error) {
       console.log(error);

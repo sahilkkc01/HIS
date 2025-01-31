@@ -268,8 +268,8 @@
           document.getElementById("weight").addEventListener("input", function () {
             BMI("height", "weight", "bmi");
           });
-          loadDropdown('Doctor', 'name', '');
-          loadDropdown('Clinic', 'name', '');
+          loadDropdown('Doctor','Doctor' ,'name', '');
+          loadDropdown('Clinic','Clinic' ,'name', '');
           document.addEventListener("DOMContentLoaded", function () {
             const dateField = document.getElementById("date");
             const today = new Date().toISOString().split("T")[0];
