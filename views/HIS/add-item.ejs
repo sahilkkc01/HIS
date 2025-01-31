@@ -33,6 +33,7 @@
                 <!-- Account -->
                 <div class="card-body pt-4">
                   <form id="addItemForm" method="post" enctype="multipart/form-data">
+                    <div id="errordiv"></div>
                     <div class="row g-6">
                       <div class="col-md-6">
                         <label for="name" class="form-label">Medicine Name*</label>
@@ -135,7 +136,7 @@
                           accept="image/png, image/jpeg, image/jpg">
                       </div>
                     </div>
-
+                    <div id="loadingIndicator"></div>
                     <div class="mt-6">
                       <button type="submit" class="btn btn-primary me-3">Save</button>
                       <button type="reset" class="btn btn-outline-secondary">Cancel</button>
@@ -187,7 +188,7 @@
                   $(errorDivId).removeClass('alert-success').addClass('alert-danger').text(` ${error.message || 'Unknown error'}`).show();
                 } finally {
                   $(loadingDiv).hide(); // Hide loading indicator after submission
-                  window.location.href = '/Patient-list'
+            
                 }
               } else {
                 $(errorDivId).removeClass('alert-success').addClass('alert-danger').text(errorMessage).show();
