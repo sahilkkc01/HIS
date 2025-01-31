@@ -206,8 +206,12 @@ exports.logoutFromEverywhere = async (req, res) => {
 exports.savePatientData = async (req, res) => {
   console.log(req.body);
   console.log(req.file);
+  let { id } = req.query;
+  if (id) {
+    id = decryptData(decodeURIComponent(id), "his");
+  }
 
-  const clinicId = req.user?.clinic_id;
+  const clinicId = req.user?.clinic_id || id;
 
   if (!clinicId) {
     return res.status(401).json({ message: "Unauthorized: Please log in" });

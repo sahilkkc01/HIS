@@ -88,7 +88,7 @@ router.get("/Patient-Registration", async function (req, res, next) {
   try {
     const { id } = req.query;
     console.log(id);
-    
+
     let patient = {};
     const clinicId = req.user?.clinic_id; // Get clinic_id from session
 
@@ -111,9 +111,6 @@ router.get("/Patient-Registration", async function (req, res, next) {
   }
 });
 
-router.get("/PatientQrReg", function (req, res, next) {
-  res.render("HIS/PatientQrReg");
-});
 router.get("/Doctor-Registration", function (req, res, next) {
   res.render("HIS/doctor-registration");
 });
@@ -177,4 +174,4 @@ router.post("/save-service", saveService);
 router.post("/save-package", savePackage);
 router.post("/addModal", addNewModal);
 
-module.exports = router;
+module.exports = { router, upload };

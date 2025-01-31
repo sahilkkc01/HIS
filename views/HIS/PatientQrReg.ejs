@@ -1,9 +1,13 @@
 <!doctype html>
 <html lang="en" dir="ltr">
+
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
     <title>Patient Registration</title>
+    <link rel="stylesheet" href="../stylesheets/core.css" class="template-customizer-core-css" />
+    <link rel="stylesheet" href="../stylesheets/theme-default.css" class="template-customizer-theme-css" />
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -11,6 +15,7 @@
             padding: 0;
             background-color: #f8f9fa;
         }
+
         .container {
             max-width: 1200px;
             margin: 20px auto;
@@ -19,22 +24,26 @@
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
+
         .card {
             padding: 20px;
             margin-bottom: 20px;
             border: 1px solid #e0e0e0;
             border-radius: 8px;
         }
+
         .card-header {
             font-size: 1.5rem;
             margin-bottom: 20px;
             font-weight: bold;
         }
+
         .form-label {
             font-weight: bold;
             margin-bottom: 5px;
             display: block;
         }
+
         .form-control {
             width: 100%;
             padding: 10px;
@@ -42,46 +51,35 @@
             border: 1px solid #ced4da;
             border-radius: 4px;
         }
+
         .form-check {
             margin-bottom: 15px;
         }
+
         .form-check-input {
             margin-right: 5px;
         }
-        .btn {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        .btn-primary {
-            background-color: #007bff;
-            color: #fff;
-        }
-        .btn-outline-secondary {
-            background-color: #fff;
-            color: #6c757d;
-            border: 1px solid #6c757d;
-        }
-        .btn:hover {
-            opacity: 0.9;
-        }
+
         .image-preview {
             display: flex;
             align-items: center;
             gap: 10px;
             margin-bottom: 20px;
         }
+
         .image-preview img {
             width: 100px;
             height: 100px;
             border-radius: 8px;
             border: 1px solid #e0e0e0;
         }
-        .tooltip {
+
+        .tool-tip {
             position: relative;
+            display: inline-flex;
         }
-        .tooltip span {
+
+        .tool-tip span {
             display: none;
             position: absolute;
             background-color: #000;
@@ -92,248 +90,169 @@
             left: 50%;
             transform: translateX(-50%);
         }
-        .tooltip:hover span {
+
+        .tool-tip:hover span {
             display: block;
         }
     </style>
 </head>
+
 <body>
 
-<div class="container">
-    <div class="card">
-        <h5 class="card-header">Patient Registration</h5>
-        <form id="PatientRegForm" method="post" enctype="multipart/form-data">
 
-            <!-- Image Upload Section -->
-            <div class="card">
-                <div class="image-preview">
-                    <img src="../images/1.png" alt="user-avatar" id="uploadedAvatar">
-                    <div>
-                        <label for="patientImage" class="btn btn-primary tooltip">
-                            Upload Image
-                            <input type="file" id="patientImage" name="patientImage" hidden accept="image/png, image/jpeg">
-                            <span>Allowed JPG, JPEG, or PNG. Max size 800K.</span>
-                        </label>
-                        <button type="button" id="resetBtn" class="btn btn-outline-secondary">Reset</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Form Fields -->
-            <div class="card">
-                <div class="row">
-                    <div class="col-md-6">
-                        <label for="name" class="form-label">Name*</label>
-                        <input type="text" id="name" name="name" class="form-control" required>
-                    </div>
-                    <div class="col-md-6">
-                        <label for="mobile" class="form-label">Mobile Number*</label>
-                        <input type="number" id="mobile" name="mobile" class="form-control" required>
-                    </div>
-                    <div class="col-md-6">
-                        <label for="email" class="form-label">E-mail</label>
-                        <input type="email" id="email" name="email" class="form-control">
-                    </div>
-                    <div class="col-md-3">
-                        <label for="gender" class="form-label">Gender*</label>
-                        <select id="gender" name="gender" class="form-control" required>
-                            <option value="">Select</option>
-                            <option value="M">Male</option>
-                            <option value="F">Female</option>
-                            <option value="O">Other</option>
-                        </select>
-                    </div>
-                    <div class="col-md-3">
-                        <label for="age" class="form-label">Age*</label>
-                        <input type="number" id="age" name="age" class="form-control" required>
-                    </div>
-                    <div class="col-md-6">
-                        <label for="address" class="form-label">Address</label>
-                        <input type="text" id="address" name="address" class="form-control">
-                    </div>
-                    <div class="col-md-6">
-                        <label for="otdetails" class="form-label">Other Details</label>
-                        <input type="text" id="otdetails" name="otdetails" class="form-control">
+    <div class="container">
+        <div class="card">
+            <h5 class="card-header">Patient Registration</h5>
+            <form id="PatientRegForm" method="post" enctype="multipart/form-data">
+                <!-- Image Upload Section -->
+                <div class="card">
+                    <div class="image-preview">
+                        <img src="../images/1.png" alt="user-avatar" id="uploadedAvatar">
+                        <div>
+                            <label for="patientImage" class="btn btn-primary tool-tip">
+                                Upload Image
+                                <input type="file" id="patientImage" name="patientImage" hidden
+                                    accept="image/png, image/jpeg">
+                                <span>Allowed JPG, JPEG, or PNG. Max size 800K.</span>
+                            </label>
+                            <button type="button" id="resetBtn" class="btn btn-outline-secondary">Reset</button>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Checkbox Section -->
-                
-            </div>
-
-            <!-- Submit and Reset Buttons -->
-            <div>
-                <button type="submit" class="btn btn-primary">Save</button>
-                <button type="reset" class="btn btn-outline-secondary">Cancel</button>
-            </div>
-        </form>
+                <!-- Form Fields -->
+                <div id="errordiv"></div>
+                <div class="card">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label for="name" class="form-label">Name*</label>
+                            <input type="text" id="name" name="name" data-validation="required"
+                                data-error-message="Please Enter Name" class="form-control">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="mobile" class="form-label">Mobile Number*</label>
+                            <input type="number" id="mobile" name="mobile" data-validation="required"
+                                data-error-message="Please Enter Mobile Number" class="form-control">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="email" class="form-label">E-mail</label>
+                            <input type="email" id="email" name="email" class="form-control">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="gender" class="form-label">Gender*</label>
+                            <select id="gender" data-validation="required" data-error-message="Please Enter Gender"
+                                name="gender" class="form-control">
+                                <option value="">Select</option>
+                                <option value="M">Male</option>
+                                <option value="F">Female</option>
+                                <option value="O">Other</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="age" class="form-label">Age*</label>
+                            <input type="number" id="age" name="age" data-validation="required"
+                                data-error-message="Please Enter Age" class="form-control">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="address" class="form-label">Address</label>
+                            <input type="text" id="address" name="address" class="form-control">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="otdetails" class="form-label">Other Details</label>
+                            <input type="text" id="otdetails" name="otdetails" class="form-control">
+                        </div>
+                    </div>
+                    <!-- Checkbox Section -->
+                </div>
+                <div id="loadingIndicator"></div>
+                <!-- Submit and Reset Buttons -->
+                <div>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                    <button type="reset" class="btn btn-outline-secondary">Cancel</button>
+                </div>
+            </form>
+        </div>
     </div>
-</div>
 
 </body>
+
 </html>
 
-            <!-- Extra Js for this Page-->
+<!-- Extra Js for this Page-->
+<script src="../javascripts/jquery.js"></script>
+<script src="../javascripts/Validation.js"></script>
+<script src="../javascripts/SaveFormData.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script>
- 
-  restrictInput("mobile", 10); // Limits mobile number to 10 digits
-  restrictInput("age", 2); 
 
-  document.getElementById('patientImage').addEventListener('change', function(event) {
-    // Just validate the file input without calling previewImage
-    validateFileInput("patientImage", ["image/jpeg", "image/jpg", "image/png"], 800);
-});
+    restrictInput("mobile", 10); // Limits mobile number to 10 digits
+    restrictInput("age", 2);
 
-  document.getElementById("height").addEventListener("input", function() {
-    BMI("height", "weight", "bmi");
-});
-document.getElementById("weight").addEventListener("input", function() {
-    BMI("height", "weight", "bmi");
-});
- 
-
-$(document).ready(function () {
-    console.log("Document is ready");
-
-    const formId = '#PatientRegForm';
-    const errorDivId = '#errordiv';
-
-    $(formId).on('submit', async function (event) {
-        event.preventDefault(); // Prevent the form from submitting
-
-        const { isValid, errorMessage } = validateForm(formId);
-
-        if (isValid) {
-            const url = '/patient-reg';
-            const loadingDiv = '#loadingIndicator';
-
-            try {
-                $(loadingDiv).show(); // Show loading indicator
-
-                const response = await saveForm(formId, url); // Perform the form submission
-
-                console.log('Success:', response);
-                $(errorDivId).removeClass('alert-danger').addClass('alert-success').text(response.message).show();
-            } catch (error) {
-                console.error('Error:', error);
-                $(errorDivId).removeClass('alert-success').addClass('alert-danger').text(` ${error.message || 'Unknown error'}`).show();
-            } finally {
-                $(loadingDiv).hide(); // Hide loading indicator after submission
-            }
-        } else {
-            $(errorDivId).removeClass('alert-success').addClass('alert-danger').text(errorMessage).show();
-        }
+    document.getElementById('patientImage').addEventListener('change', function (event) {
+        // Just validate the file input without calling previewImage
+        validateFileInput("patientImage", ["image/jpeg", "image/jpg", "image/png"], 800);
     });
-});
 
-  </script>
+    $(document).ready(function () {
+        console.log("Document is ready");
 
+        const formId = '#PatientRegForm';
+        const errorDivId = '#errordiv';
+
+        $(formId).on('submit', async function (event) {
+            event.preventDefault(); // Prevent the form from submitting
+
+            const { isValid, errorMessage } = validateForm(formId);
+            const urlParams = new URLSearchParams(window.location.search);
+            const clinicId = urlParams.get('clinic_id');
+            if (!clinicId) {
+                $(errorDivId).removeClass('alert-success').addClass('alert-danger').text("Invalid URL Try again with other Qr code").show();
+            }
+
+            if (isValid) {
+                const url = `/patient-qreg?id=${clinicId}`;
+                const loadingDiv = '#loadingIndicator';
+
+                try {
+                    $(loadingDiv).show(); // Show loading indicator
+
+                    const response = await saveForm(formId, url); // Perform the form submission
+
+                    console.log('Success:', response);
+                    $(errorDivId).removeClass('alert-danger').addClass('alert-success').text(response.message).show();
+                } catch (error) {
+                    console.error('Error:', error);
+                    $(errorDivId).removeClass('alert-success').addClass('alert-danger').text(` ${error.message || 'Unknown error'}`).show();
+                } finally {
+                    $(loadingDiv).hide(); // Hide loading indicator after submission
+                }
+            } else {
+                $(errorDivId).removeClass('alert-success').addClass('alert-danger').text(errorMessage).show();
+            }
+        });
+    });
+</script>
 <script>
-document.addEventListener('DOMContentLoaded', function() {
     const patientImageInput = document.getElementById('patientImage');
-    const webcamBtn = document.getElementById('webcamBtn');
     const uploadedAvatar = document.getElementById('uploadedAvatar');
     const resetBtn = document.getElementById('resetBtn');
-    const video = document.getElementById('video');
-    const canvas = document.getElementById('canvas');
-    const captureBtn = document.getElementById('captureBtn');
-    const webcamContainer = document.getElementById('webcamContainer');
-    let stream;
+
+    // Reset the avatar image to the default
+    resetBtn.addEventListener('click', function () {
+        uploadedAvatar.src = "../images/1.png"; // Reset to default image
+        patientImageInput.value = ''; // Clear local file input
+    });
 
     // Handle local file upload
-    patientImageInput.addEventListener('change', function(event) {
+    patientImageInput.addEventListener('change', function (event) {
         const file = event.target.files[0];
         if (file) {
             const reader = new FileReader();
-            reader.onload = function(e) {
+            reader.onload = function (e) {
                 uploadedAvatar.src = e.target.result; // Set the image source to the uploaded file
             };
             reader.readAsDataURL(file); // Convert file to DataURL
         }
     });
-
-    // Start video stream for webcam
-    function startWebcam() {
-        navigator.mediaDevices.getUserMedia({ video: true })
-            .then(function(mediaStream) {
-                stream = mediaStream;
-                video.srcObject = mediaStream;
-                webcamContainer.style.display = 'block'; // Show the webcam container
-            })
-            .catch(function(error) {
-                console.error('Error accessing webcam:', error);
-                alert('Unable to access the webcam. Please check your browser settings.');
-            });
-    }
-
-    // Capture image from webcam
-    captureBtn.addEventListener('click', function() {
-        canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height); // Capture image from video
-        const imageUrl = canvas.toDataURL('image/png'); // Convert canvas to image URL
-        uploadedAvatar.src = imageUrl; // Set the image source to the captured image
-
-        // Convert the captured image DataURL to a File and set it to the patientImage input
-        const file = dataURLtoFile(imageUrl, 'webcam_capture.png');
-        
-        // Create a new DataTransfer object to update the file input
-        const dataTransfer = new DataTransfer();
-        dataTransfer.items.add(file); // Add the captured file
-        patientImageInput.files = dataTransfer.files; // Update the file input with the captured file
-
-        stopWebcam(); // Stop the webcam after capturing the image
-    });
-
-    // Stop the webcam
-    function stopWebcam() {
-        if (stream) {
-            stream.getTracks().forEach(track => track.stop()); // Stop all webcam tracks
-            video.srcObject = null; // Reset video source
-            webcamContainer.style.display = 'none'; // Hide webcam container
-        }
-    }
-
-    // Open webcam when clicking the "Upload from Webcam" button
-    webcamBtn.addEventListener('click', function() {
-        startWebcam();
-    });
-
-    // Reset the avatar image to the default
-    resetBtn.addEventListener('click', function() {
-        uploadedAvatar.src = "../images/1.png"; // Reset to default image
-        patientImageInput.value = ''; // Clear local file input
-        stopWebcam(); // Stop webcam if active
-    });
-
-    // Convert DataURL to a File object
-    function dataURLtoFile(dataURL, filename) {
-    // Split the DataURL into the MIME type and base64 string
-    const arr = dataURL.split(',');
-
-    // Ensure that the string starts with 'data:' and contains a MIME type
-    if (arr.length < 2 || !arr[0].startsWith('data:')) {
-        throw new Error("Invalid DataURL format.");
-    }
-
-    // Extract the MIME type from the DataURL
-    const mime = arr[0].match(/:(.*?);/)[1];
-
-    // Decode the base64 string to binary
-    const bstr = atob(arr[1]);
-    const n = bstr.length;
-    const u8arr = new Uint8Array(n);
-
-    // Populate the Uint8Array with the binary data
-    for (let i = 0; i < n; i++) {
-        u8arr[i] = bstr.charCodeAt(i);
-    }
-
-    // Create and return a File object from the binary data
-    return new File([u8arr], filename, { type: mime });
-}
-
-  });
-
-
 </script>
-  <!-- Extra Js for this Page End-->
-  
+<!-- Extra Js for this Page End-->

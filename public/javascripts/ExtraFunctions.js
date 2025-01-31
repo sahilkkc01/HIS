@@ -61,7 +61,7 @@ function removeImage(inputId, previewId, removeBtnId) {
   removeBtn.style.display = "none"; // Hide the remove button
 }
 
-const loadDropdown = (elementId, FieldId ,key , selectedValue = null) => {
+const loadDropdown = (elementId, FieldId, key, selectedValue = null) => {
   // Append elementId to the URL as a query parameter
   const modifiedUrl = `getDataFromField?elementId=${FieldId}`;
 
@@ -107,27 +107,23 @@ const loadDropdown = (elementId, FieldId ,key , selectedValue = null) => {
     );
 };
 
-const generateQRCodeInDiv = (divId, route, clinicId) => {
-  // Get the window.origin (base URL)
+const generateQRCodeInDiv = (divId, route, clinicId, size = 150) => {
   const windowOrigin = window.origin;
-
-  // Construct the URL
   const url = `${windowOrigin}/${route}?clinic_id=${clinicId}`;
-
-  // Find the div where the QR code will be generated
   const targetDiv = document.getElementById(divId);
 
   if (targetDiv) {
     targetDiv.innerHTML = "";
 
-    // Generate the QR code
-    QRCode.toDataURL(url, function (err, url) {
+    // Generate the QR code with specified size
+    QRCode.toDataURL(url, { width: size, height: size }, function (err, url) {
       if (err) {
         console.error("Error generating QR code:", err);
       } else {
-        // Create an image element for the QR code
         const imgElement = document.createElement("img");
         imgElement.src = url;
+        imgElement.width = size; // Set size of the image
+        imgElement.height = size;
         targetDiv.appendChild(imgElement);
       }
     });
@@ -181,7 +177,7 @@ async function saveJsonForm(formId, endpoint, arrayObj = null) {
   });
 }
 
-function createSmallModal(id, name, path, sId,elmtId) {
+function createSmallModal(id, name, path, sId, elmtId) {
   const modal = document.createElement("div");
   modal.className = "modal fade";
   modal.id = id;
@@ -216,8 +212,7 @@ function createSmallModal(id, name, path, sId,elmtId) {
   $(`#${id}`).modal("show");
 }
 
-async function saveModalData(id, path, sid, name,elmtId) {
-
+async function saveModalData(id, path, sid, name, elmtId) {
   const inputValue = document.getElementById(`input${id}`).value;
   if (inputValue) {
     try {
@@ -226,7 +221,7 @@ async function saveModalData(id, path, sid, name,elmtId) {
         tableName: sid,
       });
       $(`#${id}`).modal("hide");
-      loadDropdown(elmtId,sid, "name", "");
+      loadDropdown(elmtId, sid, "name", "");
       document.getElementById(`input${id}`).value = "";
     } catch (error) {
       console.log(error);
