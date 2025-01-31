@@ -79,8 +79,9 @@
 
                       </div>
                       <div class="col-2 text-center d-none d-sm-block">
-                        <i class='bx bx-qr-scan'></i>
-                        <div>Scan to Register</div>
+                        <!-- <i class='bx bx-qr-scan'></i> -->
+                        <div id="qrcode"></div>
+                        <div class="pb-2">Scan to Register</div>
                       </div>
                     </div>
                   </div>
@@ -518,6 +519,6 @@
 
           });
 
-
+          generateQRCodeInDiv("qrcode", "PatientQrReg", 1);
         </script>
         <!-- Extra Js for this Page End-->

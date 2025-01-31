@@ -1,633 +1,650 @@
 <!doctype html>
-<html
-  lang="en"
-  class="light-style layout-menu-fixed layout-compact"
-  dir="ltr"
-  data-theme="theme-default"
-  data-assets-path="../assets/"
-  data-template="vertical-menu-template-free"
-  data-style="light">
-  <head>
-    <meta charset="utf-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+<html lang="en" class="light-style layout-menu-fixed layout-compact" dir="ltr" data-theme="theme-default"
+  data-assets-path="../assets/" data-template="vertical-menu-template-free" data-style="light">
 
-    <title>Doctor Registration</title>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
 
-   <%- include('../header') -%>
+  <title>Doctor Registration</title>
 
-          <!-- Content wrapper -->
-          <div class="content-wrapper">
-            <!-- Content -->
-            <style>.displaynone{display:none;}.bx-qr-scan{font-size:80px;}</style>
-            <div class="container-xxl flex-grow-1 container-p-y">
-              <div class="row">
-                <!-- Vertical & Horizontal Scrollbars -->
-                <div class="col-12">
-                  <div class="card overflow-hidden">
-                    <h5 class="card-header">Doctor Registration</h5>
-                    <form id="DoctorRegForm" >
-                    <div class="card">
-                    <!-- Account -->
-                    <div class="card-body">
-					<div class="row border-bottom">
-						<div class="col-10 col-xs-12">
-           
-         
-              <div class="d-flex align-items-start align-items-sm-center gap-6 pb-4">
-                <img src="../images/1.png" alt="user-avatar" class="d-block w-px-100 h-px-100 rounded" id="uploadedAvatar">
-                <div class="button-wrapper">
-                    <!-- Upload from Local Storage -->
-                    <label data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" title="<span>Upload from local Storage</span>" for="doctorImage" class="btn btn-primary me-3 mb-4" tabindex="0">
-                        <span class="bx bx-upload"></span>
-                        <input type="file" id="doctorImage" name="doctorImage" class="account-file-input" hidden accept="image/png, image/jpeg">
-                    </label>
-            
-                    <!-- Upload from Webcam (no input field here, will start webcam directly) -->
-                    <button type="button" data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" title="<span>Upload from Webcam</span>" id="webcamBtn" class="btn btn-primary me-3 mb-4">
-                        <span class="bx bxs-webcam"></span> 
-                    </button>
-            
-                    <!-- Reset Button -->
-                    <button data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" title="<span>Reset</span>" type="button" class="btn btn-outline-secondary account-image-reset mb-4" id="resetBtn">
-                        <span class="bx bx-reset"></span> Reset
-                    </button>
-            
-                    <!-- File Type and Size Information -->
-                    <div class="text-muted">Allowed JPG, JPEG or PNG. Max size of 800K</div>
-                </div>
-            
-              
-            </div>
-            
-              
+  <%- include('../header') -%>
+
+    <!-- Content wrapper -->
+    <div class="content-wrapper">
+      <!-- Content -->
+      <style>
+        .displaynone {
+          display: none;
+        }
+
+        .bx-qr-scan {
+          font-size: 80px;
+        }
+      </style>
+      <div class="container-xxl flex-grow-1 container-p-y">
+        <div class="row">
+          <!-- Vertical & Horizontal Scrollbars -->
+          <div class="col-12">
+            <div class="card overflow-hidden">
+              <h5 class="card-header">Doctor Registration</h5>
+              <form id="DoctorRegForm">
+                <div class="card">
+                  <!-- Account -->
+                  <div class="card-body">
+                    <div class="row border-bottom">
+                      <div class="col-10 col-xs-12">
+
+
+                        <div class="d-flex align-items-start align-items-sm-center gap-6 pb-4">
+                          <img src="../images/1.png" alt="user-avatar" class="d-block w-px-100 h-px-100 rounded"
+                            id="uploadedAvatar">
+                          <div class="button-wrapper">
+                            <!-- Upload from Local Storage -->
+                            <label data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top"
+                              data-bs-html="true" title="<span>Upload from local Storage</span>" for="doctorImage"
+                              class="btn btn-primary me-3 mb-4" tabindex="0">
+                              <span class="bx bx-upload"></span>
+                              <input type="file" id="doctorImage" name="doctorImage" class="account-file-input" hidden
+                                accept="image/png, image/jpeg">
+                            </label>
+
+                            <!-- Upload from Webcam (no input field here, will start webcam directly) -->
+                            <button type="button" data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top"
+                              data-bs-html="true" title="<span>Upload from Webcam</span>" id="webcamBtn"
+                              class="btn btn-primary me-3 mb-4">
+                              <span class="bx bxs-webcam"></span>
+                            </button>
+
+                            <!-- Reset Button -->
+                            <button data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top"
+                              data-bs-html="true" title="<span>Reset</span>" type="button"
+                              class="btn btn-outline-secondary account-image-reset mb-4" id="resetBtn">
+                              <span class="bx bx-reset"></span> Reset
+                            </button>
+
+                            <!-- File Type and Size Information -->
+                            <div class="text-muted">Allowed JPG, JPEG or PNG. Max size of 800K</div>
+                          </div>
+
+
                         </div>
-					  <div class="col-2 text-center d-none d-sm-block">
-						<i class='bx bx-qr-scan'></i>
-						<div>Scan to Register</div>
-					  </div>
-					</div>
+
+
+                      </div>
+                      <div class="col-2 text-center d-none d-sm-block">
+                        <!-- <i class='bx bx-qr-scan'></i> -->
+                        <div id="qrcode"></div>
+                        <div class="pb-2">Scan to Register</div>
+                      </div>
                     </div>
-                    <div class="card-body pt-4">
-                      <div id="errordiv"></div>
-                        <div class="row g-6">
+                  </div>
+                  <div class="card-body pt-4">
+                    <div id="errordiv"></div>
+                    <div class="row g-6">
+                      <div class="col-md-6">
+                        <label for="name" class="form-label">Name*</label>
+                        <input class="form-control" type="text" id="name" name="name" value="" autofocus=""
+                          data-validation="required" data-error-message="Please enter name">
+                      </div>
+                      <div class="col-md-6">
+                        <label class="form-label" for="phoneNumber">Mobile Number*</label>
+                        <div class="input-group input-group-merge">
+                          <span class="input-group-text">IND (+91)</span>
+                          <input type="number" id="phoneNumber" name="phoneNumber" class="form-control" placeholder=""
+                            data-validation="required mobileNum" data-error-message="Please enter mobile number">
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <label for="email" class="form-label">E-mail</label>
+                        <input class="form-control" type="email" id="email" name="email" value="" placeholder=""
+                          data-validation="email">
+                      </div>
+                      <div class="col-md-3">
+                        <label for="gender" class="form-label">Gender*</label>
+                        <select id="gender" name="gender" class="select2 form-select" data-validation="required"
+                          data-error-message="Please enter gender">
+                          <option value="">Select</option>
+                          <option value="M">Male</option>
+                          <option value="F">Female</option>
+                          <option value="O">Other</option>
+                        </select>
+                      </div>
+                      <div class="col-md-3">
+                        <label for="practicingSince" class="form-label">Practicing Since*</label>
+                        <input type="text" class="form-control" id="practicingSince" name="practicingSince"
+                          placeholder="" data-validation="required" data-error-message="Please enter practicing since">
+                      </div>
+                      <div class="col-md-6">
+                        <label for="qualification" class="form-label">Qualifications</label>
+                        <input type="text" class="form-control" id="qualification" name="qualification" placeholder="">
+                      </div>
+                      <div class="col-md-3">
+                        <label for="Specialization" class="form-label">Specialization</label>
+                        <select id="Specialization" name="specialization" class="select2 form-select">
+                          <option value="">Select</option>
+                          <option value="add-new">Add New</option>
+                        </select>
+                      </div>
+                      <div class="col-md-3">
+                        <label for="regNo" class="form-label">Reg No.</label>
+                        <input type="text" class="form-control" id="regNo" name="regNo" placeholder="">
+                      </div>
+                      <div class="col-md-3">
+                        <label for="consultationFees" class="form-label">Consultation Fees (₹)</label>
+                        <input type="number" class="form-control" id="consultationFees" name="consultationFees"
+                          placeholder="">
+                      </div>
+                      <div class="col-md-3">
+                        <div class="col-md">
+                          <small class="fw-medium d-block">Services</small>
+                          <div class="form-check form-check-inline mt-3">
+                            <input class="form-check-input" type="checkbox" id="opd" name="opd" value="true">
+                            <label class="form-check-label" for="opd">OPD</label>
+                          </div>
+                          <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" id="ipd" name="ipd" value="true">
+                            <label class="form-check-label" for="ipd">IPD</label>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <label for="otherDetails" class="form-label">Other Details</label>
+                        <input type="text" class="form-control" id="otherDetails" name="otherDetails" placeholder="">
+                      </div>
+                      <div class="col-md-6">
+                        <div class="form-check">
+                          <input class="form-check-input" type="checkbox" id="appointmentCalendar">
+                          <label class="form-check-label" for="appointmentCalendar">Appointment Calendar</label>
+                        </div>
+                      </div>
+                      <div id="markvisit" class="row g-4 displaynone">
+                        <div id="schedule" class="col-7">
                           <div class="col-md-6">
-                            <label for="name" class="form-label">Name*</label>
-                            <input class="form-control" type="text" id="name" name="name" value="" autofocus="" data-validation="required" data-error-message="Please enter name">
+                            <label for="otherDetails" class="form-label">Time Slot(Minutes)</label>
+                            <input type="number" class="form-control" id="timeslot" name="timeslot" placeholder="">
                           </div>
-                          <div class="col-md-6">
-                            <label class="form-label" for="phoneNumber">Mobile Number*</label>
-                            <div class="input-group input-group-merge">
-                              <span class="input-group-text">IND (+91)</span>
-                              <input type="number" id="phoneNumber" name="phoneNumber" class="form-control" placeholder="" data-validation="required mobileNum" data-error-message="Please enter mobile number">
-                            </div>
-                          </div>
-                          <div class="col-md-6">
-                            <label for="email" class="form-label">E-mail</label>
-                            <input class="form-control" type="email" id="email" name="email" value="" placeholder="" data-validation="email">
-                          </div>
-                          <div class="col-md-3">
-                            <label for="gender" class="form-label">Gender*</label>
-                            <select id="gender" name="gender" class="select2 form-select" data-validation="required" data-error-message="Please enter gender">
-                              <option value="">Select</option>
-                              <option value="M">Male</option>
-                              <option value="F">Female</option>
-                              <option value="O">Other</option>
-                            </select>
-                          </div>
-                          <div class="col-md-3">
-                            <label for="practicingSince" class="form-label">Practicing Since*</label>
-                            <input type="text" class="form-control" id="practicingSince" name="practicingSince" placeholder="" data-validation="required" data-error-message="Please enter practicing since">
-                          </div>
-                          <div class="col-md-6">
-                            <label for="qualification" class="form-label">Qualifications</label>
-                            <input type="text" class="form-control" id="qualification" name="qualification" placeholder="">
-                          </div>
-                          <div class="col-md-3">
-                            <label for="Specialization" class="form-label">Specialization</label>
-                            <select id="Specialization" name="specialization" class="select2 form-select">
-                              <option value="">Select</option>
-                              <option value="add-new">Add New</option>
-                            </select>
-                          </div>
-                          <div class="col-md-3">
-                            <label for="regNo" class="form-label">Reg No.</label>
-                            <input type="text" class="form-control" id="regNo" name="regNo" placeholder="">
-                          </div>
-                          <div class="col-md-3">
-                            <label for="consultationFees" class="form-label">Consultation Fees (₹)</label>
-                            <input type="number" class="form-control" id="consultationFees" name="consultationFees" placeholder="">
-                          </div>
-                          <div class="col-md-3">
-                            <div class="col-md">
-                              <small class="fw-medium d-block">Services</small>
-                              <div class="form-check form-check-inline mt-3">
-                                <input class="form-check-input" type="checkbox" id="opd" name="opd" value="true">
-                                <label class="form-check-label" for="opd">OPD</label>
-                              </div>
-                              <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="checkbox" id="ipd" name="ipd" value="true">
-                                <label class="form-check-label" for="ipd">IPD</label>
-                              </div>
-                            </div>
-                          </div>
-                          <div class="col-md-6">
-                            <label for="otherDetails" class="form-label">Other Details</label>
-                            <input type="text" class="form-control" id="otherDetails" name="otherDetails" placeholder="">
-                          </div>
-                          <div class="col-md-6">
-                            <div class="form-check">
-                              <input class="form-check-input" type="checkbox" id="appointmentCalendar" >
-                              <label class="form-check-label" for="appointmentCalendar">Appointment Calendar</label>
-                            </div>
-                          </div>
-                          <div id="markvisit" class="row g-4 displaynone">
-                            <div id="schedule" class="col-7">
-                              <div class="col-md-6">
-                                <label for="otherDetails" class="form-label">Time Slot(Minutes)</label>
-                                <input type="number" class="form-control" id="timeslot" name="timeslot" placeholder="">
-                              </div>
-                              <!-- Days of the week -->
-                              <div class="accordion" id="scheduleAccordion">
-                                <!-- Template for each day -->
-                                <div class="accordion-item" id="day-template" style="display: none;">
-                                  <h2 class="accordion-header">
-                                    <button class="accordion-button" type="button" data-bs-toggle="collapse">
-                                      <span class="day-name"></span>
-                                    </button>
-                                  </h2>
-                                  <div class="accordion-collapse collapse">
-                                    <div class="accordion-body">
-                                      <div class="d-flex justify-content-between align-items-center mb-3">
-                                        <div>
-                                          <input type="checkbox" class="form-check-input not-open-checkbox" id="not-open-checkbox">
-                                          <label for="not-open-checkbox">Not Open Today</label>
-                                        </div>
-                                        <button type="button" class="btn btn-primary btn-sm copy-day">Copy to All Days</button>
-                                      </div>
-                                      <div class="schedule-slots">
-                                        <div class="slot mb-3 d-flex align-items-center">
-                                          <input type="time" class="form-control me-2 from-time" name="from-time[]" placeholder="From Time">
-                                          <input type="time" class="form-control me-2 to-time" name="to-time[]" placeholder="To Time">
-                                          <button class="btn btn-danger btn-sm remove-slot">Remove</button>
-                                        </div>
-                                      </div>
-                                      <button type="button" class="btn btn-success btn-sm add-slot">+ Add Slot</button>
+                          <!-- Days of the week -->
+                          <div class="accordion" id="scheduleAccordion">
+                            <!-- Template for each day -->
+                            <div class="accordion-item" id="day-template" style="display: none;">
+                              <h2 class="accordion-header">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse">
+                                  <span class="day-name"></span>
+                                </button>
+                              </h2>
+                              <div class="accordion-collapse collapse">
+                                <div class="accordion-body">
+                                  <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <div>
+                                      <input type="checkbox" class="form-check-input not-open-checkbox"
+                                        id="not-open-checkbox">
+                                      <label for="not-open-checkbox">Not Open Today</label>
+                                    </div>
+                                    <button type="button" class="btn btn-primary btn-sm copy-day">Copy to All
+                                      Days</button>
+                                  </div>
+                                  <div class="schedule-slots">
+                                    <div class="slot mb-3 d-flex align-items-center">
+                                      <input type="time" class="form-control me-2 from-time" name="from-time[]"
+                                        placeholder="From Time">
+                                      <input type="time" class="form-control me-2 to-time" name="to-time[]"
+                                        placeholder="To Time">
+                                      <button class="btn btn-danger btn-sm remove-slot">Remove</button>
                                     </div>
                                   </div>
+                                  <button type="button" class="btn btn-success btn-sm add-slot">+ Add Slot</button>
                                 </div>
-                                <!-- Days (Generated dynamically in JavaScript) -->
                               </div>
-                              
-                              
                             </div>
+                            <!-- Days (Generated dynamically in JavaScript) -->
                           </div>
-                          <div id="loadingIndicator"></div>
-                          <div class="mt-6">
-                            <button type="submit" class="btn btn-primary me-3">Save</button>
-                            <button type="reset" class="btn btn-outline-secondary">Cancel</button>
-                          </div>
+
+
                         </div>
-                   
+                      </div>
+                      <div id="loadingIndicator"></div>
+                      <div class="mt-6">
+                        <button type="submit" class="btn btn-primary me-3">Save</button>
+                        <button type="reset" class="btn btn-outline-secondary">Cancel</button>
+                      </div>
                     </div>
-                    
-                    <!-- /Account -->
+
                   </div>
-                    </form>
-                  </div>
+
+                  <!-- /Account -->
                 </div>
-                <!--/ Vertical & Horizontal Scrollbars -->
+              </form>
+            </div>
+          </div>
+          <!--/ Vertical & Horizontal Scrollbars -->
+        </div>
+      </div>
+      <!-- / Content -->
+
+      <div class="modal fade" id="WebcamModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-sm" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel2">Webcam</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+
+              <!-- Webcam Section -->
+              <div id="webcamContainer" class="mt-3" style="display: none;">
+                <video id="video" width="320" height="240" autoplay></video>
+                <canvas id="canvas" width="320" height="240" style="display:none;"></canvas>
+                <button id="captureBtn" type="button" class="btn btn-success mt-3">Capture</button>
               </div>
             </div>
-            <!-- / Content -->
 
-            <div class="modal fade" id="WebcamModal" tabindex="-1" aria-hidden="true">
-              <div class="modal-dialog modal-sm" role="document">
-                  <div class="modal-content">
-                      <div class="modal-header">
-                          <h5 class="modal-title" id="exampleModalLabel2">Webcam</h5>
-                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                      </div>
-                      <div class="modal-body">
-                         
-                          <!-- Webcam Section -->
-                          <div id="webcamContainer" class="mt-3" style="display: none;">
-                              <video id="video" width="320" height="240" autoplay></video>
-                              <canvas id="canvas" width="320" height="240" style="display:none;"></canvas>
-                              <button id="captureBtn" type="button" class="btn btn-success mt-3">Capture</button>
-                          </div>
-                      </div>
-                      
-                  </div>
-              </div>
           </div>
-			
-			<!-- Small Modal -->
-                      <div class="modal fade" id="smallModal" tabindex="-1" aria-hidden="true">
-                        <div class="modal-dialog modal-sm" role="document">
-                          <div class="modal-content">
-                            <div class="modal-header">
-                              <h5 class="modal-title" id="exampleModalLabel2">Add Speciality</h5>
-                              <button
-                                type="button"
-                                class="btn-close"
-                                data-bs-dismiss="modal"
-                                aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                              <div class="row">
-                                <div class="col mb-6">
-                                  <label for="nameSmall" class="form-label">Speciality</label>
-                                  <input type="text" id="newSpec" class="form-control" placeholder="" />
-                                </div>
-                              </div>
-                            </div>
-                            <div class="modal-footer">
-                              <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
-                                Close
-                              </button>
-                              <button type="button" id="addSpec" class="btn btn-primary">Save</button>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-					  
+        </div>
+      </div>
 
-           <%- include('../footer') -%>
-	
-	<!-- Extra Js for this Page-->
-	<script>
-    $(document).ready(function () {
-    $("#appointmentCalendar").on("change", function () {
-    if ($(this).is(":checked")) {
-      $("#markvisit").removeClass("displaynone"); // Show the element
-      $("#timeslot").attr("data-validation", "required"); // Add required validation
-    } else {
-      $("#markvisit").addClass("displaynone"); // Hide the element
-      $("#timeslot").removeAttr("data-validation", "required"); 
-    }
-    });
-    });
-    </script>
-	 <script>
-    $(document).ready(function () {
-      // Show modal when "Add New" is selected
-      $('#Specialization').on('change', function () {
-        if ($(this).val() === 'add-new') {
-          $('#smallModal').modal('show');
-        }
-      });
-    });
-  </script>
-  
-	
-	  <script>
-document.addEventListener("DOMContentLoaded", function () {
-  const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
-  const scheduleContainer = document.getElementById("scheduleAccordion");
-  const dayTemplate = document.getElementById("day-template");
+      <!-- Small Modal -->
+      <div class="modal fade" id="smallModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-sm" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel2">Add Speciality</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <div class="row">
+                <div class="col mb-6">
+                  <label for="nameSmall" class="form-label">Speciality</label>
+                  <input type="text" id="newSpec" class="form-control" placeholder="" />
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                Close
+              </button>
+              <button type="button" id="addSpec" class="btn btn-primary">Save</button>
+            </div>
+          </div>
+        </div>
+      </div>
 
-  days.forEach((day, index) => {
-    const dayElement = dayTemplate.cloneNode(true);
-    dayElement.style.display = "";
-    dayElement.id = ""; // Remove template ID
-    const uniqueID = `collapse-${index}`;
 
-    // Set unique IDs for collapse functionality
-    const collapseButton = dayElement.querySelector(".accordion-button");
-    const collapseDiv = dayElement.querySelector(".accordion-collapse");
-    collapseButton.setAttribute("data-bs-target", `#${uniqueID}`);
-    collapseDiv.id = uniqueID;
+      <%- include('../footer') -%>
 
-    // Set day name
-    dayElement.querySelector(".day-name").textContent = day;
+        <!-- Extra Js for this Page-->
+        <script>
+          $(document).ready(function () {
+            $("#appointmentCalendar").on("change", function () {
+              if ($(this).is(":checked")) {
+                $("#markvisit").removeClass("displaynone"); // Show the element
+                $("#timeslot").attr("data-validation", "required"); // Add required validation
+              } else {
+                $("#markvisit").addClass("displaynone"); // Hide the element
+                $("#timeslot").removeAttr("data-validation", "required");
+              }
+            });
+          });
+        </script>
+        <script>
+          $(document).ready(function () {
+            // Show modal when "Add New" is selected
+            $('#Specialization').on('change', function () {
+              if ($(this).val() === 'add-new') {
+                $('#smallModal').modal('show');
+              }
+            });
+          });
+        </script>
 
-    // Append to schedule container
-    scheduleContainer.appendChild(dayElement);
 
-    // Handle Not Open checkbox
-    const notOpenCheckbox = dayElement.querySelector(".not-open-checkbox");
-    const accordionBody = dayElement.querySelector(".accordion-body");
-    const addSlotButton = dayElement.querySelector(".add-slot");
-    const scheduleSlots = dayElement.querySelector(".schedule-slots");
-    const copyDayButton = dayElement.querySelector(".copy-day");
+        <script>
+          document.addEventListener("DOMContentLoaded", function () {
+            const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+            const scheduleContainer = document.getElementById("scheduleAccordion");
+            const dayTemplate = document.getElementById("day-template");
 
-    notOpenCheckbox.addEventListener("change", function () {
-      if (this.checked) {
-        // Hide slots and add slot button, disable copy button
-        scheduleSlots.style.display = "none";
-        addSlotButton.style.display = "none";
-        copyDayButton.disabled = true;
+            days.forEach((day, index) => {
+              const dayElement = dayTemplate.cloneNode(true);
+              dayElement.style.display = "";
+              dayElement.id = ""; // Remove template ID
+              const uniqueID = `collapse-${index}`;
 
-        // Clear time values for slots when "Not Open" is checked
-        const slots = scheduleSlots.querySelectorAll(".slot");
-        slots.forEach(function(slot) {
-          const fromTimeInput = slot.querySelector(".from-time");
-          const toTimeInput = slot.querySelector(".to-time");
-          fromTimeInput.value = ""; // Clear "From" time
-          toTimeInput.value = ""; // Clear "To" time
-        });
-      } else {
-        // Show slots and add slot button, enable copy button
-        scheduleSlots.style.display = "";
-        addSlotButton.style.display = "";
-        copyDayButton.disabled = false;
-      }
-    });
+              // Set unique IDs for collapse functionality
+              const collapseButton = dayElement.querySelector(".accordion-button");
+              const collapseDiv = dayElement.querySelector(".accordion-collapse");
+              collapseButton.setAttribute("data-bs-target", `#${uniqueID}`);
+              collapseDiv.id = uniqueID;
 
-    // Handle Add Slot
-    addSlotButton.addEventListener("click", function () {
-      const newSlot = document.createElement("div");
-      newSlot.classList.add("slot", "mb-3", "d-flex", "align-items-center");
-      newSlot.innerHTML = `
+              // Set day name
+              dayElement.querySelector(".day-name").textContent = day;
+
+              // Append to schedule container
+              scheduleContainer.appendChild(dayElement);
+
+              // Handle Not Open checkbox
+              const notOpenCheckbox = dayElement.querySelector(".not-open-checkbox");
+              const accordionBody = dayElement.querySelector(".accordion-body");
+              const addSlotButton = dayElement.querySelector(".add-slot");
+              const scheduleSlots = dayElement.querySelector(".schedule-slots");
+              const copyDayButton = dayElement.querySelector(".copy-day");
+
+              notOpenCheckbox.addEventListener("change", function () {
+                if (this.checked) {
+                  // Hide slots and add slot button, disable copy button
+                  scheduleSlots.style.display = "none";
+                  addSlotButton.style.display = "none";
+                  copyDayButton.disabled = true;
+
+                  // Clear time values for slots when "Not Open" is checked
+                  const slots = scheduleSlots.querySelectorAll(".slot");
+                  slots.forEach(function (slot) {
+                    const fromTimeInput = slot.querySelector(".from-time");
+                    const toTimeInput = slot.querySelector(".to-time");
+                    fromTimeInput.value = ""; // Clear "From" time
+                    toTimeInput.value = ""; // Clear "To" time
+                  });
+                } else {
+                  // Show slots and add slot button, enable copy button
+                  scheduleSlots.style.display = "";
+                  addSlotButton.style.display = "";
+                  copyDayButton.disabled = false;
+                }
+              });
+
+              // Handle Add Slot
+              addSlotButton.addEventListener("click", function () {
+                const newSlot = document.createElement("div");
+                newSlot.classList.add("slot", "mb-3", "d-flex", "align-items-center");
+                newSlot.innerHTML = `
         <input type="time" class="form-control me-2 from-time" name="from-time[]" placeholder="From Time">
         <input type="time" class="form-control me-2 to-time" name="to-time[]" placeholder="To Time">
         <button class="btn btn-danger btn-sm remove-slot">Remove</button>
       `;
-      scheduleSlots.appendChild(newSlot);
+                scheduleSlots.appendChild(newSlot);
 
-      // Handle Remove Slot
-      newSlot.querySelector(".remove-slot").addEventListener("click", function () {
-        newSlot.remove();
-      });
-    });
+                // Handle Remove Slot
+                newSlot.querySelector(".remove-slot").addEventListener("click", function () {
+                  newSlot.remove();
+                });
+              });
 
-    // Handle Copy to All Days
-    copyDayButton.addEventListener("click", function () {
-      const isNotOpen = notOpenCheckbox.checked;
-      const slots = scheduleSlots.querySelectorAll(".slot");
+              // Handle Copy to All Days
+              copyDayButton.addEventListener("click", function () {
+                const isNotOpen = notOpenCheckbox.checked;
+                const slots = scheduleSlots.querySelectorAll(".slot");
 
-      // Copy to all other days
-      Array.from(scheduleContainer.children).forEach((otherDay) => {
-        if (otherDay !== dayElement) {
-          const otherCheckbox = otherDay.querySelector(".not-open-checkbox");
-          const otherSlots = otherDay.querySelector(".schedule-slots");
-          const otherAddSlotButton = otherDay.querySelector(".add-slot");
-          const otherCopyDayButton = otherDay.querySelector(".copy-day");
+                // Copy to all other days
+                Array.from(scheduleContainer.children).forEach((otherDay) => {
+                  if (otherDay !== dayElement) {
+                    const otherCheckbox = otherDay.querySelector(".not-open-checkbox");
+                    const otherSlots = otherDay.querySelector(".schedule-slots");
+                    const otherAddSlotButton = otherDay.querySelector(".add-slot");
+                    const otherCopyDayButton = otherDay.querySelector(".copy-day");
 
-          if (isNotOpen) {
-            // Mark as "Not Open Today"
-            otherCheckbox.checked = true;
-            otherSlots.style.display = "none"; // Hide slots
-            otherAddSlotButton.style.display = "none"; // Hide add slot button
-            otherCopyDayButton.disabled = true; // Disable copy button
-          } else {
-            // Uncheck the checkbox and make the day open
-            otherCheckbox.checked = false;
-            otherSlots.style.display = ""; // Show slots
-            otherAddSlotButton.style.display = ""; // Show add slot button
-            otherCopyDayButton.disabled = false; // Enable copy button
+                    if (isNotOpen) {
+                      // Mark as "Not Open Today"
+                      otherCheckbox.checked = true;
+                      otherSlots.style.display = "none"; // Hide slots
+                      otherAddSlotButton.style.display = "none"; // Hide add slot button
+                      otherCopyDayButton.disabled = true; // Disable copy button
+                    } else {
+                      // Uncheck the checkbox and make the day open
+                      otherCheckbox.checked = false;
+                      otherSlots.style.display = ""; // Show slots
+                      otherAddSlotButton.style.display = ""; // Show add slot button
+                      otherCopyDayButton.disabled = false; // Enable copy button
 
-            // Clear the existing slots before copying new ones
-            otherSlots.innerHTML = "";
+                      // Clear the existing slots before copying new ones
+                      otherSlots.innerHTML = "";
 
-            // Copy the slots
-            slots.forEach((slot) => {
-              const fromTime = slot.querySelector(".from-time").value;
-              const toTime = slot.querySelector(".to-time").value;
+                      // Copy the slots
+                      slots.forEach((slot) => {
+                        const fromTime = slot.querySelector(".from-time").value;
+                        const toTime = slot.querySelector(".to-time").value;
 
-              // Create a new slot element
-              const newSlot = document.createElement("div");
-              newSlot.classList.add("slot", "mb-3", "d-flex", "align-items-center");
-              newSlot.innerHTML = `
+                        // Create a new slot element
+                        const newSlot = document.createElement("div");
+                        newSlot.classList.add("slot", "mb-3", "d-flex", "align-items-center");
+                        newSlot.innerHTML = `
                 <input type="time" class="form-control me-2 from-time" name="from-time[]" placeholder="From Time" value="${fromTime}">
                 <input type="time" class="form-control me-2 to-time" name="to-time[]" placeholder="To Time" value="${toTime}">
                 <button class="btn btn-danger btn-sm remove-slot">Remove</button>
               `;
-              
-              // Add the slot to the other day
-              otherSlots.appendChild(newSlot);
 
-              // Re-attach the event listener for "Remove"
-              newSlot.querySelector(".remove-slot").addEventListener("click", function () {
-                newSlot.remove();
+                        // Add the slot to the other day
+                        otherSlots.appendChild(newSlot);
+
+                        // Re-attach the event listener for "Remove"
+                        newSlot.querySelector(".remove-slot").addEventListener("click", function () {
+                          newSlot.remove();
+                        });
+                      });
+                    }
+                  }
+                });
               });
             });
-          }
-        }
-      });
-    });
-  });
-});
+          });
 
 
-$(document).ready(function () {
-    console.log("Document is ready");
+          $(document).ready(function () {
+            console.log("Document is ready");
 
-    const formId = '#DoctorRegForm';
-    const errorDivId = '#errordiv';
+            const formId = '#DoctorRegForm';
+            const errorDivId = '#errordiv';
 
-    $(formId).on('submit', async function (event) {
-        event.preventDefault(); // Prevent the form from submitting
+            $(formId).on('submit', async function (event) {
+              event.preventDefault(); // Prevent the form from submitting
 
-        const { isValid, errorMessage } = validateForm(formId);
+              const { isValid, errorMessage } = validateForm(formId);
 
-        if (isValid) {
-            const url = '/doctor-reg';
-            const loadingDiv = '#loadingIndicator';
+              if (isValid) {
+                const url = '/doctor-reg';
+                const loadingDiv = '#loadingIndicator';
 
-            try {
-                $(loadingDiv).show(); // Show loading indicator
-                const form = document.getElementById('DoctorRegForm');
-                if (!form) throw new Error(`Form with ID '${formId}' not found.`);
+                try {
+                  $(loadingDiv).show(); // Show loading indicator
+                  const form = document.getElementById('DoctorRegForm');
+                  if (!form) throw new Error(`Form with ID '${formId}' not found.`);
 
-                // Use FormData to collect the form data
-                const formData = new FormData(form);
+                  // Use FormData to collect the form data
+                  const formData = new FormData(form);
 
-                // Collect day-wise data in JSON format
-                const daysData = {};
+                  // Collect day-wise data in JSON format
+                  const daysData = {};
 
-                // Assuming the schedule slots for each day are stored in elements with the class 'schedule-slots'
-                $('.schedule-slots').each(function (index, daySlots) {
+                  // Assuming the schedule slots for each day are stored in elements with the class 'schedule-slots'
+                  $('.schedule-slots').each(function (index, daySlots) {
                     const dayName = $(daySlots).closest('.accordion-item').find('.day-name').text().trim();
                     const slots = [];
 
                     // Check if there are slots for the current day
                     $(daySlots).find('.slot').each(function () {
-                        const fromTime = $(this).find('.from-time').val();
-                        const toTime = $(this).find('.to-time').val();
-                        if (fromTime && toTime) {
-                            slots.push({ fromTime, toTime });
-                        }
+                      const fromTime = $(this).find('.from-time').val();
+                      const toTime = $(this).find('.to-time').val();
+                      if (fromTime && toTime) {
+                        slots.push({ fromTime, toTime });
+                      }
                     });
 
                     // Only include the day if there are slots
                     if (slots.length > 0 && dayName) {
-                        daysData[dayName] = slots;
+                      daysData[dayName] = slots;
                     }
-                });
+                  });
 
-                // Add the day-wise data to the FormData object as 'appointmentCalendar'
-                // Remove the 'on' and '' entries
-                if (Object.keys(daysData).length > 0) {
+                  // Add the day-wise data to the FormData object as 'appointmentCalendar'
+                  // Remove the 'on' and '' entries
+                  if (Object.keys(daysData).length > 0) {
                     formData.append('appointmentCalendar', JSON.stringify(daysData));
-                }
+                  }
 
-                // Make an axios POST request to submit the form data
-                const response = await axios.post(url, formData, {
+                  // Make an axios POST request to submit the form data
+                  const response = await axios.post(url, formData, {
                     headers: {
-                        'Content-Type': 'multipart/form-data',
+                      'Content-Type': 'multipart/form-data',
                     },
-                });
+                  });
 
-                console.log('Success:', response.data);
-                $(errorDivId).removeClass('alert-danger').addClass('alert-success').text(response.data.message).show();
-            } catch (error) {
-                console.error('Error:', error);
-                $(errorDivId).removeClass('alert-success').addClass('alert-danger').text(` ${error.response.data.message || 'Unknown error'}`).show();
-            } finally {
-                $(loadingDiv).hide(); // Hide loading indicator after submission
+                  console.log('Success:', response.data);
+                  $(errorDivId).removeClass('alert-danger').addClass('alert-success').text(response.data.message).show();
+                } catch (error) {
+                  console.error('Error:', error);
+                  $(errorDivId).removeClass('alert-success').addClass('alert-danger').text(` ${error.response.data.message || 'Unknown error'}`).show();
+                } finally {
+                  $(loadingDiv).hide(); // Hide loading indicator after submission
+                }
+              } else {
+                $(errorDivId).removeClass('alert-success').addClass('alert-danger').text(errorMessage).show();
+              }
+            });
+          });
+
+          document.getElementById('addSpec').addEventListener('click', async () => {
+            const newSpec = document.getElementById('newSpec').value;
+            if (newSpec) {
+              try {
+                const response = await axios.post('/addSpec', { spec: newSpec });
+                $('#smallModal').modal('hide');
+                loadDropdown('Specialization', 'name', '');
+                document.getElementById('newSpec').value = '';
+              } catch (error) {
+                console.log(error)
+                alert(error.response.data.message);
+              }
+            } else {
+              alert('Please enter a specialty');
             }
-        } else {
-            $(errorDivId).removeClass('alert-success').addClass('alert-danger').text(errorMessage).show();
-        }
-    });
-});
-
-document.getElementById('addSpec').addEventListener('click', async () => {
-  const newSpec = document.getElementById('newSpec').value;
-  if (newSpec) {
-    try {
-      const response = await axios.post('/addSpec', { spec: newSpec });
-      $('#smallModal').modal('hide');
-      loadDropdown('Specialization', 'name', '');
-      document.getElementById('newSpec').value = '';
-    } catch (error) {
-     console.log(error)
-      alert(error.response.data.message);
-    }
-  } else {
-    alert('Please enter a specialty');
-  }
-});
-loadDropdown('Specialization', 'name', '');
+          });
+          loadDropdown('Specialization', 'name', '');
 
 
-  </script>
+        </script>
 
-  <script>
-    restrictInput("phoneNumber", 10); // Limits mobile number to 10 digits
+        <script>
+          restrictInput("phoneNumber", 10); // Limits mobile number to 10 digits
 
 
-  document.getElementById('doctorImage').addEventListener('change', function(event) {
-    // Just validate the file input without calling previewImage
-    validateFileInput("doctorImage", ["image/jpeg", "image/jpg", "image/png"], 800);
-});
-  </script>
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const doctorImageInput = document.getElementById('doctorImage');
-        const webcamBtn = document.getElementById('webcamBtn');
-        const uploadedAvatar = document.getElementById('uploadedAvatar');
-        const resetBtn = document.getElementById('resetBtn');
-        const video = document.getElementById('video');
-        const canvas = document.getElementById('canvas');
-        const captureBtn = document.getElementById('captureBtn');
-        const webcamContainer = document.getElementById('webcamContainer');
-        let stream;
-    
-        // Handle local file upload
-        doctorImageInput.addEventListener('change', function(event) {
-            const file = event.target.files[0];
-            if (file) {
+          document.getElementById('doctorImage').addEventListener('change', function (event) {
+            // Just validate the file input without calling previewImage
+            validateFileInput("doctorImage", ["image/jpeg", "image/jpg", "image/png"], 800);
+          });
+        </script>
+        <script>
+          document.addEventListener('DOMContentLoaded', function () {
+            const doctorImageInput = document.getElementById('doctorImage');
+            const webcamBtn = document.getElementById('webcamBtn');
+            const uploadedAvatar = document.getElementById('uploadedAvatar');
+            const resetBtn = document.getElementById('resetBtn');
+            const video = document.getElementById('video');
+            const canvas = document.getElementById('canvas');
+            const captureBtn = document.getElementById('captureBtn');
+            const webcamContainer = document.getElementById('webcamContainer');
+            let stream;
+
+            // Handle local file upload
+            doctorImageInput.addEventListener('change', function (event) {
+              const file = event.target.files[0];
+              if (file) {
                 const reader = new FileReader();
-                reader.onload = function(e) {
-                    uploadedAvatar.src = e.target.result; // Set the image source to the uploaded file
+                reader.onload = function (e) {
+                  uploadedAvatar.src = e.target.result; // Set the image source to the uploaded file
                 };
                 reader.readAsDataURL(file); // Convert file to DataURL
-            }
-        });
-    
-        // Start video stream for webcam
-        function startWebcam() {
-            navigator.mediaDevices.getUserMedia({ video: true })
-                .then(function(mediaStream) {
-                    stream = mediaStream;
-                    video.srcObject = mediaStream;
-                    webcamContainer.style.display = 'block'; // Show the webcam container
+              }
+            });
+
+            // Start video stream for webcam
+            function startWebcam() {
+              navigator.mediaDevices.getUserMedia({ video: true })
+                .then(function (mediaStream) {
+                  stream = mediaStream;
+                  video.srcObject = mediaStream;
+                  webcamContainer.style.display = 'block'; // Show the webcam container
                 })
-                .catch(function(error) {
-                    console.error('Error accessing webcam:', error);
-                    alert('Unable to access the webcam. Please check your browser settings.');
+                .catch(function (error) {
+                  console.error('Error accessing webcam:', error);
+                  alert('Unable to access the webcam. Please check your browser settings.');
                 });
-        }
-    
-        // Capture image from webcam
-        captureBtn.addEventListener('click', function() {
-            canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height); // Capture image from video
-            const imageUrl = canvas.toDataURL('image/png'); // Convert canvas to image URL
-            uploadedAvatar.src = imageUrl; // Set the image source to the captured image
-    
-            // Convert the captured image DataURL to a File and set it to the doctorImage input
-            const file = dataURLtoFile(imageUrl, 'webcam_capture.png');
-            
-            // Create a new DataTransfer object to update the file input
-            const dataTransfer = new DataTransfer();
-            dataTransfer.items.add(file); // Add the captured file
-            doctorImageInput.files = dataTransfer.files; // Update the file input with the captured file
-    
-            stopWebcam(); // Stop the webcam after capturing the image
-            $('#WebcamModal').modal('hide');
-            
-        });
-    
-        // Stop the webcam
-        function stopWebcam() {
-            if (stream) {
+            }
+
+            // Capture image from webcam
+            captureBtn.addEventListener('click', function () {
+              canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height); // Capture image from video
+              const imageUrl = canvas.toDataURL('image/png'); // Convert canvas to image URL
+              uploadedAvatar.src = imageUrl; // Set the image source to the captured image
+
+              // Convert the captured image DataURL to a File and set it to the doctorImage input
+              const file = dataURLtoFile(imageUrl, 'webcam_capture.png');
+
+              // Create a new DataTransfer object to update the file input
+              const dataTransfer = new DataTransfer();
+              dataTransfer.items.add(file); // Add the captured file
+              doctorImageInput.files = dataTransfer.files; // Update the file input with the captured file
+
+              stopWebcam(); // Stop the webcam after capturing the image
+              $('#WebcamModal').modal('hide');
+
+            });
+
+            // Stop the webcam
+            function stopWebcam() {
+              if (stream) {
                 stream.getTracks().forEach(track => track.stop()); // Stop all webcam tracks
                 video.srcObject = null; // Reset video source
                 webcamContainer.style.display = 'none'; // Hide webcam container
+              }
             }
-        }
-    
-        // Open webcam when clicking the "Upload from Webcam" button
-        webcamBtn.addEventListener('click', function() {
-          $('#WebcamModal').modal('show');
-            startWebcam();
-        });
-    
-        // Reset the avatar image to the default
-        resetBtn.addEventListener('click', function() {
-            uploadedAvatar.src = "../images/1.png"; // Reset to default image
-            doctorImageInput.value = ''; // Clear local file input
-            stopWebcam(); // Stop webcam if active
-        });
 
-         // Stop webcam when the modal is closed
-    $('#WebcamModal').on('hidden.bs.modal', function () {
-        stopWebcam(); // Stop the webcam when the modal is closed
-    });
-    
-        // Convert DataURL to a File object
-        function dataURLtoFile(dataURL, filename) {
-        // Split the DataURL into the MIME type and base64 string
-        const arr = dataURL.split(',');
-    
-        // Ensure that the string starts with 'data:' and contains a MIME type
-        if (arr.length < 2 || !arr[0].startsWith('data:')) {
-            throw new Error("Invalid DataURL format.");
-        }
-    
-        // Extract the MIME type from the DataURL
-        const mime = arr[0].match(/:(.*?);/)[1];
-    
-        // Decode the base64 string to binary
-        const bstr = atob(arr[1]);
-        const n = bstr.length;
-        const u8arr = new Uint8Array(n);
-    
-        // Populate the Uint8Array with the binary data
-        for (let i = 0; i < n; i++) {
-            u8arr[i] = bstr.charCodeAt(i);
-        }
-    
-        // Create and return a File object from the binary data
-        return new File([u8arr], filename, { type: mime });
-    }
-    
-      });
-    
-    
-    </script>
-  <!-- Extra Js for this Page End-->
+            // Open webcam when clicking the "Upload from Webcam" button
+            webcamBtn.addEventListener('click', function () {
+              $('#WebcamModal').modal('show');
+              startWebcam();
+            });
+
+            // Reset the avatar image to the default
+            resetBtn.addEventListener('click', function () {
+              uploadedAvatar.src = "../images/1.png"; // Reset to default image
+              doctorImageInput.value = ''; // Clear local file input
+              stopWebcam(); // Stop webcam if active
+            });
+
+            // Stop webcam when the modal is closed
+            $('#WebcamModal').on('hidden.bs.modal', function () {
+              stopWebcam(); // Stop the webcam when the modal is closed
+            });
+
+            // Convert DataURL to a File object
+            function dataURLtoFile(dataURL, filename) {
+              // Split the DataURL into the MIME type and base64 string
+              const arr = dataURL.split(',');
+
+              // Ensure that the string starts with 'data:' and contains a MIME type
+              if (arr.length < 2 || !arr[0].startsWith('data:')) {
+                throw new Error("Invalid DataURL format.");
+              }
+
+              // Extract the MIME type from the DataURL
+              const mime = arr[0].match(/:(.*?);/)[1];
+
+              // Decode the base64 string to binary
+              const bstr = atob(arr[1]);
+              const n = bstr.length;
+              const u8arr = new Uint8Array(n);
+
+              // Populate the Uint8Array with the binary data
+              for (let i = 0; i < n; i++) {
+                u8arr[i] = bstr.charCodeAt(i);
+              }
+
+              // Create and return a File object from the binary data
+              return new File([u8arr], filename, { type: mime });
+            }
+
+          });
+
+          generateQRCodeInDiv("qrcode", "DoctorQrReg", 1);
+        </script>
+        <!-- Extra Js for this Page End-->
