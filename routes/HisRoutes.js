@@ -27,6 +27,14 @@ const {
 } = require("../controllers/HisControllers");
 const { UserTokens, Patient } = require("../models/HisSchema");
 
+// Encryption function
+function encryptDataForUrl(data) {
+  // Encrypt data with the secret key
+  const encrypted = sjcl.encrypt("his", data);
+
+  // Base64-encode the encrypted JSON string for URL safety
+  return encodeURIComponent(btoa(encrypted));
+}
 // Decryption function
 function decryptData(encodedEncryptedData, secretKey) {
   try {
@@ -77,17 +85,32 @@ router.get("/login", async (req, res) => {
 });
 
 router.get("/Patient-Registration", async function (req, res, next) {
-  const { id } = req.query;
-  console.log(id);
-  if (id) {
-    const decryptedId = decryptData(decodeURIComponent(id), "his");
-    console.log(decryptedId);
-    const data = await Patient.findByPk(decryptedId);
-    const values = data ? data.get({ plain: true }) : {};
-    res.render("HIS/patient-registration", { patient: values });
+  try {
+    const { id } = req.query;
+    console.log(id);
+    
+    let patient = {};
+    const clinicId = req.user?.clinic_id; // Get clinic_id from session
+
+    if (!clinicId) {
+      return res.status(400).send({ msg: "Please login" });
+    }
+    const encClinicId = encryptDataForUrl(clinicId.toString());
+    if (id) {
+      const decryptedId = decryptData(decodeURIComponent(id), "his");
+      console.log(decryptedId);
+
+      const data = await Patient.findByPk(decryptedId);
+      patient = data ? data.get({ plain: true }) : {};
+    }
+
+    res.render("HIS/patient-registration", { patient, encClinicId });
+  } catch (error) {
+    console.error("Error in Patient Registration:", error);
+    res.status(500).send({ msg: "Internal Server Error" });
   }
-  res.render("HIS/patient-registration", { patient: {} });
 });
+
 router.get("/PatientQrReg", function (req, res, next) {
   res.render("HIS/PatientQrReg");
 });
