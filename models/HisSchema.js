@@ -437,7 +437,7 @@ const Service = sequelize.define(
     },
     service_name: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     service_category: {
       type: DataTypes.STRING,
@@ -445,7 +445,7 @@ const Service = sequelize.define(
     },
     cost: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true,
     },
     special_inst: {
       type: DataTypes.TEXT,
@@ -458,6 +458,28 @@ const Service = sequelize.define(
     tableName: "service",
   }
 );
+
+const ServiceCategory = sequelize.define(
+  "ServiceCategory",
+  {
+    clinic_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+  },
+  {
+    timestamps: true,
+    alter: true,
+    tableName: "servicecategory",
+  }
+);
+
+// ServiceCategory.sync({ alter: true });
+// Service.sync({ alter: true });
 
 const Items = sequelize.define(
   "Items",
@@ -472,11 +494,17 @@ const Items = sequelize.define(
     generic_name: {
       type: DataTypes.STRING,
     },
-    expiration_date: {
-      type: DataTypes.DATE,
+    molecule: {
+      type: DataTypes.STRING,
     },
     sell_price: {
       type: DataTypes.INTEGER,
+    },
+    mrp: {
+      type: DataTypes.INTEGER,
+    },
+    uom: {
+      type: DataTypes.STRING,
     },
   },
   {
@@ -501,10 +529,10 @@ const ItemDetails = sequelize.define(
     strength: {
       type: DataTypes.STRING,
     },
-    manufacturer: {
+    strength_unit: {
       type: DataTypes.STRING,
     },
-    batch_number: {
+    manufacturer: {
       type: DataTypes.STRING,
     },
     buy_price: {
@@ -525,11 +553,172 @@ const ItemDetails = sequelize.define(
     item_img: {
       type: DataTypes.STRING,
     },
+    other_uom: {
+      type: DataTypes.STRING,
+    },
+    hsn: {
+      type: DataTypes.STRING,
+    },
+    conversion: {
+      type: DataTypes.INTEGER,
+    },
   },
   {
     timestamps: true,
     alter: true,
     tableName: "itemdetails",
+  }
+);
+
+const Molecule = sequelize.define(
+  "Molecule",
+  {
+    clinic_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+  },
+  {
+    timestamps: true,
+    alter: true,
+    tableName: "molecule",
+  }
+);
+
+const ItemBrandName = sequelize.define(
+  "ItemBrandName",
+  {
+    clinic_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+  },
+  {
+    timestamps: true,
+    alter: true,
+    tableName: "itembrandname",
+  }
+);
+
+const ItemCategory = sequelize.define(
+  "ItemCategory",
+  {
+    clinic_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+  },
+  {
+    timestamps: true,
+    alter: true,
+    tableName: "itemcategory",
+  }
+);
+
+const DosageForm = sequelize.define(
+  "DosageForm",
+  {
+    clinic_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+  },
+  {
+    timestamps: true,
+    alter: true,
+    tableName: "dosageform",
+  }
+);
+
+const StrengthUnit = sequelize.define(
+  "StrengthUnit",
+  {
+    clinic_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+  },
+  {
+    timestamps: true,
+    alter: true,
+    tableName: "strengthunit",
+  }
+);
+
+const Manufacturer = sequelize.define(
+  "Manufacturer",
+  {
+    clinic_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+  },
+  {
+    timestamps: true,
+    alter: true,
+    tableName: "manufacturer",
+  }
+);
+
+const UOM = sequelize.define(
+  "UOM",
+  {
+    clinic_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+  },
+  {
+    timestamps: true,
+    alter: true,
+    tableName: "uom",
+  }
+);
+
+const HSNCode = sequelize.define(
+  "HSNCode",
+  {
+    clinic_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+  },
+  {
+    timestamps: true,
+    alter: true,
+    tableName: "hsncode",
   }
 );
 
@@ -570,47 +759,37 @@ const Employee = sequelize.define(
     },
     address: {
       type: DataTypes.STRING,
-    
     },
     dept: {
       type: DataTypes.STRING,
-    
     },
     desg: {
       type: DataTypes.STRING,
-    
     },
     doj: {
       type: DataTypes.DATEONLY,
       allowNull: true,
-    
     },
     qualification: {
       type: DataTypes.STRING,
-    
     },
     exp: {
       type: DataTypes.STRING,
-    
     },
     specialization: {
       type: DataTypes.STRING,
-    
     },
     shiftTimming: {
       type: DataTypes.STRING,
-    
     },
     emerCont: {
       type: DataTypes.STRING,
-    
     },
     emerContMobile: {
       type: DataTypes.STRING,
     },
     empImage: {
       type: DataTypes.STRING,
-    
     },
   },
   {
@@ -620,6 +799,16 @@ const Employee = sequelize.define(
   }
 );
 
+// Items.sync({ force: true });
+// ItemDetails.sync({ alter: true });
+// Molecule.sync({ alter: true });
+// ItemBrandName.sync({ alter: true });
+// ItemCategory.sync({ alter: true });
+// DosageForm.sync({ alter: true });
+// StrengthUnit.sync({ alter: true });
+// Manufacturer.sync({ alter: true });
+// UOM.sync({ alter: true });
+// HSNCode.sync({ alter: true });
 
 // sequelize.sync();
 module.exports = {
@@ -633,8 +822,17 @@ module.exports = {
   PatientDetails,
   Package,
   Service,
+  ServiceCategory,
   Items,
   ItemDetails,
   Department,
-  Employee
+  Employee,
+  Molecule,
+  ItemBrandName,
+  ItemCategory,
+  DosageForm,
+  StrengthUnit,
+  Manufacturer,
+  UOM,
+  HSNCode,
 };

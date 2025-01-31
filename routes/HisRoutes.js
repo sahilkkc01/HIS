@@ -23,6 +23,7 @@ const {
   savePackage,
   addDepartment,
   saveEmployeeData,
+  addNewModal,
 } = require("../controllers/HisControllers");
 const { UserTokens, Patient } = require("../models/HisSchema");
 
@@ -124,7 +125,6 @@ router.get("/indent", function (req, res, next) {
   res.render("HIS/Indent");
 });
 
-
 // Put all render routes above this
 router.post("/login", login);
 router.post("/logout", logout);
@@ -149,10 +149,9 @@ router.post("/getAvailableSlots", getAvailableSlots);
 router.get("/patient/:patientId", getPatientData);
 router.get("/getDoctorAppointments", getDoctorAppointments);
 
-
-
 router.post("/save-item", upload.single("itemImage"), saveItems);
 router.post("/save-service", saveService);
 router.post("/save-package", savePackage);
+router.post("/addModal", addNewModal);
 
 module.exports = router;

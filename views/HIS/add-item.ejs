@@ -37,11 +37,14 @@
                     <div class="row g-6">
                       <div class="col-md-6">
                         <label for="name" class="form-label">Medicine Name*</label>
-                        <input class="form-control" type="text" id="name" name="medicine_name" value="" autofocus="">
+                        <input class="form-control" type="text" id="name" name="medicine_name"
+                          data-validation="required" data-error-message="Please Enter Medicine Name" value=""
+                          autofocus="">
                       </div>
                       <div class="col-md-3">
                         <label for="language" class="form-label">Molecule*</label>
-                        <select id="brandName" name="brand_name" class="select2 form-select">
+                        <select id="Molecule" name="molecule" data-validation="required"
+                          data-error-message="Please Enter Molecule" class="select2 form-select">
                           <option value="">Select</option>
                           <option value="add-new">Add New</option>
                         </select>
@@ -54,19 +57,15 @@
                       </div>
                       <div class="col-md-3">
                         <label for="language" class="form-label">Brand Name</label>
-                        <select id="brandName" name="brand_name" class="select2 form-select">
+                        <select id="ItemBrandName" name="brand_name" class="select2 form-select">
                           <option value="">Select</option>
                           <option value="add-new">Add New</option>
                         </select>
                       </div>
                       <div class="col-md-3">
                         <label for="language" class="form-label">Dosage Form</label>
-                        <select id="dosageForm" name="dosage_form" class="select2 form-select">
+                        <select id="DosageForm" name="dosage_form" class="select2 form-select">
                           <option value="">Select</option>
-                          <option value="Tablet">Tablet</option>
-                          <option value="Capsule">Capsule</option>
-                          <option value="Injection">Injection</option>
-                          <option value="Syrup">Syrup</option>
                           <option value="add-new">Add New</option>
                         </select>
                       </div>
@@ -77,43 +76,43 @@
                       </div>
                       <div class="col-md-3">
                         <label for="language" class="form-label">Strength Unit</label>
-                        <select id="brandName" name="brand_name" class="select2 form-select">
+                        <select id="StrengthUnit" name="strength_unit" class="select2 form-select">
                           <option value="">Select</option>
-                          <option value="mg">mg</option>
                           <option value="add-new">Add New</option>
                         </select>
                       </div>
                       <div class="col-md-3">
                         <label for="language" class="form-label">Manufacturer</label>
-                        <select id="manufacturer" name="manufacturer" class="select2 form-select">
+                        <select id="Manufacturer" name="manufacturer" class="select2 form-select">
                           <option value="">Select</option>
                           <option value="add-new">Add New</option>
                         </select>
                       </div>
                       <div class="col-md-3">
                         <label for="language" class="form-label">UOM*</label>
-                        <select id="manufacturer" name="manufacturer" class="select2 form-select">
+                        <select id="UOM" data-validation="required" data-error-message="Please Enter UOM" name="uom"
+                          class="select2 form-select">
                           <option value="">Select</option>
                           <option value="add-new">Add New</option>
                         </select>
                       </div>
                       <div class="col-md-3">
                         <label for="language" class="form-label">Other UOM</label>
-                        <select id="manufacturer" name="manufacturer" class="select2 form-select">
+                        <select id="other_uom" name="other_uom" class="select2 form-select">
                           <option value="">Select</option>
                           <option value="add-new">Add New</option>
                         </select>
                       </div>
-                      
+
                       <div class="col-md-3">
                         <label for="language" class="form-label">Conversion Factor</label>
-                        <input class="form-control" type="number" id="buyPrice" name="buy_price" value=""
+                        <input class="form-control" type="number" id="conversion" name="conversion" value=""
                           placeholder="">
                       </div>
                       <div class="col-md-3">
                         <label for="language" class="form-label">MRP*</label>
-                        <input class="form-control" type="number" id="buyPrice" name="buy_price" value=""
-                          placeholder="">
+                        <input class="form-control" data-validation="required" data-error-message="Please Enter MRP"
+                          type="number" id="mrp" name="mrp" value="" placeholder="">
                       </div>
                       <div class="col-md-3">
                         <label for="language" class="form-label">Buying Price</label>
@@ -147,20 +146,19 @@
 
                       <div class="col-md-3">
                         <label for="language" class="form-label">Category*</label>
-                        <select id="category" name="category" class="select2 form-select">
+                        <select id="ItemCategory" name="category" data-validation="required"
+                          data-error-message="Please Enter Category" class="select2 form-select">
                           <option value="">Select</option>
-                          <option value="Antibiotic">Antibiotic</option>
-                          <option value="Analgesic">Analgesic</option>
-                          <option value="Antipyretic">Antipyretic</option>
                           <option value="add-new">Add New</option>
                         </select>
                       </div>
                       <div class="col-md-3">
                         <label for="language" class="form-label">HSN Code*</label>
-                        <select id="category" name="category" class="select2 form-select">
+                        <select id="HSNCode" name="hsn" data-validation="required"
+                          data-error-message="Please Enter HSN Code" class="select2 form-select">
                           <option value="">Select</option>
-                          <option value="9001">90001</option>
-                      
+                          <!-- <option value="9001">90001</option> -->
+                          <option value="add-new">Add New</option>
                         </select>
                       </div>
 
@@ -186,8 +184,64 @@
       </div>
       <!-- / Content -->
 
+      <!-- Small Modal -->
+
 
       <%- include('../footer') -%>
+        <script>
+          $(document).ready(function () {
+            // Show modal when "Add New" is selected
+            $('#Molecule').on('change', function () {
+              if ($(this).val() === 'add-new') {
+                createSmallModal("smallModal", "Molecule", "/addModal", "Molecule")
+              }
+            });
+            $('#ItemBrandName').on('change', function () {
+              if ($(this).val() === 'add-new') {
+                createSmallModal("brandModal", "Brand Name", "/addModal", "ItemBrandName")
+              }
+            })
+            $('#ItemCategory').on('change', function () {
+              if ($(this).val() === 'add-new') {
+                createSmallModal("categoryModal", "Category", "/addModal", "ItemCategory")
+              }
+            })
+            $('#DosageForm').on('change', function () {
+              if ($(this).val() === 'add-new') {
+                createSmallModal("dosageModal", "Dosage Form", "/addModal", "DosageForm")
+              }
+            })
+            $('#StrengthUnit').on('change', function () {
+              if ($(this).val() === 'add-new') {
+                createSmallModal("strengthUnitModal", "Strength Unit", "/addModal", "StrengthUnit")
+              }
+            })
+            $('#Manufacturer').on('change', function () {
+              if ($(this).val() === 'add-new') {
+                createSmallModal("manufacturerModal", "Manufacturer", "/addModal", "Manufacturer")
+              }
+            })
+            $('#UOM').on('change', function () {
+              if ($(this).val() === 'add-new') {
+                createSmallModal("uomModal", "UOM", "/addModal", "UOM")
+              }
+            })
+            $('#HSNCode').on('change', function () {
+              if ($(this).val() === 'add-new') {
+                createSmallModal("hsnModal", "HSN Code", "/addModal", "HSNCode")
+              }
+            })
+          });
+
+          loadDropdown('Molecule', 'name', '');
+          loadDropdown('ItemBrandName', 'name', '');
+          loadDropdown('ItemCategory', 'name', '');
+          loadDropdown('DosageForm', 'name', '');
+          loadDropdown('StrengthUnit', 'name', '');
+          loadDropdown('Manufacturer', 'name', '');
+          loadDropdown('UOM', 'name', '');
+          loadDropdown('HSNCode', 'code', '');
+        </script>
         <script>
 
           $(document).ready(function () {
@@ -222,12 +276,11 @@
                   $(errorDivId).removeClass('alert-success').addClass('alert-danger').text(` ${error.message || 'Unknown error'}`).show();
                 } finally {
                   $(loadingDiv).hide(); // Hide loading indicator after submission
-            
+
                 }
               } else {
                 $(errorDivId).removeClass('alert-success').addClass('alert-danger').text(errorMessage).show();
               }
             });
           });
-
         </script>

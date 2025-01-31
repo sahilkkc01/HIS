@@ -45,6 +45,8 @@ const {
   Package,
   Department,
   Employee,
+  Molecule,
+  ItemBrandName,
 } = require("../models/HisSchema");
 
 exports.verifyToken = async (req, res, next) => {
@@ -925,15 +927,27 @@ exports.saveItems = async (req, res) => {
       dosage_form,
       strength,
       manufacturer,
-      batch_number,
-      expiration_date,
       buy_price,
       sell_price,
       storage_condition,
       prescription_req,
       interactions,
       category,
+      molecule,
+      mrp,
+      uom,
+      strength_unit,
+      other_uom,
+      hsn,
+      conversion,
     } = req.body;
+
+    if (!medicine_name || !molecule || !uom || !mrp || !category || !hsn) {
+      return res
+        .status(400)
+        .json({ message: "Important fields are required." });
+    }
+
     const itemImage = req.file?.path ? path.basename(req.file.path) : null;
     const prqst = prescription_req === "Yes"; // Simplified condition for prescription requirement
 
@@ -943,7 +957,9 @@ exports.saveItems = async (req, res) => {
     });
 
     if (existingItem) {
-      return res.status(400).json({ message: "Item with the same medicine name already exists" });
+      return res
+        .status(400)
+        .json({ message: "Item with the same medicine name already exists" });
     }
 
     // Create a new item since there is no duplicate
@@ -951,8 +967,10 @@ exports.saveItems = async (req, res) => {
       clinic_id: clinicId,
       medicine_name,
       generic_name,
-      expiration_date,
       sell_price,
+      molecule,
+      mrp,
+      uom,
     });
 
     // Create the associated ItemDetails record
@@ -962,23 +980,24 @@ exports.saveItems = async (req, res) => {
       dosage_form,
       strength,
       manufacturer,
-      batch_number,
       buy_price,
       storage_condition,
       prescription_req: prqst,
       interactions,
       category,
       item_img: itemImage,
+      strength_unit,
+      other_uom,
+      hsn,
+      conversion,
     });
 
-    res.status(200).json(newItem);
+    res.status(200).json({ message: `Medicine added successfully`, newItem });
   } catch (error) {
     console.error("Error saving items:", error);
     res.status(500).json({ error: "Failed to save items" });
   }
 };
-
-
 
 exports.saveService = async (req, res) => {
   try {
@@ -994,7 +1013,9 @@ exports.saveService = async (req, res) => {
     });
 
     if (existingService) {
-      return res.status(400).json({ message: "Service with the same name already exists" });
+      return res
+        .status(400)
+        .json({ message: "Service with the same name already exists" });
     }
 
     // Create a new service since there is no duplicate
@@ -1035,11 +1056,16 @@ exports.savePackage = async (req, res) => {
 
     // Check if a package with the same package_name or package_code already exists in the clinic
     const existingPackage = await Package.findOne({
-      where: { clinic_id: clinicId, [Op.or]: [{ package_name }, { package_code }] },
+      where: {
+        clinic_id: clinicId,
+        [Op.or]: [{ package_name }, { package_code }],
+      },
     });
 
     if (existingPackage) {
-      return res.status(400).json({ message: "Package name or package code already exists" });
+      return res
+        .status(400)
+        .json({ message: "Package name or package code already exists" });
     }
 
     // Create a new package since there is no duplicate
@@ -1068,7 +1094,7 @@ exports.savePackage = async (req, res) => {
 exports.saveEmployeeData = async (req, res) => {
   console.log(req.body);
   console.log(req.file);
-  
+
   const clinicId = req.user.clinic_id; // Get clinic_id from session
   if (clinicId == null) {
     return res.status(400).send({ msg: "Please login" });
@@ -1096,14 +1122,18 @@ exports.saveEmployeeData = async (req, res) => {
 
     // Validate required fields
     if (!empId || !name || !phoneNumber) {
-      return res.status(400).json({ message: "Employee ID, name, and phone number are required." });
+      return res
+        .status(400)
+        .json({ message: "Employee ID, name, and phone number are required." });
     }
 
     const existingEmployee = await Employee.findOne({
       where: { empId, clinic_id: clinicId },
     });
     if (existingEmployee) {
-      return res.status(400).json({ message: "An employee with this ID already exists." });
+      return res
+        .status(400)
+        .json({ message: "An employee with this ID already exists." });
     }
 
     const empImage = req.file ? path.basename(req.file.path) : null;
@@ -1134,9 +1164,59 @@ exports.saveEmployeeData = async (req, res) => {
       empImage,
     });
 
-    return res.status(201).json({ message: "Employee data saved successfully", employee: newEmployee });
+    return res.status(201).json({
+      message: "Employee data saved successfully",
+      employee: newEmployee,
+    });
   } catch (error) {
     console.error("Error saving employee data:", error);
     return res.status(500).json({ message: "Failed to save employee data" });
+  }
+};
+
+exports.addNewModal = async (req, res) => {
+  const { name, tableName } = req.body;
+
+  const clinicId = req.user.clinic_id; // Get clinic_id from session
+
+  // Check if clinicId is available
+  if (!clinicId) {
+    return res.status(400).send({ msg: "Please login" });
+  }
+
+  // Validate if specialty name is provided
+  if (!name) {
+    return res.status(400).json({ message: `${tableName} is required` });
+  }
+
+  try {
+    const model = require("../models/HisSchema")[tableName]; // Assuming the models are in the 'models' folder
+
+    if (!model) {
+      return res.status(404).send({ msg: `Schema ${tableName} not found` });
+    }
+    // Check if the specialization already exists for the clinic
+    const existingRow = await model.findOne({
+      where: { name: name, clinic_id: clinicId },
+    });
+
+    if (existingRow) {
+      return res
+        .status(400)
+        .json({ message: `${tableName} already exists for this clinic` });
+    }
+
+    // Create new specialty if it doesn't exist
+    const newRow = await model.create({
+      name: name,
+      clinic_id: clinicId,
+    });
+    res.status(200).json({
+      message: `${tableName} added successfully`,
+      specialty: newRow,
+    });
+  } catch (error) {
+    console.error(`Error adding ${tableName}:`, error);
+    res.status(500).json({ message: "Internal server error" });
   }
 };

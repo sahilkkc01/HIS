@@ -96,7 +96,7 @@ const loadDropdown = (elementId, key, selectedValue = null) => {
         addNewOption.textContent = "Add New";
         dropdown.appendChild(addNewOption);
       }
-      
+
       // Set the value after the dropdown has been populated
       if (selectedValue) {
         dropdown.value = selectedValue;
@@ -179,4 +179,59 @@ async function saveJsonForm(formId, endpoint, arrayObj = null) {
       reject(error.response ? error.response.data : error);
     }
   });
+}
+
+function createSmallModal(id, name, path, sId) {
+  const modal = document.createElement("div");
+  modal.className = "modal fade";
+  modal.id = id;
+  modal.tabIndex = -1;
+  modal.setAttribute("aria-hidden", "true");
+  modal.innerHTML = `
+    <div class="modal-dialog modal-sm" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="${id}Label">Add ${name}</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col mb-6">
+              <label for="input${id}" class="form-label">${name}</label>
+              <input type="text" id="input${id}" class="form-control" placeholder="" />
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+            Close
+          </button>
+          <button type="button" id="save${id}" onclick="saveModalData('${id}','${path}','${sId}','${name}')" class="btn btn-primary">Save</button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+  $(`#${id}`).modal("show");
+}
+
+async function saveModalData(id, path, sid, name) {
+  const inputValue = document.getElementById(`input${id}`).value;
+  if (inputValue) {
+    try {
+      const response = await axios.post(path, {
+        name: inputValue,
+        tableName: sid,
+      });
+      $(`#${id}`).modal("hide");
+      loadDropdown(sid, "name", "");
+      document.getElementById(`input${id}`).value = "";
+    } catch (error) {
+      console.log(error);
+      alert(error.response?.data?.message || "An error occurred");
+    }
+  } else {
+    alert(`Please enter a ${name}`);
+  }
 }
