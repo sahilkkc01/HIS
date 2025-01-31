@@ -39,7 +39,14 @@
                         <label for="name" class="form-label">Medicine Name*</label>
                         <input class="form-control" type="text" id="name" name="medicine_name" value="" autofocus="">
                       </div>
-                      <div class="col-md-6">
+                      <div class="col-md-3">
+                        <label for="language" class="form-label">Molecule*</label>
+                        <select id="brandName" name="brand_name" class="select2 form-select">
+                          <option value="">Select</option>
+                          <option value="add-new">Add New</option>
+                        </select>
+                      </div>
+                      <div class="col-md-3">
                         <label class="form-label" for="genericName">Generic Name</label>
                         <div class="input-group">
                           <input type="text" id="genericName" name="generic_name" class="form-control" placeholder="">
@@ -69,24 +76,43 @@
                         <input class="form-control" type="text" id="strength" name="strength" value="" placeholder="">
                       </div>
                       <div class="col-md-3">
+                        <label for="language" class="form-label">Strength Unit</label>
+                        <select id="brandName" name="brand_name" class="select2 form-select">
+                          <option value="">Select</option>
+                          <option value="mg">mg</option>
+                          <option value="add-new">Add New</option>
+                        </select>
+                      </div>
+                      <div class="col-md-3">
                         <label for="language" class="form-label">Manufacturer</label>
                         <select id="manufacturer" name="manufacturer" class="select2 form-select">
                           <option value="">Select</option>
                           <option value="add-new">Add New</option>
                         </select>
                       </div>
-                      <!-- <div class="col-md-3">
-                                        <label for="language" class="form-label">Strength</label>
-                                        <input class="form-control" type="text" id="email" name="email" value="" placeholder="">
-                                      </div> -->
                       <div class="col-md-3">
-                        <label for="language" class="form-label">Batch Number</label>
-                        <input class="form-control" type="text" id="batchNum" name="batch_number" value=""
+                        <label for="language" class="form-label">UOM*</label>
+                        <select id="manufacturer" name="manufacturer" class="select2 form-select">
+                          <option value="">Select</option>
+                          <option value="add-new">Add New</option>
+                        </select>
+                      </div>
+                      <div class="col-md-3">
+                        <label for="language" class="form-label">Other UOM</label>
+                        <select id="manufacturer" name="manufacturer" class="select2 form-select">
+                          <option value="">Select</option>
+                          <option value="add-new">Add New</option>
+                        </select>
+                      </div>
+                      
+                      <div class="col-md-3">
+                        <label for="language" class="form-label">Conversion Factor</label>
+                        <input class="form-control" type="number" id="buyPrice" name="buy_price" value=""
                           placeholder="">
                       </div>
                       <div class="col-md-3">
-                        <label for="language" class="form-label">Expiration Date</label>
-                        <input class="form-control" type="date" id="expDate" name="expiration_date" value=""
+                        <label for="language" class="form-label">MRP*</label>
+                        <input class="form-control" type="number" id="buyPrice" name="buy_price" value=""
                           placeholder="">
                       </div>
                       <div class="col-md-3">
@@ -120,13 +146,21 @@
                       </div>
 
                       <div class="col-md-3">
-                        <label for="language" class="form-label">Category</label>
+                        <label for="language" class="form-label">Category*</label>
                         <select id="category" name="category" class="select2 form-select">
                           <option value="">Select</option>
                           <option value="Antibiotic">Antibiotic</option>
                           <option value="Analgesic">Analgesic</option>
                           <option value="Antipyretic">Antipyretic</option>
                           <option value="add-new">Add New</option>
+                        </select>
+                      </div>
+                      <div class="col-md-3">
+                        <label for="language" class="form-label">HSN Code*</label>
+                        <select id="category" name="category" class="select2 form-select">
+                          <option value="">Select</option>
+                          <option value="9001">90001</option>
+                      
                         </select>
                       </div>
 
