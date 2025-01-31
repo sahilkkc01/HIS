@@ -36,25 +36,31 @@
                 <!-- Account -->
                 <div class="card-body pt-4">
                   <form id="formAccountSettings" method="POST" enctype="multipart/form-data">
+                    <div id="errordiv"></div>
                     <div class="row g-6">
                       <div class="col-md-6">
                         <label for="package_Code" class="form-label">Package Code*</label>
-                        <input class="form-control" type="text" id="package_Code" name="package_code" value=""
+                        <input class="form-control" type="text" data-validation="required"
+                          data-error-message="Please Enter Package Code" id="package_Code" name="package_code" value=""
                           autofocus="">
                       </div>
                       <div class="col-md-6">
                         <label for="package_Name" class="form-label">Package Name*</label>
-                        <input class="form-control" type="text" id="package_Name" name="package_name" value=""
+                        <input class="form-control" type="text" data-validation="required"
+                          data-error-message="Please Enter Package Name" id="package_Name" name="package_name" value=""
                           autofocus="">
                       </div>
                       <div class="col-md-6">
                         <label for="package_Validity" class="form-label">Package Validity*</label>
-                        <input class="form-control" type="date" id="package_Validity" name="package_validity" value=""
-                          autofocus="">
+                        <input class="form-control" type="date" data-validation="required"
+                          data-error-message="Please Enter Package Validity" id="package_Validity"
+                          name="package_validity" value="" autofocus="">
                       </div>
                       <div class="col-md-6">
                         <label for="total_Cost" class="form-label">Total Package Cost*</label>
-                        <input class="form-control" type="number" id="total_Cost" name="cost" value="" autofocus="">
+                        <input class="form-control" type="number" data-validation="required"
+                          data-error-message="Please Enter Total Package Cost" id="total_Cost" name="cost" value=""
+                          autofocus="">
                       </div>
                       <div class="col-md-3">
                         <label for="service_Component" class="form-label" data-bs-toggle="tooltip" data-bs-offset="0,4"
@@ -155,6 +161,7 @@
                           </div>
                         </div>
                       </div>
+                      <div id="loadingIndicator"></div>
                       <div class="mt-6">
                         <button type="submit" class="btn btn-primary me-3">Save</button>
                         <button type="reset" class="btn btn-outline-secondary">Cancel</button>

@@ -37,32 +37,31 @@
                 <!-- Account -->
                 <div class="card-body pt-4">
                   <form id="formAccountSettings" method="POST" enctype="multipart/form-data">
+                    <div id="errordiv"></div>
                     <div class="row g-6">
                       <div class="col-md-6">
                         <label for="firstName" class="form-label">Service Name*</label>
-                        <input class="form-control" type="text" id="firstName" name="service_name">
+                        <input class="form-control" type="text" data-validation="required"
+                          data-error-message="Please Enter Service Name" id="firstName" name="service_name">
                       </div>
                       <div class="col-md-6">
-                        <label class="form-label" for="categoryDropdown">Service Category</label>
-                        <select id="categoryDropdown" name="service_category" class="select2 form-select">
+                        <label class="form-label" for="categoryDropdown">Service Category*</label>
+                        <select id="ServiceCategory" name="service_category" data-validation="required"
+                          data-error-message="Please Enter Category" class="select2 form-select">
                           <option value="">Select</option>
-                          <option value="Emergency">Emergency</option>
-                          <option value="Inpatient">Inpatient</option>
-                          <option value="Outpatient">Outpatient</option>
-                          <option value="Diagnostic">Diagnostic</option>
                           <option value="add-new">Add New</option>
                         </select>
                       </div>
                       <div class="col-md-6">
-                        <label for="cost" class="form-label">Cost</label>
-                        <input class="form-control" type="number" id="cost" name="cost">
+                        <label for="cost" class="form-label">Cost*</label>
+                        <input class="form-control" type="number" id="cost" data-validation="required"
+                          data-error-message="Please Enter Cost" name="cost">
                       </div>
                       <div class="col-md-6">
                         <label for="inst" class="form-label">Any Special Instructions</label>
                         <input class="form-control" type="text" id="inst" name="special_inst">
                       </div>
-
-
+                      <div id="loadingIndicator"></div>
                       <div class="mt-6">
                         <button type="submit" class="btn btn-primary me-3">Save</button>
                         <button type="reset" class="btn btn-outline-secondary">Cancel</button>
@@ -78,6 +77,14 @@
       </div>
       <!-- / Content -->
       <%- include('../footer') -%>
+        <script>
+          $('#ServiceCategory').on('change', function () {
+            if ($(this).val() === 'add-new') {
+              createSmallModal("smallModal", "Category", "/addModal", "ServiceCategory")
+            }
+          });
+          loadDropdown('ServiceCategory', 'name', '');
+        </script>
         <script>
 
           $(document).ready(function () {

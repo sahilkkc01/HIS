@@ -1027,7 +1027,7 @@ exports.saveService = async (req, res) => {
       special_inst,
     });
 
-    res.status(200).json(newService);
+    res.status(200).json({ message: "Service Added Successfully", newService });
   } catch (error) {
     console.error("Error saving services:", error);
     res.status(500).json({ error: "Failed to save services" });
@@ -1084,7 +1084,7 @@ exports.savePackage = async (req, res) => {
       terms_conditions,
     });
 
-    res.status(200).json(newPackage);
+    res.status(200).json({ message: "Package Added Successfully", newPackage });
   } catch (error) {
     console.error("Error saving packages:", error);
     res.status(500).json({ error: "Failed to save packages" });
