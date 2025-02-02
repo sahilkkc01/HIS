@@ -800,7 +800,7 @@ const Employee = sequelize.define(
 );
 
 // Items.sync({ force: true });
-// ItemDetails.sync({ alter: true });
+// ItemDetails.sync({ force: true });
 // Molecule.sync({ alter: true });
 // ItemBrandName.sync({ alter: true });
 // ItemCategory.sync({ alter: true });
