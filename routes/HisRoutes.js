@@ -147,9 +147,6 @@ router.get("/add-employee", function (req, res, next) {
 router.get("/purchase-order", function (req, res, next) {
   res.render("HIS/PurchaseOrder");
 });
-router.get("/indent", function (req, res, next) {
-  res.render("HIS/Indent");
-});
 
 // Put all render routes above this
 router.post("/login", login);
