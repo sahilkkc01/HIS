@@ -112,16 +112,17 @@
                       <div class="col-md-3">
                         <label for="language" class="form-label">MRP*</label>
                         <input class="form-control" data-validation="required" data-error-message="Please Enter MRP"
-                          type="number" id="mrp" name="mrp" value="" placeholder="">
+                          type="number" id="mrp" name="mrp" value="" placeholder="" step="any">
                       </div>
                       <div class="col-md-3">
-                        <label for="language" class="form-label">Buying Price</label>
-                        <input class="form-control" type="number" id="buyPrice" name="buy_price" value=""
+                        <label for="language" class="form-label">Cost Price*</label>
+                        <input class="form-control" type="number" id="costPrice" name="cost_price" value="" step="any"
+                        data-validation="required" data-error-message="Please Enter Cost Price"
                           placeholder="">
                       </div>
                       <div class="col-md-3">
                         <label for="language" class="form-label">Selling Price</label>
-                        <input class="form-control" type="number" id="sellPrice" name="sell_price" value=""
+                        <input class="form-control" type="number" id="sellPrice" name="sell_price" value="" step="any"
                           placeholder="">
                       </div>
                       <div class="col-md-3">
@@ -153,15 +154,18 @@
                         </select>
                       </div>
                       <div class="col-md-3">
-                        <label for="language" class="form-label">HSN Code*</label>
-                        <select id="HSNCode" name="hsn" data-validation="required"
-                          data-error-message="Please Enter HSN Code" class="select2 form-select">
+                        <label for="language" class="form-label">HSN Code</label>
+                        <select id="HSNCode" name="hsn" class="select2 form-select">
                           <option value="">Select</option>
                           <!-- <option value="9001">90001</option> -->
                           <option value="add-new">Add New</option>
                         </select>
                       </div>
-
+                      <div class="col-md-3">
+                        <label for="language" class="form-label">GST %*</label>
+                        <input class="form-control" data-validation="required" data-error-message="Please Enter GST"
+                          type="number" id="gst" name="gst" value="" placeholder="" step="any">
+                      </div>
                       <div class="col-md-4">
                         <label for="formFile" class="form-label">Item Image</label>
                         <input class="form-control" type="file" id="itemImage" name="itemImage"
@@ -241,7 +245,7 @@
           loadDropdown('Manufacturer', 'Manufacturer', 'name', '');
           loadDropdown('UOM', 'UOM', 'name', '');
           loadDropdown('other_uom', 'UOM', 'name', '');
-          loadDropdown('HSNCode', 'HSNCode', 'code', '');
+          loadDropdown('HSNCode', 'HSNCode', 'name', '');
         </script>
         <script>
 

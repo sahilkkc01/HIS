@@ -917,6 +917,7 @@ exports.getDoctorAppointments = async (req, res) => {
 };
 
 exports.saveItems = async (req, res) => {
+  const t = await sequelize.transaction(); // Start a transaction
   try {
     const clinicId = req.user?.clinic_id; // Get clinic ID from logged-in user
 
@@ -931,7 +932,7 @@ exports.saveItems = async (req, res) => {
       dosage_form,
       strength,
       manufacturer,
-      buy_price,
+      cost_price,
       sell_price,
       storage_condition,
       prescription_req,
@@ -939,6 +940,7 @@ exports.saveItems = async (req, res) => {
       category,
       molecule,
       mrp,
+      gst,
       uom,
       strength_unit,
       other_uom,
@@ -946,10 +948,8 @@ exports.saveItems = async (req, res) => {
       conversion,
     } = req.body;
 
-    if (!medicine_name || !molecule || !uom || !mrp || !category || !hsn) {
-      return res
-        .status(400)
-        .json({ message: "Important fields are required." });
+    if (!medicine_name || !molecule || !uom || !mrp || !category || !gst || !cost_price) {
+      return res.status(400).json({ message: "Please fill all required fields." });
     }
 
     const itemImage = req.file?.path ? path.basename(req.file.path) : null;
@@ -958,50 +958,79 @@ exports.saveItems = async (req, res) => {
     // Check if the item with the same medicine_name already exists in the clinic
     const existingItem = await Items.findOne({
       where: { clinic_id: clinicId, medicine_name },
+      transaction: t,
     });
 
     if (existingItem) {
-      return res
-        .status(400)
-        .json({ message: "Item with the same medicine name already exists" });
+      await t.rollback(); // Rollback transaction
+      return res.status(400).json({ message: "Item with the same medicine name already exists" });
     }
 
     // Create a new item since there is no duplicate
-    const newItem = await Items.create({
-      clinic_id: clinicId,
-      medicine_name,
-      generic_name,
-      sell_price,
-      molecule,
-      mrp,
-      uom,
-    });
+    const newItem = await Items.create(
+      {
+        clinic_id: clinicId,
+        medicine_name,
+        generic_name,
+        cost_price,
+        molecule,
+        mrp,
+        gst,
+        uom,
+        category,
+      },
+      { transaction: t }
+    );
 
-    // Create the associated ItemDetails record
-    await ItemDetails.create({
-      item_id: newItem.id,
-      brand_name,
-      dosage_form,
-      strength,
-      manufacturer,
-      buy_price,
-      storage_condition,
-      prescription_req: prqst,
-      interactions,
-      category,
-      item_img: itemImage,
-      strength_unit,
-      other_uom,
-      hsn,
-      conversion,
-    });
+    // Check if any required field for ItemDetails exists
+    const hasItemDetails =
+      brand_name ||
+      dosage_form ||
+      strength ||
+      manufacturer ||
+      sell_price ||
+      storage_condition ||
+      prescription_req ||
+      interactions ||
+      itemImage ||
+      strength_unit ||
+      other_uom ||
+      hsn ||
+      conversion;
+
+    if (hasItemDetails) {
+      await ItemDetails.create(
+        {
+          item_id: newItem.id,
+          brand_name,
+          dosage_form,
+          strength,
+          manufacturer,
+          sell_price: sell_price ? parseFloat(sell_price) : null,
+          storage_condition,
+          prescription_req: prqst,
+          interactions,
+          item_img: itemImage,
+          strength_unit,
+          other_uom,
+          hsn,
+          conversion: conversion ? conversion : null,
+        },
+        { transaction: t }
+      );
+    }
+
+    await t.commit(); // Commit transaction if everything is successful
 
     res.status(200).json({ message: `Medicine added successfully`, newItem });
   } catch (error) {
+    await t.rollback(); // Rollback transaction on error
     console.error("Error saving items:", error);
     res.status(500).json({ error: "Failed to save items" });
   }
 };
+
+
 
 exports.saveService = async (req, res) => {
   try {

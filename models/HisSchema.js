@@ -497,13 +497,19 @@ const Items = sequelize.define(
     molecule: {
       type: DataTypes.STRING,
     },
-    sell_price: {
-      type: DataTypes.INTEGER,
+    cost_price: {
+      type: DataTypes.DECIMAL(10, 2),
     },
     mrp: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.DECIMAL(10, 2),
+    },
+    gst: {
+      type: DataTypes.DECIMAL(10, 2),
     },
     uom: {
+      type: DataTypes.STRING,
+    },
+    category: {
       type: DataTypes.STRING,
     },
   },
@@ -535,8 +541,8 @@ const ItemDetails = sequelize.define(
     manufacturer: {
       type: DataTypes.STRING,
     },
-    buy_price: {
-      type: DataTypes.INTEGER,
+    sell_price: {
+      type: DataTypes.DECIMAL(10, 2),
     },
     storage_condition: {
       type: DataTypes.STRING,
@@ -546,9 +552,6 @@ const ItemDetails = sequelize.define(
     },
     interactions: {
       type: DataTypes.TEXT,
-    },
-    category: {
-      type: DataTypes.STRING,
     },
     item_img: {
       type: DataTypes.STRING,
