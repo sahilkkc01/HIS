@@ -112,7 +112,13 @@ router.get("/Patient-Registration", async function (req, res, next) {
 });
 
 router.get("/Doctor-Registration", function (req, res, next) {
-  res.render("HIS/doctor-registration");
+  const clinicId = req.user?.clinic_id; // Get clinic_id from session
+
+  if (!clinicId) {
+    return res.status(400).send({ msg: "Please login" });
+  }
+  const encClinicId = encryptDataForUrl(clinicId.toString());
+  res.render("HIS/doctor-registration",{encClinicId});
 });
 router.get("/Patient-List", function (req, res, next) {
   res.render("HIS/list-of-patients");
