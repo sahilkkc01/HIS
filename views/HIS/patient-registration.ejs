@@ -102,7 +102,7 @@
                             data-validation="required mobileNum" data-error-message="Please Enter Mobile Number">
                         </div>
                       </div>
-                      <div class="col-md-6">
+                      <div class="col-md-3">
                         <label for="email" class="form-label">E-mail</label>
                         <input class="form-control" type="email" id="email" name="email" value=""
                           data-validation="email" placeholder="">
@@ -116,6 +116,21 @@
                           <option value="F">Female</option>
                           <option value="O">Other</option>
                         </select>
+                      </div>
+                      <div class="col-md-3">
+                        <label for="language" class="form-label">Blood Group*</label>
+                        <select id="bloodGroup" name="bloodGroup" class="select2 form-select" data-validation="required"
+                        data-error-message="Please Enter Blood Group">
+                          <option value="">Select</option>
+                          <option value="A+">A+</option>
+                          <option value="A-">A-</option>
+                          <option value="B+">B+</option>
+                          <option value="B-">B-</option>
+                          <option value="O+">O+</option>
+                          <option value="O-">O-</option>
+                          <option value="AB+">AB+</option>
+                          <option value="AB-">AB-</option>
+                      </select>
                       </div>
                       <div class="col-md-3">
                         <label for="address" class="form-label">Age*</label>
@@ -373,6 +388,7 @@
                 $("#mobile").val(data.patient.mobile);
                 $("#email").val(data.patient.email);
                 $("#gender").val(data.patient.gender).trigger("change");
+                $("#bloodGroup").val(data.patient.bloodGroup).trigger("change");
                 $("#age").val(data.patient.age);
                 $("#address").val(data.patient.address);
                 $("#otdetails").val(data.patient.otdetails);
@@ -395,8 +411,8 @@
             });
           }
 
-          if ('<%= patient %>' !== '') {
-            loadPatientData('<%= patient %>')
+          if ('<%= patient.id %>' !== '') {
+            loadPatientData('<%= patient.id %>')
             $('input[data-validation], select').prop('readonly', true);
           }
           function updateQuery() {

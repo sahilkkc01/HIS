@@ -24,19 +24,23 @@ const {
   addDepartment,
   saveEmployeeData,
   addNewModal,
+  PatientFilter,
 } = require("../controllers/HisControllers");
 const { UserTokens, Patient } = require("../models/HisSchema");
 
+
+const secretKey='his'
 // Encryption function
 function encryptDataForUrl(data) {
   // Encrypt data with the secret key
-  const encrypted = sjcl.encrypt("his", data);
+  const encrypted = sjcl.encrypt(secretKey, data);
 
   // Base64-encode the encrypted JSON string for URL safety
   return encodeURIComponent(btoa(encrypted));
 }
+
 // Decryption function
-function decryptData(encodedEncryptedData, secretKey) {
+function decryptData(encodedEncryptedData) {
   try {
     // Decode the Base64-encoded data from the URL
     const encryptedData = atob(decodeURIComponent(encodedEncryptedData));
@@ -97,11 +101,7 @@ router.get("/Patient-Registration", async function (req, res, next) {
     }
     const encClinicId = encryptDataForUrl(clinicId.toString());
     if (id) {
-      const decryptedId = decryptData(decodeURIComponent(id), "his");
-      console.log(decryptedId);
-
-      const data = await Patient.findByPk(decryptedId);
-      patient = data ? data.get({ plain: true }) : {};
+      patient.id=id;
     }
 
     res.render("HIS/patient-registration", { patient, encClinicId });
@@ -131,7 +131,9 @@ router.get("/calender", function (req, res, next) {
 });
 
 router.get("/add-item", function (req, res, next) {
-  res.render("HIS/add-item");
+  console.log(req.query)
+  const id=req.query.Id;
+  res.render("HIS/add-item",{id});
 });
 
 router.get("/add-package", function (req, res, next) {
@@ -146,6 +148,9 @@ router.get("/add-employee", function (req, res, next) {
 });
 router.get("/purchase-order", function (req, res, next) {
   res.render("HIS/PurchaseOrder");
+});
+router.get("/add-prefix", function (req, res, next) {
+  res.render("HIS/add-prefix");
 });
 
 // Put all render routes above this
@@ -170,6 +175,7 @@ router.get("/getDataFromField", getDataFromField);
 router.get("/patients-with-appointments", getAllPatientsWithLatestAppointment);
 router.post("/getAvailableSlots", getAvailableSlots);
 router.get("/patient/:patientId", getPatientData);
+router.get("/patientFilter", PatientFilter);
 router.get("/getDoctorAppointments", getDoctorAppointments);
 
 router.post("/save-item", upload.single("itemImage"), saveItems);

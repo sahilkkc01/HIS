@@ -22,6 +22,7 @@
             <!-- Content -->
             <style>.displaynone{display:none;}.bx-qr-scan{font-size:80px;}</style>
             <div class="container-xxl flex-grow-1 container-p-y">
+              <form id="IndentForm" method="POST">
               <div class="row">
                 <!-- Vertical & Horizontal Scrollbars -->
                 <div class="col-12">
@@ -30,7 +31,7 @@
                     <div class="card">
                     <!-- Account -->
                     <div class="card-body pt-4">
-                        <form id="IndentForm" method="POST">
+                      <div id="errordiv"></div>
                           <!-- First Row -->
                           <div class="row g-6">
                             <div class="col-md-4">
@@ -39,11 +40,11 @@
                             </div>
                             <div class="col-md-4">
                               <label for="IndDate" class="form-label">Indent Date</label>
-                              <input class="form-control" type="date" id="IndDate" name="IndDate" value="">
+                              <input class="form-control" type="date" readonly id="IndDate" name="indentDate" value="">
                             </div>
                             <div class="col-md-4">
                               <label for="expDelDate" class="form-label">Expected Delivery Date</label>
-                              <input class="form-control" type="date" id="expDelDate" name="expDelDate" value="">
+                              <input class="form-control" type="date" id="expDelDate" name="expDelDate" value=""  data-validation="required futureDate" data-error-message="Please enter expected delivery date.">
                             </div>
                           </div>
                       
@@ -51,14 +52,14 @@
                           <div class="row g-6 mt-3">
                             <div class="col-md-6">
                               <label class="form-label" for="fromStore">From Store</label>
-                              <select id="fromStore" name="fromStore" class="select2 form-select">
+                              <select id="fromStore" name="fromStore" class="select2 form-select"  data-validation="required" data-error-message="Please enter from store.">
                                 <option value="">Select</option>
                                 <option value="add-new">Add New</option>
                               </select>
                             </div>
                             <div class="col-md-6">
                               <label class="form-label" for="toStore">To Store</label>
-                              <select id="toStore" name="toStore" class="select2 form-select">
+                              <select id="toStore" name="toStore" class="select2 form-select"  data-validation="required" data-error-message="Please enter to store.">
                                 <option value="">Select</option>
                                 <option value="add-new">Add New</option>
                               </select>
@@ -69,7 +70,7 @@
                           <div class="row g-6 mt-1">
                             <div class="col-md-12">
                               <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="againstPatient" name="againstPatient">
+                                <input class="form-check-input" type="checkbox" id="againstPatient" >
                                 <label class="form-check-label" for="againstPatient">Against Patient</label>
                               </div>
                             </div>
@@ -86,7 +87,7 @@
                               <input class="form-control" type="number" id="contactNo" name="contactNo" disabled data-validation="mobileNo" value="">
                             </div>
                           </div>
-                        </form>
+                       
                       </div>
                       
                     <!-- /Account -->
@@ -97,34 +98,25 @@
 				
 				<div class="card overflow-hidden mt-3">
 				<div class="row card-header flex-column flex-md-row pb-4 col-md-6">
-				<input type="search" class="form-control ms-4 mb-2 mt-2" id="itemSearch" placeholder="Search item to Add in Indent" aria-controls="DataTables_Table_1">
+          <input type="search" class="form-control ms-4 mb-2 mt-2" id="searchBox" placeholder="Search item to Add in GRN" aria-controls="DataTables_Table_1">
+          <ul id="searchResults" class="list-group mt-2" style="display: none;"></ul>
 				</div>
 				
 				 <div class="table-responsive text-nowrap">
-                  <table class="table table-bordered">
+                  <table class="table table-bordered" id="dataTable">
                     <thead>
                       <tr>
                         <th>Item Name</th>
                         <th>Indent Qty</th>
 						<th>UOM</th>
 						<th>MRP</th>
+						<th>Cost Price</th>
+						<th>GST %</th>
 						<th>Action</th>
                       </tr>
                     </thead>
-                    <tbody class="table-border-bottom-0">
-                      <tr>
-                        <td>ITM01</td>
-                        <td>Paracitamol</td>
-                        <td>
-                         <input class="form-control" type="number" id="itemQty" name="itemQty" value="" autofocus=""> 
-						</td>
-						<td>10</td>
-						
-						<td><button class="btn btn-icon btn-outline-danger">
-                                  <i class="bx bx-trash bx-sm"></i>
-                                </button></td>
-                      </tr>
-                      
+                    <tbody class="table-border-bottom-0" id="mainTblBody">
+                
                     </tbody>
                   </table>
                 </div>
@@ -136,22 +128,219 @@
 			
 				<div class="col-md-3">
 				 <label class="form-label">Total Amount: </label>
-				 <input class="form-control" type="text" readonly>
+				 <input class="form-control" type="text" id="totalAmount" name="totalAmount"readonly>
 				</div>
-				<div class="col-md-9">
-				 <label class="form-label">Remarks: </label>
-				 <input class="form-control" type="text" >
-				</div>
+        <div class="col-md-6">
+          <label class="form-label">Remarks: </label>
+          <textarea class="form-control" id="remark" name="remark" placeholder="Enter remarks"></textarea>
+      </div>
+      <div id="loadingIndicator"></div>
 				<div class="mt-6">
                           <button type="submit" class="btn btn-primary me-3">Save</button>
-                          <button type="reset" class="btn btn-outline-secondary">Cancel</button>
+                          <button type="reset" onclick=" window.location.href = '/inventory/indent-list'" class="btn btn-outline-secondary">Cancel</button>
                         </div>
 				</div>
 				 </div>
 				</div>
               </div>
+              </form>
             </div>
             <!-- / Content -->
 					  
 
           <%- include('../footer') -%>
+          <script>
+            document.addEventListener("DOMContentLoaded", function () {
+        const searchBox = document.getElementById("searchBox");
+        const searchResults = document.getElementById("searchResults");
+        const mainTblBody = document.getElementById("mainTblBody");
+        const netAmountInput = document.getElementById("netAmount");
+    
+        let itemsData = [];
+    
+        fetchItems();
+    
+        function fetchItems() {
+            axios.get("/inventory/getItems")
+                .then(response => {
+                    itemsData = response.data.items;
+                })
+                .catch(error => {
+                    console.error("Error fetching items:", error);
+                });
+        }
+    
+        searchBox.addEventListener("input", function () {
+            const query = searchBox.value.toLowerCase();
+            if (query) {
+                const filteredItems = itemsData.filter(item =>
+                    item.medicine_name.toLowerCase().includes(query) ||
+                    item.molecule.toLowerCase().includes(query)
+                );
+                displaySearchResults(filteredItems);
+            } else {
+                searchResults.style.display = "none";
+            }
+        });
+    
+        function displaySearchResults(items) {
+            searchResults.innerHTML = "";
+            if (items.length > 0) {
+                items.forEach(item => {
+                    const li = document.createElement("li");
+                    li.className = "list-group-item";
+                    li.textContent = `${item.medicine_name} (${item.molecule}) - ${item.uom}, MRP-${item.mrp} Cost-${item.cost_price} GST-${item.gst}%`;
+                    li.addEventListener("click", () => selectItem(item));
+                    searchResults.appendChild(li);
+                });
+                searchResults.style.display = "block";
+            } else {
+                searchResults.style.display = "none";
+            }
+        }
+    
+        function selectItem(item) {
+            if (document.querySelector(`#mainTblBody tr[data-id="${item.id}"]`)) {
+                alert("Item already added!");
+                return;
+            }
+    
+            const row = document.createElement("tr");
+            row.setAttribute("data-id", item.id);
+            row.innerHTML = `
+        <td data-key="item_name">${item.medicine_name}</td>
+       
+        <td><input class="form-control indentQty" type="number" data-key="indentQty"  value="0" data-validation="required greaterThanZero" data-error-message="Please enter Indent Qty."></td>
+  
+        <td data-key="uom">${item.uom}</td>
+       
+        <td><input class="form-control mrp" type="number" data-key="mrp" readonly value="${item.mrp}"></td>
+        <td><input class="form-control cost_price" type="number" data-key="cost_price" readonly value="${item.cost_price}"></td>
+        <td><input class="form-control gst" type="number" data-key="gst" readonly value="${item.gst}"></td>
+       
+        <td>
+            <button class="btn btn-icon btn-outline-danger" onclick="removeItem(this)">
+                <i class="bx bx-trash bx-sm"></i>
+            </button>
+        </td>
+    `;
+    
+            mainTblBody.appendChild(row);
+            searchResults.style.display = "none";
+            searchBox.value = "";
+    
+            attachEventListeners(row);
+            updateTotalValues(); // Recalculate total when adding a new item
+        }
+    
+        window.removeItem = function (button) {
+            button.closest("tr").remove();
+            updateTotalValues(); // Recalculate total after removing an item
+        };
+        function attachEventListeners(row) {
+    const indentQty = row.querySelector(".indentQty");
+    indentQty.addEventListener("input", updateTotalValues);
+}
+
+function updateTotalValues() {
+    let totalAmount = 0;
+
+    document.querySelectorAll("#mainTblBody tr").forEach(row => {
+        const indentQty = parseInt(row.querySelector(".indentQty")?.value) || 0;
+        const mrp = parseFloat(row.querySelector(".mrp")?.value) || 0;
+
+        totalAmount += indentQty * mrp;
+    });
+
+    document.getElementById("totalAmount").value = totalAmount.toFixed(2);
+}
+
+    });
+    
+    $('#fromStore').on('change', function () {
+                if ($(this).val() === 'add-new') {
+                  createSmallModal("smallModal", "Store", "/addModal", "Store","formStore")
+                }
+              });
+    $('#toStore').on('change', function () {
+                if ($(this).val() === 'add-new') {
+                  createSmallModal("smallModal", "Store", "/addModal", "Store","toStore")
+                }
+              });
+    loadDropdown('fromStore', 'Store','name', '');
+    loadDropdown('toStore', 'Store','name', '');
+
+     $("#IndDate").val(new Date().toISOString().split('T')[0]);
+     document.addEventListener("DOMContentLoaded", function () {
+    const fromStore = document.getElementById("fromStore");
+    const toStore = document.getElementById("toStore");
+
+    function validateStores() {
+        if (fromStore.value && fromStore.value === toStore.value) {
+            alert("From Store and To Store cannot be the same.");
+            toStore.value = ""; // Reset To Store selection
+        }
+    }
+
+    fromStore.addEventListener("change", validateStores);
+    toStore.addEventListener("change", validateStores);
+});
+
+document.getElementById("againstPatient").addEventListener("change", function () {
+    ["patientName", "contactNo"].forEach(id => {
+        const input = document.getElementById(id);
+        input.disabled = !this.checked;
+        if (!this.checked) input.value = "";
+    });
+});
+
+
+           </script>
+          <script>
+            $(document).ready(function () {
+              console.log("Document is ready");
+          
+              const formId = '#IndentForm';
+              const errorDivId = '#errordiv';
+          
+              $(formId).on('submit', async function (event) {
+                event.preventDefault(); // Prevent default form submission
+          
+                const { isValid, errorMessage } = validateForm(formId);
+          
+                if (isValid) {
+                  const url = '/Inventory/SaveIndent';
+                  const loadingDiv = '#loadingIndicator';
+          
+                  try {
+                    $(loadingDiv).show(); // Show loading indicator
+          
+                    // Collect form data manually
+                    const tblid='#dataTable';
+                    const formData = collectFormDataWithTbl(formId,tblid);
+                    console.log('Collected Form Data:', formData);
+          
+                    // Make Axios POST request
+                    const response = await axios.post(url, formData, {
+                      headers: { 'Content-Type': 'application/json' }
+                    });
+          
+                    console.log('Success:', response.data);
+                    $("#indentNo").val(response.data.indentNo);
+                    $(errorDivId).removeClass('alert-danger').addClass('alert-success').text(response.data.message).show();
+          
+                   
+                  } catch (error) {
+                    console.error('Error:', error);
+                    $(errorDivId).removeClass('alert-success').addClass('alert-danger').text(` ${error.response?.data?.message || 'Unknown error'}`).show();
+                  } finally {
+                    $(loadingDiv).hide(); // Hide loading indicator after submission
+                  }
+                } else {
+                  $(errorDivId).removeClass('alert-success').addClass('alert-danger').text(errorMessage).show();
+                }
+              });
+          
+             
+             });
+          </script>

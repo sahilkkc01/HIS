@@ -33,6 +33,7 @@
                 <!-- Account -->
                 <div class="card-body pt-4">
                   <form id="addItemForm" method="post" enctype="multipart/form-data">
+                    <input type="hidden" name="itemId" id="itemId">
                     <div id="errordiv"></div>
                     <div class="row g-6">
                       <div class="col-md-6">
@@ -175,7 +176,7 @@
                     <div id="loadingIndicator"></div>
                     <div class="mt-6">
                       <button type="submit" class="btn btn-primary me-3">Save</button>
-                      <button type="reset" class="btn btn-outline-secondary">Cancel</button>
+                      <button type="reset" onclick="window.location.href='/inventory/item-list'" class="btn btn-outline-secondary">Cancel</button>
                     </div>
                   </form>
                 </div>
@@ -225,7 +226,7 @@
                 createSmallModal("manufacturerModal", "Manufacturer", "/addModal", "Manufacturer", "Manufacturer")
               }
             })
-            $('#UOM').on('change', function () {
+          $('#UOM').on('change', function () {
               if ($(this).val() === 'add-new') {
                 createSmallModal("uomModal", "UOM", "/addModal", "UOM", "UOM")
               }
@@ -288,4 +289,83 @@
               }
             });
           });
+        
         </script>
+
+<script>
+  $(document).ready(function () {
+  console.log("Document is ready");
+
+  const itemId = '<%= id %>'; // Get ID from EJS
+  if (itemId) {
+    fetchItemData(itemId);
+  }
+
+  // Load dropdowns first before populating the form
+  const dropdownsLoaded = [
+    loadDropdown('Molecule', 'Molecule', 'name', ''),
+    loadDropdown('ItemBrandName', 'ItemBrandName', 'name', ''),
+    loadDropdown('ItemCategory', 'ItemCategory', 'name', ''),
+    loadDropdown('DosageForm', 'DosageForm', 'name', ''),
+    loadDropdown('StrengthUnit', 'StrengthUnit', 'name', ''),
+    loadDropdown('Manufacturer', 'Manufacturer', 'name', ''),
+    loadDropdown('UOM', 'UOM', 'name', ''),
+    loadDropdown('other_uom', 'UOM', 'name', ''),
+    loadDropdown('HSNCode', 'HSNCode', 'name', '')
+  ];
+
+  // Ensure all dropdowns are loaded before populating the form
+  Promise.all(dropdownsLoaded).then(() => {
+    if (itemId) {
+      fetchItemData(itemId);
+    }
+  });
+});
+
+function fetchItemData(id) {
+  $.ajax({
+    url: `/inventory/getItem/${id}`,
+    type: 'GET',
+    success: function (response) {
+      console.log(response);
+      if (response.success) {
+        setTimeout(() => populateForm(response.data), 500); // Small delay to ensure dropdowns are ready
+      } else {
+        console.error('Failed to fetch item data:', response.message);
+      }
+    },
+    error: function (err) {
+      console.error('Error fetching data:', err);
+    }
+  });
+}
+
+function populateForm(data) {
+  $('#itemId').val(data.id);
+  $('#name').val(data.medicine_name);
+  $('#Molecule').val(data.molecule).trigger('change');
+  $('#genericName').val(data.generic_name);
+  $('#UOM').val(data.uom).trigger('change');
+  $('#other_uom').val(data.other_uom).trigger('change');
+  $('#mrp').val(data.mrp);
+  $('#costPrice').val(data.cost_price);
+  $('#gst').val(data.gst);
+  $('#ItemCategory').val(data.category).trigger('change');
+
+  // Check if `details` exist before accessing properties
+  if (data.details) {
+    $('#ItemBrandName').val(data.details.brand_name).trigger('change');
+    $('#DosageForm').val(data.details.dosage_form).trigger('change');
+    $('#conversion').val(data.details.conversion);
+    $('#strength').val(data.details.strength);
+    $('#StrengthUnit').val(data.details.strength_unit).trigger('change');
+    $('#Manufacturer').val(data.details.manufacturer).trigger('change');
+    $('#sellPrice').val(data.details.sell_price);
+    $('#storageCond').val(data.details.storage_condition);
+    $('#prescReq').val(data.details.prescription_req ? 'Yes' : 'No').trigger('change');
+    $('#interaction').val(data.details.interactions);
+    $('#HSNCode').val(data.details.hsn).trigger('change');
+  }
+}
+
+</script>

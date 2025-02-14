@@ -7,17 +7,19 @@ const sjcl = require("sjcl");
 const { Op } = require("sequelize");
 const { sequelize } = require("../db");
 
+
+const secretKey='his'
 // Encryption function
 function encryptDataForUrl(data) {
   // Encrypt data with the secret key
-  const encrypted = sjcl.encrypt("his", data);
+  const encrypted = sjcl.encrypt(secretKey, data);
 
   // Base64-encode the encrypted JSON string for URL safety
   return encodeURIComponent(btoa(encrypted));
 }
 
 // Decryption function
-function decryptData(encodedEncryptedData, secretKey) {
+function decryptData(encodedEncryptedData) {
   try {
     // Decode the Base64-encoded data from the URL
     const encryptedData = atob(decodeURIComponent(encodedEncryptedData));
@@ -47,6 +49,7 @@ const {
   Employee,
   Molecule,
   ItemBrandName,
+  Store
 } = require("../models/HisSchema");
 
 exports.verifyToken = async (req, res, next) => {
@@ -208,7 +211,7 @@ exports.savePatientData = async (req, res) => {
   console.log(req.file);
   let { id } = req.query;
   if (id) {
-    id = decryptData(decodeURIComponent(id), "his");
+    id = decryptData(id);
   }
 
   const clinicId = req.user?.clinic_id || id;
@@ -226,6 +229,7 @@ exports.savePatientData = async (req, res) => {
       mobile,
       email,
       gender,
+      bloodGroup,
       age,
       address,
       otdetails,
@@ -241,7 +245,7 @@ exports.savePatientData = async (req, res) => {
       time, // appointment time slot
     } = req.body;
 
-    if (!name || !mobile || !gender || !age) {
+    if (!name || !mobile || !gender || !age || !bloodGroup) {
       return res
         .status(400)
         .json({ message: "Name, mobile, gender, and age are required." });
@@ -253,7 +257,7 @@ exports.savePatientData = async (req, res) => {
 
     if (patientId) {
       // Update existing patient
-      const decryptedId = decryptData(decodeURIComponent(patientId), "his");
+      const decryptedId = decryptData(patientId);
       patient = await Patient.findOne({
         where: { id: decryptedId, clinic_id: clinicId },
       });
@@ -269,6 +273,7 @@ exports.savePatientData = async (req, res) => {
           mobile,
           email,
           gender,
+          bloodGroup,
           age,
         },
         { transaction }
@@ -315,6 +320,7 @@ exports.savePatientData = async (req, res) => {
           mobile,
           email,
           gender,
+          bloodGroup,
           age,
         },
         { transaction }
@@ -828,7 +834,7 @@ exports.getPatientData = async (req, res) => {
   if (!clinicId) {
     return res.status(401).json({ message: "Unauthorized: Please log in" });
   }
-  const decryptedId = decryptData(decodeURIComponent(patientId), "his");
+  const decryptedId = decryptData(patientId);
   console.log(decryptedId);
   try {
     // Fetch patient record
@@ -917,6 +923,7 @@ exports.getDoctorAppointments = async (req, res) => {
 };
 
 exports.saveItems = async (req, res) => {
+  console.log(req.body);
   const t = await sequelize.transaction(); // Start a transaction
   try {
     const clinicId = req.user?.clinic_id; // Get clinic ID from logged-in user
@@ -926,6 +933,7 @@ exports.saveItems = async (req, res) => {
     }
 
     const {
+      itemId, // Used for update
       medicine_name,
       generic_name,
       brand_name,
@@ -953,55 +961,90 @@ exports.saveItems = async (req, res) => {
     }
 
     const itemImage = req.file?.path ? path.basename(req.file.path) : null;
-    const prqst = prescription_req === "Yes"; // Simplified condition for prescription requirement
+    const prqst = prescription_req === "Yes"; // Convert "Yes" to `true`, otherwise `false`
 
-    // Check if the item with the same medicine_name already exists in the clinic
-    const existingItem = await Items.findOne({
-      where: { clinic_id: clinicId, medicine_name },
-      transaction: t,
-    });
+    let item;
+    if (itemId) {
+      // **Update existing item**
+      item = await Items.findOne({ where: { id: itemId, clinic_id: clinicId }, transaction: t });
 
-    if (existingItem) {
-      await t.rollback(); // Rollback transaction
-      return res.status(400).json({ message: "Item with the same medicine name already exists" });
-    }
+      if (!item) {
+        await t.rollback();
+        return res.status(404).json({ message: "Item not found" });
+      }
 
-    // Create a new item since there is no duplicate
-    const newItem = await Items.create(
-      {
-        clinic_id: clinicId,
-        medicine_name,
-        generic_name,
-        cost_price,
-        molecule,
-        mrp,
-        gst,
-        uom,
-        category,
-      },
-      { transaction: t }
-    );
+      await item.update(
+        { medicine_name, generic_name, cost_price, molecule, mrp, gst, uom, category },
+        { transaction: t }
+      );
 
-    // Check if any required field for ItemDetails exists
-    const hasItemDetails =
-      brand_name ||
-      dosage_form ||
-      strength ||
-      manufacturer ||
-      sell_price ||
-      storage_condition ||
-      prescription_req ||
-      interactions ||
-      itemImage ||
-      strength_unit ||
-      other_uom ||
-      hsn ||
-      conversion;
+      // **Update or Create ItemDetails**
+      let itemDetails = await ItemDetails.findOne({ where: { item_id: itemId }, transaction: t });
 
-    if (hasItemDetails) {
+      if (itemDetails) {
+        await itemDetails.update(
+          {
+            brand_name,
+            dosage_form,
+            strength,
+            manufacturer,
+            sell_price: sell_price ? parseFloat(sell_price) : null,
+            storage_condition,
+            prescription_req: prqst,
+            interactions,
+            item_img: itemImage ? itemImage : itemDetails.item_img, // Retain existing image if not updated
+            strength_unit,
+            other_uom,
+            hsn,
+            conversion: conversion ? conversion : null,
+          },
+          { transaction: t }
+        );
+      } else {
+        await ItemDetails.create(
+          {
+            item_id: itemId,
+            brand_name,
+            dosage_form,
+            strength,
+            manufacturer,
+            sell_price: sell_price ? parseFloat(sell_price) : null,
+            storage_condition,
+            prescription_req: prqst,
+            interactions,
+            item_img: itemImage,
+            strength_unit,
+            other_uom,
+            hsn,
+            conversion: conversion ? conversion : null,
+          },
+          { transaction: t }
+        );
+      }
+
+      await t.commit();
+      return res.status(200).json({ message: "Medicine updated successfully", item });
+
+    } else {
+      // **Create a new item**
+      const existingItem = await Items.findOne({
+        where: { clinic_id: clinicId, medicine_name },
+        transaction: t,
+      });
+
+      if (existingItem) {
+        await t.rollback();
+        return res.status(400).json({ message: "Item with the same medicine name already exists" });
+      }
+
+      item = await Items.create(
+        { clinic_id: clinicId, medicine_name, generic_name, cost_price, molecule, mrp, gst, uom, category },
+        { transaction: t }
+      );
+
       await ItemDetails.create(
         {
-          item_id: newItem.id,
+          item_id: item.id,
           brand_name,
           dosage_form,
           strength,
@@ -1018,17 +1061,17 @@ exports.saveItems = async (req, res) => {
         },
         { transaction: t }
       );
+
+      await t.commit();
+      return res.status(201).json({ message: "Medicine added successfully", item });
     }
-
-    await t.commit(); // Commit transaction if everything is successful
-
-    res.status(200).json({ message: `Medicine added successfully`, newItem });
   } catch (error) {
-    await t.rollback(); // Rollback transaction on error
+    await t.rollback();
     console.error("Error saving items:", error);
     res.status(500).json({ error: "Failed to save items" });
   }
 };
+
 
 
 
@@ -1210,6 +1253,7 @@ exports.saveEmployeeData = async (req, res) => {
 exports.addNewModal = async (req, res) => {
   const { name, tableName } = req.body;
 
+  console.log(req.body)
   const clinicId = req.user.clinic_id; // Get clinic_id from session
 
   // Check if clinicId is available
@@ -1253,3 +1297,39 @@ exports.addNewModal = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+
+exports.PatientFilter = async (req, res) => {
+  try {
+    const clinicId = req.user?.clinic_id; // Get clinic ID from logged-in user
+
+    if (!clinicId) {
+      return res.status(401).json({ message: "Unauthorized: Please log in" });
+    }
+
+    const { uhid, mobile, email } = req.query;
+
+    // Check if no parameters are provided
+    if (!uhid && !mobile && !email) {
+      return res.status(404).json({ message: "No search value provided" });
+    }
+
+    let whereClause = { clinic_id: clinicId };
+
+    if (uhid) whereClause.uhid = uhid;
+    if (mobile) whereClause.mobile = mobile;
+    if (email) whereClause.email = email;
+
+    let patient = await Patient.findOne({ where: whereClause });
+
+    if (patient) {
+      res.json(patient);
+    } else {
+      res.status(404).json({ message: "Patient not found" });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+

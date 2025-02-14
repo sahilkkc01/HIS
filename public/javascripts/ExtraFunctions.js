@@ -63,7 +63,7 @@ function removeImage(inputId, previewId, removeBtnId) {
 
 const loadDropdown = (elementId, FieldId, key, selectedValue = null) => {
   // Append elementId to the URL as a query parameter
-  const modifiedUrl = `getDataFromField?elementId=${FieldId}`;
+  const modifiedUrl = `/getDataFromField?elementId=${FieldId}`;
 
   fetch(modifiedUrl)
     .then((response) => {
@@ -73,7 +73,7 @@ const loadDropdown = (elementId, FieldId, key, selectedValue = null) => {
       return response.json();
     })
     .then((data) => {
-      console.log(data);
+      // console.log(data);
       const dropdown = document.getElementById(elementId);
       dropdown.innerHTML = '<option value="">Select</option>'; // Clear existing options and add a default one
 
@@ -230,4 +230,63 @@ async function saveModalData(id, path, sid, name, elmtId) {
   } else {
     alert(`Please enter a ${name}`);
   }
+}
+
+ // Function to collect form data
+          function collectFormDataWithTbl(formId,tblId) {
+  const formData = {};
+
+  // Collect non-table input and select values from the form
+  $(`${formId} input, ${formId} select, ${formId} textarea`).each(function () {
+    const key = $(this).attr('name');
+    if (key) {
+      formData[key] = $(this).val().trim();
+    }
+  });
+
+  // Collect table data
+  const tableData = [];
+  $(`${tblId} tbody tr`).each(function () {
+    const row = {};
+    $(this).find('td, input').each(function () {
+      const key = $(this).attr('data-key');
+      if (key) {
+        row[key] = $(this).is('input') ? $(this).val().trim() : $(this).text().trim();
+      }
+    });
+    tableData.push(row);
+  });
+
+  formData['tableData'] = tableData; // Attach table data to JSON
+
+  return formData;
+}
+ // Function to collect form data with table
+ function collectFormDataWithTbl(formId,tblId) {
+  const formData = {};
+
+  // Collect non-table input and select values from the form
+  $(`${formId} input, ${formId} select, ${formId} textarea`).each(function () {
+    const key = $(this).attr('name');
+    if (key) {
+      formData[key] = $(this).val().trim();
+    }
+  });
+
+  // Collect table data
+  const tableData = [];
+  $(`${tblId} tbody tr`).each(function () {
+    const row = {};
+    $(this).find('td, input').each(function () {
+      const key = $(this).attr('data-key');
+      if (key) {
+        row[key] = $(this).is('input') ? $(this).val().trim() : $(this).text().trim();
+      }
+    });
+    tableData.push(row);
+  });
+
+  formData['tableData'] = tableData; // Attach table data to JSON
+
+  return formData;
 }

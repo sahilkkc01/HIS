@@ -7,6 +7,7 @@ const { con } = require("./db");
 
 var { router: his, upload } = require("./routes/HisRoutes");
 const { router:inventory } = require("./routes/InventoryRoutes");
+const { router:billing } = require("./routes/BillingRoutes");
 const {
   verifyToken,
   savePatientData,
@@ -44,6 +45,7 @@ app.use((req, res, next) => {
 
 app.use("/", his);
 app.use("/inventory", inventory);
+app.use("/billing",billing );
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

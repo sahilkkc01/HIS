@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en" class="light-style layout-menu-fixed layout-compact" dir="ltr" data-theme="theme-default">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>List of Purchase Orders</title>
+  <%- include('../header') -%>
+</head>
+<body>
+  <div class="content-wrapper">
+    <div class="container-xxl flex-grow-1 container-p-y">
+      <div class="card">
+        <div class="row card-header pb-4">
+          <div class="col-md-auto me-auto">
+            <h5 class="card-title mb-0">All Purchase Orders</h5>
+          </div>
+          <div class="d-md-flex justify-content-between align-items-center dt-layout-end col-md-auto ms-auto mt-0">
+				
+            <div class="dt-buttons btn-group flex-wrap mb-0"> 
+				
+				<div class="btn-group">
+				<input type="search" class="form-control ms-4" id="searchBox" placeholder="Search" aria-controls="DataTables_Table_1">
+				
+				<button class="btn buttons-collection btn-label-primary dropdown-toggle me-4" tabindex="0" aria-controls="DataTables_Table_0" type="button" aria-haspopup="dialog" aria-expanded="false"><span><span class="d-flex align-items-center gap-2"><i class="icon-base bx bx-export me-sm-1"></i> <span class="d-none d-sm-inline-block">Export</span></span></span></button></div> 
+				
+				<button class="btn create-new btn-primary" tabindex="0" id="approvePO" aria-controls="DataTables_Table_0" type="button"><span><span class="d-flex align-items-center gap-2"></i> <span class="d-none d-sm-inline-block">Approve</span></span></span></button> 
+				<button class="btn create-new btn-danger" tabindex="0" id="rejectPO" aria-controls="DataTables_Table_0" type="button"><span><span class="d-flex align-items-center gap-2 "></i> <span class="d-none d-sm-inline-block">Reject</span></span></span></button> 
+				  </div>
+             </div>
+        </div>
+        
+        <div class="table-responsive text-nowrap">
+          <table class="table" id="poTable">
+            <thead>
+              <tr>
+                <th>PO No</th>
+                <th>PO Date</th>
+                <th>Indent No</th>
+                <th>Store</th>
+                <th>Supplier</th>
+                <th>Payment Mode</th>
+                <th>Expected Delivery</th>
+                <th>Payment Terms</th>
+                <th>Total GST</th>
+                <th>Other Charges</th>
+                <th>PO Discount</th>
+                <th>Net Amount</th>
+                <th>Created By</th>
+                <th>Approved By</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="poBody"></tbody>
+          </table>
+          <div id="paginationControls"></div>
+        </div>
+        
+        <div class="table-responsive text-nowrap mt-3">
+          <h5>PO Items</h5>
+          <table class="table" id="itemsTable">
+            <thead>
+              <tr>
+                <th>Item Name</th>
+                <th>UOM</th>
+                <th>MRP</th>
+                <th>Cost Price</th>
+                <th>Order Qty</th>
+                <th>GST %</th>
+                <th>GST Amount</th>
+                <th>Total Cost</th>
+                <th>Net Amount</th>
+              </tr>
+            </thead>
+            <tbody id="itemsBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <%- include('../footer') -%>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      
+      function fetchPoData() {
+        axios.get("/inventory/getAllPo")
+          .then(response => {
+            const poList = response.data.purchaseOrders;
+            const tbody = document.getElementById("poBody");
+            tbody.innerHTML = "";
+  
+            poList.forEach(po => {
+              const row = `
+                <tr data-items='${JSON.stringify(po.items)}' data-id="${po.id}">
+                  <td>${po.poNo}</td>
+                  <td>${po.poDate}</td>
+                  <td>${po.indentNo ||''}</td>
+                  <td>${po.store}</td>
+                  <td>${po.supplier}</td>
+                  <td>${po.paymentMode}</td>
+                  <td>${po.expectedDeliveryDate}</td>
+                  <td>${po.paymentTerms}</td>
+                  <td>${po.totalGst}</td>
+                  <td>${po.otherCharges}</td>
+                  <td>${po.poDiscount}</td>
+                  <td>${po.netAmount}</td>
+                  <td>${po.createdBy}</td>
+                  <td>${po.approvedBy || 'N/A'}</td>
+                  <td>${po.status}</td>
+                </tr>
+              `;
+              tbody.innerHTML += row;
+            });
+  
+            pagi_search("#searchBox", "#poTable", "#paginationControls");
+          })
+          .catch(error => console.error("Error fetching PO data:", error));
+      }
+  
+      // Fetch PO data on page load
+      fetchPoData();
+  
+      document.getElementById("poTable").addEventListener("click", function (event) {
+        const row = event.target.closest("tr");
+        if (!row || !row.dataset.items) return;
+  
+        document.querySelectorAll("#poTable tr").forEach(tr => tr.classList.remove("selected-row"));
+        row.classList.add("selected-row");
+  
+        const items = JSON.parse(row.dataset.items);
+        const itemsBody = document.getElementById("itemsBody");
+        itemsBody.innerHTML = "";
+  
+        items.forEach(item => {
+          const itemRow = `
+            <tr>
+              <td>${item.item_name}</td>
+              <td>${item.uom}</td>
+              <td>${item.mrpUnit}</td>
+              <td>${item.costPrice}</td>
+              <td>${item.orderQty}</td>
+              <td>${item.gst}</td>
+              <td>${item.gstAmount}</td>
+              <td>${item.totalCost}</td>
+              <td>${item.netAmount}</td>
+            </tr>
+          `;
+          itemsBody.innerHTML += itemRow;
+        });
+      });
+  
+      // Approve PO
+      document.getElementById("approvePO").addEventListener("click", function () {
+        const selectedRow = document.querySelector(".selected-row");
+        if (!selectedRow) {
+          alert("Please select a PO to approve.");
+          return;
+        }
+        const poId = selectedRow.dataset.id;
+  
+        axios.post(`/inventory/approvePo/${poId}`)
+          .then(response => {
+            alert(response.data.message || "PO Approved Successfully");
+            fetchPoData(); // Refresh data after approval
+          })
+          .catch(error => {
+            console.error("Error approving PO:", error);
+            alert(error.response?.data?.message || "Error approving PO");
+          });
+      });
+  
+      // Reject PO
+      document.getElementById("rejectPO").addEventListener("click", function () {
+        const selectedRow = document.querySelector(".selected-row");
+        if (!selectedRow) {
+          alert("Please select a PO to reject.");
+          return;
+        }
+        const poId = selectedRow.dataset.id;
+  
+        axios.post(`/inventory/rejectPo/${poId}`)
+          .then(response => {
+            alert(response.data.message || "PO Rejected Successfully");
+            fetchPoData(); // Refresh data after rejection
+          })
+          .catch(error => {
+            console.error("Error rejecting PO:", error);
+            alert(error.response?.data?.message || "Error rejecting PO");
+          });
+      });
+  
+    });
+  </script>
+  

@@ -36,6 +36,10 @@ const Patient = sequelize.define(
       type: DataTypes.ENUM("M", "F", "O"),
       allowNull: false,
     },
+    bloodGroup: {
+      type: DataTypes.ENUM("A+", "A-", "B+", "B-", "O+" ,"O-", "AB+", "AB-"),
+      allowNull: false,
+    },
     age: {
       type: DataTypes.INTEGER,
       allowNull: false,
@@ -802,6 +806,25 @@ const Employee = sequelize.define(
   }
 );
 
+const Store = sequelize.define(
+  "Store",
+  {
+    clinic_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+  },
+  {
+    timestamps: true,
+    alter: true,
+    tableName: "store",
+  }
+);
+
 // Items.sync({ force: true });
 // ItemDetails.sync({ force: true });
 // Molecule.sync({ alter: true });
@@ -838,4 +861,5 @@ module.exports = {
   Manufacturer,
   UOM,
   HSNCode,
+  Store
 };

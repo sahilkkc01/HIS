@@ -17,7 +17,13 @@
 <link rel="stylesheet" href="../stylesheets/demo.css" />
 
 <!-- Page CSS -->
-
+ 
+<style>
+  /* Highlight selected row */
+  .selected-row {
+    background-color: #cce5ff !important;
+  }
+</style>
 <!-- Helpers -->
 <script src="../javascripts/helpers.js"></script>
 <!--! Template customizer & Theme config files MUST be included after core stylesheets and helpers.js in the <head> section -->
@@ -33,7 +39,7 @@
 
     <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
       <div class="app-brand demo">
-        <a href="index.html" class="app-brand-link">
+        <a href="/Patient-List" class="app-brand-link">
           <span class="app-brand-logo demo">
             
           </span>
@@ -62,18 +68,60 @@
               </a>
             </li>
             <li class="menu-item">
+              <a href="/Patient-List" class="menu-link">
+                <div class="text-truncate" data-i18n="Without menu">List of Patients</div>
+              </a>
+            </li>
+            <!-- <li class="menu-item">
               <a href="#" class="menu-link">
                 <div class="text-truncate" data-i18n="Without navbar">History</div>
               </a>
-            </li>
+            </li> -->
             <li class="menu-item">
               <a href="/calender" class="menu-link">
                 <div class="text-truncate" data-i18n="Fluid">Calender</div>
               </a>
             </li>
-            <li class="menu-item">
+            <!-- <li class="menu-item">
               <a href="patient-registration.html" class="menu-link">
                 <div class="text-truncate" data-i18n="Without menu">IPD Registration</div>
+              </a>
+            </li> -->
+          </ul>
+        </li>
+
+        <!-- Masters -->
+        <li class="menu-item ">
+          <a href="javascript:void(0);" class="menu-link menu-toggle">
+            <i class="menu-icon tf-icons bx bx-list-ul"></i>
+
+            <div class="text-truncate" data-i18n="Layouts">Masters</div>
+          </a>
+
+          <ul class="menu-sub">
+            <li class="menu-item">
+              <a href="/doctor-Registration" class="menu-link">
+                <div class="text-truncate" data-i18n="Without menu">Doctor</div>
+              </a>
+            </li>
+            <li class="menu-item">
+              <a href="/add-employee" class="menu-link">
+                <div class="text-truncate" data-i18n="Without menu">Employee</div>
+              </a>
+            </li>
+            <li class="menu-item">
+              <a href="/add-package" class="menu-link">
+                <div class="text-truncate" data-i18n="Without menu">Package</div>
+              </a>
+            </li>
+            <li class="menu-item">
+              <a href="/add-service" class="menu-link">
+                <div class="text-truncate" data-i18n="Fluid">Service</div>
+              </a>
+            </li>
+            <li class="menu-item">
+              <a href="/add-prefix" class="menu-link">
+                <div class="text-truncate" data-i18n="Fluid">Prefix</div>
               </a>
             </li>
           </ul>
@@ -116,33 +164,50 @@
           <ul class="menu-sub">
             <li class="menu-item">
               <a
-                href="#"
+                href="/inventory/Current-item-stock"
                 class="menu-link"
-                target="_blank">
-                <div class="text-truncate" data-i18n="Landing">ITEMS</div>
+              >
+                <div class="text-truncate" data-i18n="Landing">CURRENT ITEM STOCK</div>
               </a>
             </li>
             <li class="menu-item">
               <a
-                href="#"
+                href="/inventory/stock-transaction"
                 class="menu-link"
-                target="_blank">
+              >
+                <div class="text-truncate" data-i18n="Landing">STOCK TRANSACTION</div>
+              </a>
+            </li>
+            <li class="menu-item">
+              <a
+                href="/inventory/item-list"
+                class="menu-link"
+              >
+                <div class="text-truncate" data-i18n="Landing">ITEMS</div>
+              </a>
+            </li>
+           
+            <li class="menu-item">
+              <a
+                href="/inventory/po-list"
+                class="menu-link"
+               >
                 <div class="text-truncate" data-i18n="Pricing">PO</div>
               </a>
             </li>
             <li class="menu-item">
               <a
-                href="#"
+                href="/inventory/grn-list"
                 class="menu-link"
-                target="_blank">
+              >
                 <div class="text-truncate" data-i18n="Pricing">GRN</div>
               </a>
             </li>
             <li class="menu-item">
               <a
-                href="#"
+                href="/inventory/indent-list"
                 class="menu-link"
-                target="_blank">
+               >
                 <div class="text-truncate" data-i18n="Pricing">INDENT</div>
               </a>
             </li>
@@ -152,6 +217,30 @@
                 class="menu-link"
                 target="_blank">
                 <div class="text-truncate" data-i18n="Pricing">CONSUMPTION</div>
+              </a>
+            </li>
+            <li class="menu-item">
+              <a
+                href="/inventory/approve-grn"
+                class="menu-link"
+                target="">
+                <div class="text-truncate" data-i18n="Pricing">Approve GRN</div>
+              </a>
+            </li>
+            <li class="menu-item">
+              <a
+                href="/inventory/approve-po"
+                class="menu-link"
+                target="">
+                <div class="text-truncate" data-i18n="Pricing">Approve PO</div>
+              </a>
+            </li>
+            <li class="menu-item">
+              <a
+                href="/inventory/approve-indent"
+                class="menu-link"
+                target="">
+                <div class="text-truncate" data-i18n="Pricing">Approve Indent</div>
               </a>
             </li>
           </ul>
@@ -202,9 +291,9 @@
             </li>
             <li class="menu-item">
               <a
-                href="#"
+                href="/billing/bill-list"
                 class="menu-link"
-                target="_blank">
+                target="">
                 <div class="text-truncate" data-i18n="Pricing">PHARMACY BILL</div>
               </a>
             </li>

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bill Details</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+    <div class="container mt-4">
+        <h2 class="text-center">Bill Details</h2>
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Patient Information</h5>
+                <p><strong>Name:</strong> <span id="patientName"></span></p>
+                <p><strong>Gender:</strong> <span id="patientGender"></span></p>
+                <p><strong>Age:</strong> <span id="patientAge"></span></p>
+                <p><strong>Mobile:</strong> <span id="patientMobile"></span></p>
+                <p><strong>Doctor:</strong> <span id="doctor"></span></p>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-body">
+                <h5 class="card-title">Bill Summary</h5>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Item Name</th>
+                            <th>Quantity</th>
+                            <th>UOM</th>
+                            <th>MRP</th>
+                            <th>Total</th>
+                            <th>GST Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody id="itemsTableBody"></tbody>
+                </table>
+                <p><strong>Discount Category:</strong> <span id="discountCategory"></span></p>
+                <p><strong>Discount Amount:</strong> ₹<span id="discountAmount"></span></p>
+                <p><strong>Tax Amount:</strong> ₹<span id="taxAmount"></span></p>
+                <p><strong>Net Amount:</strong> ₹<span id="netAmount"></span></p>
+                <p><strong>Remark:</strong> <span id="remark"></span></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const billId = '<%=billId%>';
+            if (!billId) {
+                alert("Bill ID is required");
+                return;
+            }
+            
+            axios.get(`/billing/getBill/${billId}`)
+                .then(response => {
+
+                    const bill = response.data;
+             
+                    document.getElementById("patientName").textContent = bill.patientName;
+                    document.getElementById("patientGender").textContent = bill.patientGender || "-";
+                    document.getElementById("patientAge").textContent = bill.patientAge || "-";
+                    document.getElementById("patientMobile").textContent = bill.patientMobile || "-";
+                    document.getElementById("doctor").textContent = bill.doctor || "-";
+                    
+                    document.getElementById("discountCategory").textContent = bill.discountCategory || "N/A";
+                    document.getElementById("discountAmount").textContent = bill.discountAmount || "0.00";
+                    document.getElementById("taxAmount").textContent = bill.taxAmount || "0.00";
+                    document.getElementById("netAmount").textContent = bill.netAmount || "0.00";
+                    document.getElementById("remark").textContent = bill.remark || "N/A";
+                    
+                    const itemsTableBody = document.getElementById("itemsTableBody");
+                    itemsTableBody.innerHTML = "";
+                    bill.items.forEach((item, index) => {
+                        const row = `<tr>
+                            <td>${index + 1}</td>
+                            <td>${item.name}</td>
+                            <td>${item.quantity}</td>
+                            <td>${item.uom}</td>
+                            <td>₹${item.mrp}</td>
+                            <td>₹${item.total}</td>
+                            <td>₹${item.gstAmount}</td>
+                        </tr>`;
+                        itemsTableBody.innerHTML += row;
+                    });
+                })
+                .catch(error => {
+                    console.error("Error fetching bill details:", error);
+                    alert("Failed to load bill details.");
+                });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en" class="light-style layout-menu-fixed layout-compact" dir="ltr" data-theme="theme-default">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bill List</title>
+    <%- include('../header') -%>
+</head>
+<body>
+    <div class="content-wrapper">
+        <div class="container-xxl flex-grow-1 container-p-y">
+            <div class="card">
+                <div class="row card-header flex-column flex-md-row pb-4">
+                    <div class="d-md-flex justify-content-between align-items-center col-md-auto me-auto">
+                        <h5 class="card-title mb-0">Bill List</h5>
+                    </div>
+                    <div class="d-md-flex justify-content-between align-items-center col-md-auto ms-auto">
+                        <div class="btn-group">
+                            <input type="search" class="form-control" id="searchBox" placeholder="Search Items">
+                        </div>
+                    <button class="btn btn-primary ms-2" onclick="window.location.href='/billing/bill'">
+                            <i class="bx bx-plus"></i> New Bill
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="table-responsive text-nowrap">
+                    <table class="table" id="billsTable">
+                        <thead>
+                            <tr>
+                                <th>Bill ID</th>
+                                <th>Patient Name</th>
+                                <th>Doctor</th>
+                                <th>Net Amount</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="billsBody"></tbody>
+                    </table>
+                    <div id="paginationControls"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <%- include('../footer') -%>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            axios.get("/billing/getBills")
+                .then(response => {
+                    const bills = response.data.bills;
+                    console.log(bills);
+                    const tbody = document.getElementById("billsBody");
+                    tbody.innerHTML = "";
+
+                    bills.forEach(bill => {
+                        const row = `
+                            <tr>
+                                <td>${bill.id}</td>
+                                <td>${bill.patientName || "N/A"}</td>
+                                <td>${bill.doctor || "N/A"}</td>
+                                <td>${bill.netAmount}</td>
+                                <td>${new Date(bill.createdAt).toLocaleDateString()}</td>
+                                <td>
+                                    <button class="btn btn-primary" onclick="viewBill('${bill.encryptedId}')">View</button>
+                                </td>
+                            </tr>
+                        `;
+                        tbody.innerHTML += row;
+                    });
+
+                    pagi_search('#searchBox', '#billsTable', '#paginationControls');
+                })
+                .catch(error => {
+                    console.error("Error fetching bills:", error);
+                });
+        });
+
+        function viewBill(billId) {
+            window.location.href = `/billing/PrintBill?id=${billId}`;
+        }
+    </script>
+</body>
+</html>

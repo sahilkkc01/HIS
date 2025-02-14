@@ -80,7 +80,7 @@
         <script>
           $('#ServiceCategory').on('change', function () {
             if ($(this).val() === 'add-new') {
-              createSmallModal("smallModal", "Category", "/addModal", "ServiceCategory")
+              createSmallModal("smallModal", "Category", "/addModal", "ServiceCategory","ServiceCategory")
             }
           });
           loadDropdown('ServiceCategory', 'ServiceCategory','name', '');
