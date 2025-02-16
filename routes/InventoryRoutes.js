@@ -3,7 +3,7 @@ var router = express.Router();
 const multer = require("multer");
 const path = require("path");
 const sjcl = require("sjcl");
-const { getAllItems, createGRN, createIndent, getAllGRNs, getAllIndents, getItemById, approveGrn, rejectGrn, getCurrentStock, getStockTransaction, savePo, createPO, getAllPOs, approvePo, rejectPo, getIndentsByStore, approveIndent, rejectIndent, getPOsByStore } = require("../controllers/InventoryCtrls");
+const { getAllItems, createGRN, createIndent, getAllGRNs, getAllIndents, getItemById, approveGrn, rejectGrn, getCurrentStock, getStockTransaction, savePo, createPO, getAllPOs, approvePo, rejectPo, getIndentsByStore, approveIndent, rejectIndent, getPOsByStore, createIssue } = require("../controllers/InventoryCtrls");
 
 // Encryption function
 function encryptDataForUrl(data) {
@@ -74,6 +74,9 @@ router.get("/approve-po", function (req, res, next) {
 router.get("/approve-indent", function (req, res, next) {
     res.render("Inventory/ApproveIndent");
   });
+router.get("/issue-item", function (req, res, next) {
+    res.render("Inventory/IssueItem");
+  });
 
 router.get("/getItems", getAllItems);
 router.get("/getCurrentStock", getCurrentStock);
@@ -93,6 +96,7 @@ router.post("/approveIndent/:indentId", approveIndent);
 router.post("/rejectIndent/:indentId", rejectIndent);
 router.get("/getIndentsByStore/:store", getIndentsByStore);
 router.get("/getPOsByStore/:store", getPOsByStore);
+router.post('/issueToStore',createIssue)
 
 
 module.exports = { router};

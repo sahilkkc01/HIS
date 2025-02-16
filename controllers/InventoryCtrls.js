@@ -1,5 +1,5 @@
 const { Items, ItemDetails } = require("../models/HisSchema");
-const { GRN, Indent, StockTransaction, CurrentStock, PurchaseOrder } = require("../models/InventorySchema");
+const { GRN, Indent, StockTransaction, CurrentStock, PurchaseOrder, IssueToStore } = require("../models/InventorySchema");
 const sjcl = require("sjcl");
 
 const secretKey='his'
@@ -660,7 +660,7 @@ exports.rejectPo = async (req, res) => {
 exports.getIndentsByStore = async (req, res) => {
   try {
     const { store } = req.params;
-    const clinic_id = req.user.clinic_id; // Assuming clinic_id is retrieved from req.user
+    const clinic_id = req.user.clinic_id;
 
     if (!store) {
       return res.status(400).json({ message: "Store name is required." });
@@ -674,18 +674,48 @@ exports.getIndentsByStore = async (req, res) => {
     const indents = await Indent.findAll({
       where: {
         toStore: store,
-        clinic_id: clinic_id, // Ensure only indents for the correct clinic are retrieved
-        status:"Approved"
+        clinic_id: clinic_id,
+        status: "Approved",
       },
       order: [["createdAt", "DESC"]],
+      raw: true, // Ensures plain JSON output
     });
 
-    return res.json({ success: true, indents });
+    // Fetch stock details for the given store and clinic
+    const stockItems = await CurrentStock.findAll({
+      where: {
+        store: store,
+        clinic_id: clinic_id,
+      },
+      attributes: ["itemName", "batchCode", "expiryDate", "availableStock", "mrp", "costPrice", "gst"],
+      raw: true,
+    });
+
+    console.log(stockItems);
+
+    // Attach stock details within each indent's item field
+    const indentsWithStock = indents.map(indent => {
+      return {
+        ...indent,
+        items: indent.items.map(item => {
+          const stockItem = stockItems.find(stock => stock.itemName === item.item_name);
+          return {
+            ...item,
+            stockDetails: stockItem || null, // Add stock details if available, else null
+          };
+        }),
+      };
+    });
+
+    console.log(indentsWithStock);
+
+    return res.json({ success: true, indents: indentsWithStock });
   } catch (error) {
-    console.error("Error fetching indents:", error);
+    console.error("Error fetching indents with stock details:", error);
     return res.status(500).json({ message: "Internal server error." });
   }
 };
+
 
 // Approve Indent
 exports.approveIndent = async (req, res) => {
@@ -761,5 +791,114 @@ exports.getPOsByStore = async (req, res) => {
   } catch (error) {
     console.error("Error fetching purchase orders:", error);
     return res.status(500).json({ message: "Internal server error." });
+  }
+};
+
+
+exports.createIssue = async (req, res) => {
+  console.log(req.body);
+  try {
+    const {
+      issueNo,
+      issueDate,
+      fromStore,
+      toStore,
+      indentNo,
+      netAmount,
+      remark,
+      tableData, // Contains issued items
+    } = req.body;
+
+    const clinicId = req.user?.clinic_id; // Get clinic ID from logged-in user
+
+    if (!clinicId) {
+      return res.status(401).json({ message: "Unauthorized: Please log in" });
+    }
+
+    if (!indentNo) {
+      return res.status(400).json({ message: "Indent Number is required" });
+    }
+
+    if (!tableData || tableData.length === 0) {
+      return res.status(400).json({ message: "Please add at least one item" });
+    }
+
+    if (!issueDate || !fromStore || !toStore || !netAmount) {
+      return res.status(400).json({ message: "Missing required fields" });
+    }
+
+    // Check if an issue with the same number exists
+    const existingIssue = await IssueToStore.findOne({ where: { issueNo } });
+    if (existingIssue) {
+      return res.status(400).json({ message: "Issue with this number already exists" });
+    }
+
+    // Fetch the Indent record
+    const indentRecord = await Indent.findOne({ where: { indentNo, clinic_id: clinicId } });
+
+    if (!indentRecord) {
+      return res.status(404).json({ message: "Indent record not found" });
+    }
+
+    let indentItems = indentRecord.items; // Sequelize should return JSON
+
+    // Ensure Issue Quantity does not exceed Indent Pending Quantity or Available Quantity
+    tableData.forEach(issueItem => {
+      const indentItem = indentItems.find(item => item.item_name === issueItem.item_name);
+
+      if (!indentItem) {
+        return res.status(400).json({ message: `Item ${issueItem.item_name} not found in Indent` });
+      }
+
+      // Initialize indentPendingQty if missing
+      if (indentItem.indentPendingQty === undefined) {
+        indentItem.indentPendingQty = indentItem.indentQty;
+      }
+
+      if (issueItem.isseuQty > indentItem.indentPendingQty) {
+        return res.status(400).json({ message: `Issue Quantity for ${issueItem.item_name} cannot exceed Indent Pending Quantity` });
+      }
+
+      if (issueItem.isseuQty > indentItem.availableQty) {
+        return res.status(400).json({ message: `Issue Quantity for ${issueItem.item_name} cannot exceed Available Quantity` });
+      }
+
+      console.log("Before Update:", indentItem);
+
+      // Reduce indentPendingQty
+      indentItem.indentPendingQty = Math.max(0, indentItem.indentPendingQty - issueItem.isseuQty);
+
+      console.log("After Update:", indentItem);
+    });
+
+    // Update Indent record with new pending quantities
+    await Indent.update(
+      { items: indentItems },
+      { where: { indentNo, clinic_id: clinicId } }
+    );
+
+    console.log("Updated Indent Record:", indentRecord.items);
+
+    // Create Issue record
+    const newIssue = await Issue.create({
+      clinic_id: clinicId,
+      issueNo,
+      issueDate,
+      fromStore,
+      toStore,
+      indentNo,
+      items: tableData, // Store items as JSON
+      netAmount,
+      remark,
+      issuedBy: req.user.name,
+    });
+
+    return res.status(201).json({
+      message: "Issue created successfully",
+      data: newIssue,
+    });
+  } catch (error) {
+    console.error("Error creating Issue:", error);
+    return res.status(500).json({ message: "Internal server error", error: error.message });
   }
 };

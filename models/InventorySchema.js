@@ -398,10 +398,59 @@ const GRN = sequelize.define(
     }
   );
 
+const IssueToStore = sequelize.define("IssueToStore", {
+    clinic_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+    },
+    issueNo: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true,
+    },
+    issueDate: {
+        type: DataTypes.DATE,
+        allowNull: false,
+    },
+    fromStore: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    },
+    toStore: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    },
+    indentNo: {
+        type: DataTypes.STRING,
+        allowNull: false, 
+    },
+    items: {
+        type: DataTypes.JSON, // Store items as a JSON array
+        allowNull: false,
+    },
+    netAmount: {
+        type: DataTypes.DECIMAL(10, 2), // Stores up to 99999999.99
+        allowNull: false,
+        defaultValue: 0.00,
+    },
+    remark: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+    },
+    issuedBy: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    },
+}, {
+    tableName: "issuetostore", 
+    timestamps: true, 
+});
+IssueToStore.sync()
   module.exports={
     GRN,
     Indent,
     CurrentStock,
     StockTransaction,
-    PurchaseOrder
+    PurchaseOrder,
+    IssueToStore
   }

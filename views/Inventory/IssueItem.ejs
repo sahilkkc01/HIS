@@ -1,0 +1,518 @@
+<!doctype html>
+<html
+  lang="en"
+  class="light-style layout-menu-fixed layout-compact"
+  dir="ltr"
+  data-theme="theme-default"
+  data-assets-path="../assets/"
+  data-template="vertical-menu-template-free"
+  data-style="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+
+    <title>Issue to Store</title>
+
+    <%- include('../header') -%>
+
+          <!-- Content wrapper -->
+          <div class="content-wrapper">
+            <!-- Content -->
+            <style>.displaynone{display:none;}.bx-qr-scan{font-size:80px;}</style>
+            <div class="container-xxl flex-grow-1 container-p-y">
+                <form id="issueToStore" method="POST">
+              <div class="row">
+                  <!-- Vertical & Horizontal Scrollbars -->
+                  <div class="col-12">
+                      <div class="card overflow-hidden">
+                          <h5 class="card-header">Issue to Store</h5>
+                          <div class="card">
+                              <!-- Account -->
+                              <div class="card-body pt-4">
+                                
+                                    <div id="errordiv"></div>
+                                      <!-- First Row -->
+                                      <div class="row g-6">
+                                          <div class="col-md-4">
+                                              <label for="issueNo" class="form-label">Issue No</label>
+                                              <input class="form-control" disabled type="text" id="issueNo" name="issueNo" readonly value="" autofocus>
+                                          </div>
+                                          <div class="col-md-4">
+                                              <label for="issueDate" class="form-label">Issue Date</label>
+                                              <input class="form-control" readonly type="date" id="issueDate" name="issueDate" value="">
+                                          </div>
+                                          
+                                      </div>
+          
+                                      <!-- Second Row -->
+                                      <div class="row g-6 mt-3">
+                                          <div class="col-md-4">
+                                              <label for="store" class="form-label">From Store<span class="required-star">*</span></label>
+                                              <select id="fromStore" name="fromStore"  class="form-control select2" data-validation="required" data-error-message="Please enter store">
+                                                  <option value="">Select</option>
+                                                  <option value="add-new">add-new</option>
+                                              </select>
+                                          </div>
+                                          <div class="col-md-4">
+                                              <label for="store" class="form-label">To Store<span class="required-star">*</span></label>
+                                              <select id="toStore" name="toStore"  class="form-control select2" data-validation="required" data-error-message="Please enter to store">
+                                                  <option value="">Select</option>
+                                                  <option value="add-new">add-new</option>
+                                              </select>
+                                          </div>
+                                       
+                                      </div>
+          
+                                    
+          
+                                      <!-- Fourth Row: Get Items -->
+                                      <div class="row g-6 mt-3">
+                                          <div class="col-md-12">
+                                              <div class="form-check-label">
+                                                
+                                                  <div class="radio d-flex align-items-center mt-2">
+                                                      <label class="form-check-label pt-1 pr-2"> Agaisnst Indent</label>
+                                                      <button type="button" id="getIndents" class="btn btn-primary btn-sm ms-2">
+                                                          <strong>Get Indents</strong>
+                                                      </button>
+                                                  </div>
+                                              </div>
+                                          </div>
+                                      </div>
+                                
+                              </div>
+                              <!-- /Account -->
+                          </div>
+                      </div>
+                  </div>
+                  <!--/ Vertical & Horizontal Scrollbars -->
+          
+                  <!-- Items Table -->
+                  <div class="card overflow-hidden mt-3">
+                      
+                      <div id="indentInfo" class="alert alert-primary text-center mx-3" style="display: none;">
+                        Indent No: <strong id="selectedIndentNo"></strong>
+                        <input type="hidden" name="indentNo" id="indentNo">
+                    </div>
+                    
+                      <div class="table-responsive text-nowrap">
+                          <table class="table table-bordered" id="dataTable">
+                              <thead>
+                                  <tr>
+                                      <th>Item Name</th>
+                                      <th>Batch Code</th>
+                                      <th>Expiry Date</th>
+                                      <th style="min-width: 140px;">Indent Qty</th>
+                                      <th>Indent Pending Qty</th>
+                                      <th>Available Qty</th>
+                                      <th>Issue Qty*</th>
+                                      <th>UOM</th>
+                                      <th style="min-width: 142px;">MRP/Unit</th>
+                                      <th>Total MRP</th>
+                                      <th  style="min-width: 142px;">Cost/Unit</th>
+                                      <th>Total Cost</th>
+                                      <th >GST %</th>
+                                      <th>GST Amount</th>
+                                      <th>Net Amount</th>
+                                   
+                                      <th>Action</th>
+                                  </tr>
+                              </thead>
+                              <tbody class="table-border-bottom-0" id="mainTblBody">
+                                 
+                              </tbody>
+                          </table>
+                      </div>
+                  </div>
+          
+                  <!-- Total Amount and Remarks Section -->
+                  <div class="card overflow-hidden mt-3">
+                      <div class="card-body pt-4">
+                          <div class="row g-6">
+                              <div class="col-md-3">
+                                  <label class="form-label">Net Amount: </label>
+                                  <input class="form-control" id="netAmount" name="netAmount" type="number" readonly>
+                              </div>
+                              <div class="col-md-6">
+                                  <label class="form-label">Remarks: </label>
+                                  <textarea class="form-control" id="remark" name="remark" placeholder="Enter remarks"></textarea>
+                              </div>
+                          </div>
+                          <div id="loadingIndicator"></div>
+                          <div class="mt-6">
+                              <button type="submit" class="btn btn-primary me-3">Save</button>
+                              <button type="reset" onclick=" window.location.href = '/inventory/grn-list'" class="btn btn-outline-secondary">Cancel</button>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+                </form>
+          </div>
+            <!-- / Content -->
+					  
+            <div class="modal fade" id="indentModal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-lg" role="document">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title">Indent Details</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+              
+                      <!-- Search Box -->
+                      <div class="mb-3">
+                        <input type="text" id="IndentSearch" class="form-control" placeholder="Search Indent...">
+                      </div>
+              
+                      <!-- Indent Table -->
+                      <div class="table-responsive text-nowrap">
+                        <table class="table" id="tblid">
+                          <thead>
+                            <tr>
+                              <th>Indent No</th>
+                              <th>Indent Date</th>
+                              <th>From Store</th>
+                              <th>To Store</th>
+                              <th>Requested By</th>
+                              <th>Approved By</th>
+                              <th>Status</th>
+                              <th>Total Amount</th>
+                              <th>Patient Name</th>
+                              <th>Contact No</th>
+                              <th>Remark</th>
+                            </tr>
+                          </thead>
+                          <tbody id="indentBody" class="table-border-bottom-0"></tbody>
+                        </table>
+                        <div id="paginationControls"></div>
+                      </div>
+              
+                      <!-- Indent Items Table -->
+                      <div class="table-responsive text-nowrap mt-3">
+                        <h5>Indent Items</h5>
+                        <table class="table" id="itemsTable">
+                          <thead>
+                            <tr>
+                              <th>Item Name</th>
+                              <th>UOM</th>
+                              <th>MRP</th>
+                              <th>Cost Price</th>
+                              <th>GST %</th>
+                              <th>Indent Qty</th>
+                              <th>Indent Pending Qty</th>
+                              <th>Available Qty</th>
+                              <th>Batch Code</th>
+                              <th>Expiry Date</th>
+                            </tr>
+                          </thead>
+                          <tbody id="itemsBody" class="table-border-bottom-0"></tbody>
+                        </table>
+                      </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" id="addIndent" class="btn btn-primary me-2">Add</button>
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                      </div>
+                      
+                  </div>
+                </div>
+              </div>
+  
+              
+
+          <%- include('../footer') -%>
+       <script>
+        document.addEventListener("DOMContentLoaded", function () {
+    const searchBox = document.getElementById("searchBox");
+    const searchResults = document.getElementById("searchResults");
+    const mainTblBody = document.getElementById("mainTblBody");
+  
+    const netAmountInput = document.getElementById("netAmount");
+   
+    window.removeItem = function (button) {
+        button.closest("tr").remove();
+        updateTotalValues(); // Recalculate total after removing an item
+    };
+    function attachEventListeners(row) {
+    const isseuQty = row.querySelector(".isseuQty");
+    const mrpInput = row.querySelector(".mrpUnit");
+    const costPriceInput = row.querySelector(".costPrice");
+    const indentPendingQty = parseFloat(row.querySelector(".indentPendingQty").value) || 0; // Get pending indent qty
+    const availableStock = parseFloat(row.querySelector(".availableQty").value) || 0; // Get available stock
+
+    isseuQty.addEventListener("input", updateAmounts);
+
+    function updateAmounts() {
+        const totalMRP = row.querySelector(".totalMrp");
+        const totalCost = row.querySelector(".totalCost");
+        const gstAmount = row.querySelector(".gstAmount");
+        const netAmount = row.querySelector(".netAmount");
+
+        let mrp = parseFloat(mrpInput.value) || 0;
+        let costPrice = parseFloat(costPriceInput.value) || 0;
+        let gstPercent = parseFloat(row.cells[12].textContent) || 0;
+        let issue = parseInt(isseuQty.value) || 0;
+
+        // Validate Issue Quantity (should not exceed Pending indent Quantity or Available Stock)
+        if (issue > indentPendingQty) {
+            alert("Issue Quantity cannot exceed Pending Indent Quantity.");
+            isseuQty.value = indentPendingQty;
+            issue = indentPendingQty;
+        }
+        if (issue > availableStock) {
+            alert("Issue Quantity cannot exceed Available Stock.");
+            isseuQty.value = availableStock;
+            issue = availableStock;
+        }
+
+        const totalMRPValue = issue * mrp;
+        const totalCostValue = issue * costPrice;
+        const gst = (totalCostValue * gstPercent) / 100;
+        const netTotal = totalCostValue + gst;
+
+        totalMRP.textContent = totalMRPValue.toFixed(2);
+        totalCost.textContent = totalCostValue.toFixed(2);
+        gstAmount.textContent = gst.toFixed(2);
+        netAmount.textContent = netTotal.toFixed(2);
+
+        updateTotalValues();
+    }
+}
+
+function updateTotalValues() {
+    let totalAmount = 0;
+    let totalGst = 0;
+    let netAmount = 0;
+
+    document.querySelectorAll("#mainTblBody tr").forEach(row => {
+        totalAmount += parseFloat(row.querySelector(".totalCost").textContent) || 0;
+        totalGst += parseFloat(row.querySelector(".gstAmount").textContent) || 0;
+        netAmount += parseFloat(row.querySelector(".netAmount").textContent) || 0;
+    });
+
+    document.getElementById("netAmount").value = (netAmount ).toFixed(2);
+}
+
+
+function fetchIndents(store) {
+            if (!store) {
+              alert("Please select a store first.");
+              return;
+            }
+      
+            axios.get(`/inventory/getIndentsByStore/${encodeURIComponent(store)}`)
+              .then(response => {
+                console.log(response)
+                const indentList = response.data.indents;
+                const tbody = document.getElementById("indentBody");
+                tbody.innerHTML = "";
+      
+                indentList.forEach(indent => {
+                  const row = `
+                    <tr data-items='${JSON.stringify(indent.items)}' data-id="${indent.id}" data-indentno="${indent.indentNo}">
+                      <td>${indent.indentNo}</td>
+                      <td>${indent.indentDate}</td>
+                      <td>${indent.fromStore}</td>
+                      <td>${indent.toStore}</td>
+                      <td>${indent.requestedBy}</td>
+                      <td>${indent.approvedBy || "N/A"}</td>
+                      <td>${indent.status}</td>
+                      <td>${indent.totalAmount}</td>
+                      <td>${indent.patientName || "N/A"}</td>
+                      <td>${indent.contactNo || "N/A"}</td>
+                      <td>${indent.remark || "N/A"}</td>
+                    </tr>
+                  `;
+                  tbody.innerHTML += row;
+                });
+      
+                pagi_search("#IndentSearch", "#tblid", "#paginationControls");
+              })
+              .catch(error => console.error("Error fetching indent data:", error));
+          }
+      
+document.getElementById("getIndents").addEventListener("click", function () {
+  const storeElement = document.getElementById("fromStore");
+  const store = storeElement.value;
+
+  if (!store) {
+    alert("Please select from store.");
+    return;
+  }
+
+  fetchIndents(store);
+  $("#indentModal").modal("show"); // Show PO modal
+});
+
+let selectedIndentNumber = null;
+let selectedIndentItems = [];
+// Handle indent selection to show items
+document.getElementById("tblid").addEventListener("click", function (event) {
+    const row = event.target.closest("tr");
+    if (!row || !row.dataset.items) return;
+
+    document.querySelectorAll("#tblid tr").forEach(tr => tr.classList.remove("selected-row"));
+    row.classList.add("selected-row");
+
+    selectedIndentNumber = row.dataset.indentno; // Store the selected indent number
+    selectedIndentItems = JSON.parse(row.dataset.items); // Store selected indent items
+    $('#indentNo').val(row.dataset.indentno)
+    const itemsBody = document.getElementById("itemsBody");
+    itemsBody.innerHTML = "";
+
+    selectedIndentItems.forEach(item => {
+        const itemRow = `
+            <tr>
+                <td>${item.item_name}</td>
+                <td>${item.uom}</td>
+                <td>${item.mrp}</td>
+                <td>${item.cost_price}</td>
+                <td>${item.gst}</td>
+                <td>${item.indentQty}</td>
+                <td>${item.indentPendingQty || item.indentQty}</td>
+                <td>${item.stockDetails?.availableStock || 0}</td>
+                <td>${item.stockDetails?.batchCode || 'N/A'}</td>
+                <td>${item.stockDetails?.expiryDate || 'N/A'}</td>
+            </tr>
+        `;
+        itemsBody.innerHTML += itemRow;
+    });
+});
+
+// When "Add" button is clicked, insert selected indent items into the main table
+// When "Add" button is clicked, insert selected indent items into the main table
+document.getElementById("addIndent").addEventListener("click", function () {
+    if (selectedIndentItems.length === 0) {
+        alert("Please select an indent first.");
+        return;
+    }
+
+    if (!selectedIndentNumber) {
+        alert("Indent number is missing. Please select an indent again.");
+        return;
+    }
+
+    // Update and show Indent No.
+    document.getElementById("selectedIndentNo").textContent = selectedIndentNumber; // Set the indent number
+    document.getElementById("indentInfo").style.display = "block"; // Show the indent info div
+
+    const mainTableBody = document.getElementById("mainTblBody");
+    mainTableBody.innerHTML = ""; // Clear existing items before adding new ones
+
+    let unavailableItems = [];
+
+    selectedIndentItems.forEach(item => {
+        const stockDetails = item.stockDetails || {}; // Ensure stockDetails exists to prevent errors
+        const availableStock = stockDetails.availableStock || 0;
+
+        if (availableStock <= 0) {
+            unavailableItems.push(item.item_name);
+            return; // Skip adding this item to the table
+        }
+
+        const newRow = document.createElement("tr");
+        newRow.innerHTML = `
+            <td data-key="item_name">${item.item_name}</td>
+            <td><input class="form-control batchCode" type="text" readonly data-key="batchCode" value="${stockDetails.batchCode || ''}"></td>
+            <td><input class="form-control expiry" type="date" readonly data-key="expiry" value="${stockDetails.expiryDate || ''}"></td>
+            <td><input class="form-control indentQty" type="number" readonly data-key="indentQty" value="${item.indentQty}"></td>
+            <td><input class="form-control indentPendingQty" type="number" readonly data-key="indentPendingQty" value="${item.indentPendingQty || item.indentQty}"></td>
+            <td><input class="form-control availableQty" type="number" readonly data-key="availableQty" value="${availableStock}"></td>
+            <td><input class="form-control isseuQty" data-validation="required" data-error-message="Issue Qty is required." type="number" data-key="isseuQty" value="0" min="1"></td>
+            <td data-key="uom">${stockDetails.uom || ''}</td>
+            <td><input class="form-control mrpUnit" step="any" readonly type="number" data-key="mrpUnit" value="${stockDetails.mrp || 0}" min="0"></td>
+            <td class="totalMrp" data-key="totalMrp">0.00</td>
+            <td><input class="form-control costPrice" step="any" readonly type="number" data-key="costPrice" value="${stockDetails.costPrice || 0}" min="0"></td>
+            <td class="totalCost" data-key="totalCost">0.00</td>
+            <td data-key="gst">${stockDetails.gst || 0}</td>
+            <td class="gstAmount" data-key="gstAmount">0.00</td>
+            <td class="netAmount" data-key="netAmount">0.00</td>
+            <td>
+                <button class="btn btn-icon btn-outline-danger" onclick="removeItem(this)">
+                    <i class="bx bx-trash bx-sm"></i>
+                </button>
+            </td>
+        `;
+
+        mainTableBody.appendChild(newRow);
+        attachEventListeners(newRow);
+    });
+
+    if (unavailableItems.length > 0) {
+        alert(`The following items have zero or insufficient stock and were not added:\n\n${unavailableItems.join(", ")}`);
+    }
+
+    $("#indentModal").modal("hide"); // Close modal after adding items
+    updateTotalValues();
+});
+
+});
+
+$('#fromStore').on('change', function () {
+            if ($(this).val() === 'add-new') {
+              createSmallModal("smallModal", "Store", "/addModal", "Store","fromStore")
+            }
+          });
+
+$('#toStore').on('change', function () {
+            if ($(this).val() === 'add-new') {
+              createSmallModal("smallModal", "Store", "/addModal", "Store","toStore")
+            }
+          });
+loadDropdown('fromStore', 'Store','name', '');
+loadDropdown('toStore', 'Store','name', '');
+
+ $("#issueDate").val(new Date().toISOString().split('T')[0]);
+
+       </script>
+      <script>
+        $(document).ready(function () {
+          console.log("Document is ready");
+      
+          const formId = '#issueToStore';
+          const errorDivId = '#errordiv';
+      
+          $(formId).on('submit', async function (event) {
+            event.preventDefault(); // Prevent default form submission
+      
+            const { isValid, errorMessage } = validateForm(formId);
+      
+            if (isValid) {
+              const url = '/Inventory/issueToStore';
+              const loadingDiv = '#loadingIndicator';
+      
+              try {
+                $(loadingDiv).show(); // Show loading indicator
+      
+                // Collect form data manually
+                const tblid='#dataTable';
+                const formData = collectFormDataWithTbl(formId,tblid);
+                console.log('Collected Form Data:', formData);
+      
+                // Make Axios POST request
+                const response = await axios.post(url, formData, {
+                  headers: { 'Content-Type': 'application/json' }
+                });
+      
+                console.log('Success:', response.data);
+                $("#issueNo").val(response.data.grnNo);
+                $(errorDivId).removeClass('alert-danger').addClass('alert-success').text(response.data.message).show();
+      
+               
+              } catch (error) {
+                console.error('Error:', error);
+                $(errorDivId).removeClass('alert-success').addClass('alert-danger').text(` ${error.response?.data?.message || 'Unknown error'}`).show();
+              } finally {
+                $(loadingDiv).hide(); // Hide loading indicator after submission
+              }
+            } else {
+              $(errorDivId).removeClass('alert-success').addClass('alert-danger').text(errorMessage).show();
+            }
+          });
+      
+         
+         });
+      </script>
+      
