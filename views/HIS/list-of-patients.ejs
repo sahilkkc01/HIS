@@ -6,124 +6,232 @@
   data-theme="theme-default"
   data-assets-path="../assets/"
   data-template="vertical-menu-template-free"
-  data-style="light">
+  data-style="light"
+>
   <head>
     <meta charset="utf-8" />
     <meta
       name="viewport"
-      content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
-
+      content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"
+    />
     <title>List of Patients</title>
+    <!-- your CSS / assets here -->
+    <%- include('../header') -%>
+  </head>
 
-  <%- include('../header') -%>
+  <body>
+  
+    <div class="content-wrapper">
+      <div class="container-xxl flex-grow-1 container-p-y">
+        <div class="card mb-4">
+          <div class="card-header d-flex flex-column flex-md-row justify-content-between align-items-center">
+            <h5 class="card-title mb-0">All Patients</h5>
+            <button
+              class="btn btn-primary"
+              onclick="window.location.href='/patient-registration'"
+            >
+              <i class="bx bx-plus me-1"></i> New Registration
+            </button>
+          </div>
 
-          <!-- Content wrapper -->
-          <div class="content-wrapper">
-            <!-- Content -->
-            <div class="container-xxl flex-grow-1 container-p-y">
-              <!-- Basic Bootstrap Table -->
-              <div class="card">
-                <div class="row card-header flex-column flex-md-row pb-4">
-				<div class="d-md-flex justify-content-between align-items-center dt-layout-start col-md-auto me-auto mt-0">
-				<h5 class="card-title mb-0 text-md-start text-center">All Patient</h5></div>
-				<div class="d-md-flex justify-content-between align-items-center dt-layout-end col-md-auto ms-auto mt-0">
-				
-				<div class="dt-buttons btn-group flex-wrap mb-0"> 
-				
-				<div class="btn-group">
-				<input type="search" class="form-control ms-4" id="searchBox" placeholder="Search" aria-controls="DataTables_Table_1">
-				
-				<button class="btn buttons-collection btn-label-primary dropdown-toggle me-4" tabindex="0" aria-controls="DataTables_Table_0" type="button" aria-haspopup="dialog" aria-expanded="false"><span><span class="d-flex align-items-center gap-2"><i class="icon-base bx bx-export me-sm-1"></i> <span class="d-none d-sm-inline-block">Export</span></span></span></button></div> 
-				
-				<button class="btn create-new btn-primary" tabindex="0" onclick=" window.location.href = '/patient-registration'" aria-controls="DataTables_Table_0" type="button"><span><span class="d-flex align-items-center gap-2"><i class="icon-base bx bx-plus icon-sm"></i> <span class="d-none d-sm-inline-block">New Registration</span></span></span></button> 
-				  </div>
-				 </div>
-				</div>
-				
-                <div class="table-responsive text-nowrap">
-                  <table class="table" id="tblid">
-                    <thead>
-                      <tr>
-                        <th>UHID</th>
-                        <th>Name</th>
-                        <th>Mobile</th>
-                        <th>Appointment</th>
-                        <th>Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody id="patientTbody" class="table-border-bottom-0">
+          <div class="card-body">
+         <!-- in your search form -->
+<form id="searchForm" class="row g-3 mb-3">
+  <div class="col-md-4">
+    <input
+      type="text"
+      class="form-control"
+      id="searchName"
+      placeholder="Search by name"
+    />
+  </div>
+  <div class="col-md-4">
+    <input
+      type="email"
+      class="form-control"
+      id="searchEmail"
+      placeholder="Search by email"
+    />
+  </div>
+  <div class="col-md-4">
+    <input
+      type="text"
+      class="form-control"
+      id="searchMobile"
+      placeholder="Search by mobile"
+    />
+  </div>
+  <div class="col-12 d-grid">
+    <button type="submit" class="btn btn-outline-primary">
+      <i class="bx bx-search me-1"></i> Search
+    </button>
+  </div>
+</form>
 
-                   </tbody>
-                 
-                  </table>
-                  <div id="paginationControls"></div>
-                </div>
-              </div>
-              <!--/ Basic Bootstrap Table -->
+
+            <div class="table-responsive text-nowrap">
+              <table class="table" id="tblid">
+                <thead>
+                  <tr>
+                    <th>UHID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Mobile</th>
+                    <th>Appointment</th>
+                    <th>EMR</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="patientTbody"></tbody>
+              </table>
             </div>
-            <!-- / Content -->
 
-          <%- include('../footer') -%>
+            <nav aria-label="Patient pages">
+              <ul id="paginationControls" class="pagination justify-content-center"></ul>
+            </nav>
+          </div>
+        </div>
+      </div>
+    </div>
 
+    <%- include('../footer') -%>
+
+    <script>
+document.addEventListener("DOMContentLoaded", () => {
+  const tbody    = document.getElementById("patientTbody");
+  const pager    = document.getElementById("paginationControls");
+  const form     = document.getElementById("searchForm");
+  const inpName  = document.getElementById("searchName");
+  const inpEmail = document.getElementById("searchEmail");
+  const inpMobile= document.getElementById("searchMobile");
+
+  let state = {
+    page:   1,
+    limit:  20,
+    totalPages: 1,
+    name:   "",
+    email:  "",
+    mobile: ""
+  };
+
+  function loadPatients() {
+    axios.get("/patients-with-appointments", {
+      params: {
+        page:   state.page,
+        limit:  state.limit,
+        name:   state.name,
+        email:  state.email,
+        mobile: state.mobile
+      }
+    })
+    .then(({ data }) => {
+      if (!data.success) return;
+      const { patients, pagination } = data;
+      state.totalPages  = pagination.totalPages;
+      state.page        = pagination.currentPage;
+
+      tbody.innerHTML = "";
+      patients.forEach(p => {
+        const appt = p.latestAppointment || {};
+        const date = appt.date
+          ? new Date(appt.date).toDateString()
+          : "N/A";
+        const time = appt.time || "N/A";
+        const img  = p.patientImage
+          ? `../MyUploads/${p.patientImage}`
+          : "../images/5.png";
+
+        tbody.insertAdjacentHTML("beforeend", `
+          <tr data-patient-id="${p.id}">
+            <td>${p.uhid}</td>
+            <td>
+              <img src="${img}" width="30" class="rounded-circle me-1" />
+              ${p.name}
+            </td>
+            <td>${p.email || "-"}</td>
+            <td>${p.mobile}</td>
+            <td>
+              <div class="d-flex flex-column">
+                <span>${appt.doctor || "No Appointment"}</span>
+                <small>${date}, ${time}</small>
+              </div>
+            </td>
+              <td>
+              <button class="btn btn-icon btn-primary item-emr">
+                <i class="bx bx-edit"></i>
+              </button>
+            </td>
+            <td>
+              <button class="btn btn-icon item-edit">
+                <i class="bx bx-edit"></i>
+              </button>
+            </td>
           
-          <script>
-            document.addEventListener("DOMContentLoaded", function () {
-                axios.get("/patients-with-appointments") // Call the API
-                    .then(response => {
-                        const patients = response.data.patients;
-                        const tbody = document.getElementById("patientTbody"); // Use correct ID
-                        tbody.innerHTML = ""; // Clear existing content
-            
-                        patients.forEach(patient => {
-                            const appointment = patient.latestAppointment;
-            
-                            // Format appointment details
-                            const doctorName = appointment ? appointment.doctor : "No Appointment";
-                            const appointmentDate = appointment ? new Date(appointment.date).toDateString() : "N/A";
-                            const appointmentTime = appointment ? appointment.time : "N/A";
-            
-                            // Get patient image, if available, otherwise use a placeholder
-                            const imageUrl = patient.patientImage 
-                                ? `../MyUploads/${patient.patientImage}` // Adjust based on actual image path
-                                : "../images/5.png"; // Placeholder image
-            
-                            // Create table row
-                            const row = `
-                                <tr data-patient-id="${patient.id}">
-                                    <td>${patient.uhid}</td>
-                                    <td>
-                                        <img width="30" src="${imageUrl}" alt="" class="rounded-circle" />
-                                        ${patient.name}
-                                    </td>
-                                    <td>${patient.mobile}</td>
-                                    <td>
-                                        <div class="d-flex flex-column">
-                                            <span class="emp_name text-truncate text-heading">${doctorName}</span>
-                                            <small class="emp_post text-truncate">${appointmentDate}, ${appointmentTime}</small>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <button id="action" href="javascript:;" class="btn btn-icon item-edit">
-                                            <i class="icon-base bx bx-edit icon-sm"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                            `;
-            
-                            tbody.innerHTML += row;
-                        });
-                        pagi_search('#searchBox','#tblid','#paginationControls')
-                    })
-                    .catch(error => {
-                        console.error("Error fetching patient data:", error);
-                    });
+           
+          </tr>
+        `);
+      });
 
-                    $('#tblid').on('click', '#action', function() {
-                        const id=$(this).closest('tr').data('patient-id')
-                        const route='Patient-registration'
-                          ViewBtn(route,id)
-                         });
-            });
-            
-            </script>
-            
+      renderPager();
+    })
+    .catch(err => console.error("Error fetching patients:", err));
+  }
+
+  function renderPager() {
+    const { page, totalPages } = state;
+    pager.innerHTML = "";
+
+    pager.insertAdjacentHTML("beforeend", `
+      <li class="page-item ${page===1?"disabled":""}">
+        <a class="page-link" href="#" data-page="${page-1}">Prev</a>
+      </li>`);
+    for (let i=1; i<=totalPages; i++) {
+      pager.insertAdjacentHTML("beforeend", `
+        <li class="page-item ${i===page?"active":""}">
+          <a class="page-link" href="#" data-page="${i}">${i}</a>
+        </li>`);
+    }
+    pager.insertAdjacentHTML("beforeend", `
+      <li class="page-item ${page===totalPages?"disabled":""}">
+        <a class="page-link" href="#" data-page="${page+1}">Next</a>
+      </li>`);
+  }
+
+  pager.addEventListener("click", e => {
+    e.preventDefault();
+    const a = e.target.closest("a");
+    if (!a) return;
+    const pg = parseInt(a.dataset.page, 10);
+    if (pg>=1 && pg<=state.totalPages) {
+      state.page = pg;
+      loadPatients();
+    }
+  });
+
+  form.addEventListener("submit", e => {
+    e.preventDefault();
+    state.name   = inpName.value.trim();
+    state.email  = inpEmail.value.trim();
+    state.mobile = inpMobile.value.trim();
+    state.page   = 1;
+    loadPatients();
+  });
+
+  document.getElementById("tblid").addEventListener("click", e => {
+    if (!e.target.closest(".item-edit")) return;
+    const tr = e.target.closest("tr");
+    ViewBtn("Patient-registration", tr.dataset.patientId);
+  });
+  document.getElementById("tblid").addEventListener("click", e => {
+    if (!e.target.closest(".item-emr")) return;
+    const tr = e.target.closest("tr");
+    ViewBtn("emr", tr.dataset.patientId);
+  });
+
+  // initial load
+  loadPatients();
+});
+</script>
+
+  </body>
+</html>

@@ -30,6 +30,7 @@
             <div class="card overflow-hidden">
               <h5 class="card-header">Doctor Registration</h5>
               <form id="DoctorRegForm">
+                <input type="hidden" id="doctorId" name="doctorId">
                 <div class="card">
                   <!-- Account -->
                   <div class="card-body">
@@ -207,7 +208,7 @@
                       <div id="loadingIndicator"></div>
                       <div class="mt-6">
                         <button type="submit" class="btn btn-primary me-3">Save</button>
-                        <button type="reset" class="btn btn-outline-secondary">Cancel</button>
+                        <button type="reset" class="btn btn-outline-secondary"  onclick="window.location.href='/doctors'">Cancel</button>
                       </div>
                     </div>
 
@@ -490,6 +491,10 @@
 
                   console.log('Success:', response.data);
                   $(errorDivId).removeClass('alert-danger').addClass('alert-success').text(response.data.message).show();
+                  alert(response.data.message)
+                    setTimeout(() => {
+                window.location.href = "/doctors";
+              }, 1500);
                 } catch (error) {
                   console.error('Error:', error);
                   $(errorDivId).removeClass('alert-success').addClass('alert-danger').text(` ${error.response.data.message || 'Unknown error'}`).show();
@@ -647,4 +652,132 @@
 
           generateQRCodeInDiv("qrcode", "DoctorQrReg", '<%=encClinicId%>');
         </script>
+
+
+<script>
+ function loadDoctorData(encryptedId) {
+  $.ajax({
+    url: `/getdoctorbyid`,
+    type: "GET",
+    data: { id: encryptedId },
+    success: function (data) {
+      if (!data.success) {
+        console.error("Doctor not found");
+        return;
+      }
+      const d = data.doctor;
+
+      // fill flat form fields
+      $("#doctorId").val(d.id);
+      $("#name").val(d.name);
+      $("#phoneNumber").val(d.phoneNumber);
+      $("#email").val(d.email);
+      $("#gender").val(d.gender).trigger("change");
+      $("#practicingSince").val(d.practicingSince);
+      $("#qualification").val(d.qualification);
+      $("#Specialization").val(d.specialization).trigger("change");
+      $("#regNo").val(d.regNo);
+      $("#consultationFees").val(d.consultationFees);
+      $("#otherDetails").val(d.otherDetails);
+      $("#appointmentCalendar").prop("checked", !!d.appointmentCalendar);
+      $("#timeslot").val(d.timeslot);
+      $("#opd").prop("checked", d.opd);
+      $("#ipd").prop("checked", d.ipd);
+
+      // doctor image
+      if (d.doctorImage) {
+        $("#uploadedAvatar").attr("src", `/Myuploads/${d.doctorImage}`);
+      } else {
+        $("#uploadedAvatar").attr("src", "../images/1.png");
+      }
+
+      // show modify/save buttons
+      $("#mod-btn").show();
+      $("#subBtn").prop("disabled", true);
+
+     const cal = d.appointmentCalendar || {};
+      if (Object.keys(cal).length) {
+        $("#markvisit").removeClass("displaynone");
+      }
+
+      // your days/panels were already cloned on DOMContentLoaded,
+      // so we just grab them in order:
+      const panels = $("#scheduleAccordion .accordion-item");
+
+      // define your exact same weekday order
+      const week = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
+
+      week.forEach((day, idx) => {
+        const panel = panels.eq(idx);
+        const slotsData = Array.isArray(cal[day]) ? cal[day] : [];
+        const isClosed  = slotsData.length === 0;
+
+        // toggle Not‑Open & collapse state
+        const $notOpenCb = panel.find(".not-open-checkbox").prop("checked", isClosed);
+        const $btn       = panel.find(".accordion-header button");
+        const $collapse  = panel.find(".accordion-collapse");
+
+        if (isClosed) {
+          $collapse.removeClass("show");
+          $btn.addClass("collapsed");
+          $notOpenCb.closest(".d-flex").addClass("text-muted");
+        } else {
+          $collapse.addClass("show");
+          $btn.removeClass("collapsed");
+          $notOpenCb.closest(".d-flex").removeClass("text-muted");
+        }
+
+        // now fill slots in that one template container
+        const $slotsCt = panel.find(".schedule-slots");
+        let $tplSlot   = $slotsCt.find(".slot").first();
+
+        // first, clear all existing clones but keep the very first slot element
+        $slotsCt.find(".slot").not($tplSlot).remove();
+
+        if (slotsData.length) {
+          // fill the first one
+          $tplSlot.find(".from-time").val(slotsData[0].fromTime);
+          $tplSlot.find(".to-time").val(slotsData[0].toTime);
+          // bind remove on first slot if you like
+          $tplSlot.find(".remove-slot")
+            .off("click")
+            .on("click", () => $tplSlot.remove());
+
+          // for any extra slots, clone the template and fill values
+          slotsData.slice(1).forEach(slot => {
+            const $clone = $tplSlot.clone();
+            $clone.find(".from-time").val(slot.fromTime);
+            $clone.find(".to-time").val(slot.toTime);
+            $clone.find(".remove-slot")
+              .off("click")
+              .on("click", () => $clone.remove());
+            $slotsCt.append($clone);
+          });
+        } else {
+          // no data: blank out the template slot
+          $tplSlot.find(".from-time").val("");
+          $tplSlot.find(".to-time").val("");
+          $tplSlot.find(".remove-slot")
+            .off("click")
+            .on("click", () => $tplSlot.remove());
+        }
+      });
+    },
+    error: function (err) {
+      console.error("Error fetching doctor data", err);
+    }
+  });
+}
+
+// on page load, parse ?id= and call loader
+$(function () {
+  const params = new URLSearchParams(window.location.search);
+  const encId  = params.get("id");
+  if (encId) {
+    loadDoctorData(encId);
+  }
+});
+
+
+</script>
         <!-- Extra Js for this Page End-->

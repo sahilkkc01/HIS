@@ -49,7 +49,8 @@ const {
   Employee,
   Molecule,
   ItemBrandName,
-  Store
+  Store,
+  EMR
 } = require("../models/HisSchema");
 
 exports.verifyToken = async (req, res, next) => {
@@ -421,14 +422,14 @@ exports.savePatientData = async (req, res) => {
 };
 
 exports.saveDoctorData = async (req, res) => {
-  console.log(req.body);
-  console.log(req.file);
-  const clinicId = req.user.clinic_id; // Get clinic_id from session
-  if (clinicId == null) {
-    return res.status(400).send({ msg: "Please login" });
+  const clinicId = req.user.clinic_id;
+  if (!clinicId) {
+    return res.status(400).json({ message: "Please login" });
   }
+
   try {
     const {
+      doctorId, // plain numeric ID, or undefined/new
       name,
       phoneNumber,
       email,
@@ -442,29 +443,50 @@ exports.saveDoctorData = async (req, res) => {
       ipd,
       otherDetails,
       appointmentCalendar,
-      timeslot,
+      timeslot
     } = req.body;
 
-    // Validate required fields
     if (!name || !phoneNumber) {
       return res
         .status(400)
         .json({ message: "Name and phone number are required." });
     }
-    const existingDoctor = await Doctor.findOne({
-      where: { phoneNumber, clinic_id: clinicId },
+
+    let targetDoctor = null;
+    if (doctorId) {
+      const id = parseInt(doctorId, 10);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid doctor ID" });
+      }
+      targetDoctor = await Doctor.findOne({
+        where: { id, clinic_id: clinicId }
+      });
+      if (!targetDoctor) {
+        return res.status(404).json({ message: "Doctor not found" });
+      }
+    }
+
+    // unique phone check, excluding current if updating
+    const phoneConflict = await Doctor.findOne({
+      where: {
+        phoneNumber,
+        clinic_id: clinicId,
+        ...(targetDoctor && { id: { [Op.ne]: targetDoctor.id } })
+      }
     });
-    if (existingDoctor) {
+    if (phoneConflict) {
       return res
         .status(400)
         .json({ message: "A doctor with this mobile number already exists." });
     }
-    const doctorImage = req.file ? path.basename(req.file.path) : null;
-    // Create new doctor record
-    const newDoctor = await Doctor.create({
+
+    // build payload
+    const payload = {
       clinic_id: clinicId,
       name,
-      doctorImage,
+      doctorImage: req.file
+        ? path.basename(req.file.path)
+        : targetDoctor?.doctorImage || null,
       phoneNumber,
       email,
       gender,
@@ -473,18 +495,32 @@ exports.saveDoctorData = async (req, res) => {
       specialization,
       regNo,
       consultationFees,
-      opd: opd === "true", // Convert string to boolean
-      ipd: ipd === "true", // Convert string to boolean
+      opd: opd === "true",
+      ipd: ipd === "true",
       otherDetails,
       appointmentCalendar: appointmentCalendar
         ? JSON.parse(appointmentCalendar)
-        : null, // Parse JSON if provided
-      timeslot,
-    });
+        : null,
+      timeslot
+    };
 
-    return res
-      .status(201)
-      .json({ message: "Doctor data saved successfully", doctor: newDoctor });
+    let doctor;
+    if (targetDoctor) {
+      // update existing
+      await targetDoctor.update(payload);
+      doctor = targetDoctor;
+    } else {
+      // create new
+      doctor = await Doctor.create(payload);
+    }
+
+    return res.json({
+      success: true,
+      message: targetDoctor
+        ? "Doctor updated successfully"
+        : "Doctor created successfully",
+      doctor
+    });
   } catch (error) {
     console.error("Error saving doctor data:", error);
     return res.status(500).json({ message: "Failed to save doctor data" });
@@ -782,46 +818,89 @@ const convertToTimeString = (totalMinutes) => {
   return `${hours}:${minutes.toString().padStart(2, "0")} ${period}`;
 };
 
-exports.getAllPatientsWithLatestAppointment = async (req, res) => {
+exports.getPatientsWithLatestAppointment = async (req, res) => {
   try {
-    // Fetch all patients
-    const patients = await Patient.findAll({
-      where: { clinic_id: req.user.clinic_id },
-      attributes: ["id", "name", "mobile", "uhid", "patientImage"],
-    });
+    // pagination
+    let page  = Math.max(1, parseInt(req.query.page, 10)  || 1);
+    let limit = Math.max(1, parseInt(req.query.limit, 10) || 20);
+    const offset = (page - 1) * limit;
 
-    if (!patients.length) {
-      return res.status(404).json({ message: "No patients found." });
+    // search filters
+    const { name = "", email = "", mobile = "" } = req.query;
+    const where = { clinic_id: req.user.clinic_id };
+
+    if (name.trim()) {
+      where.name = { [Op.like]: `%${name.trim()}%` };
+    }
+    if (email.trim()) {
+      where.email = { [Op.like]: `%${email.trim()}%` };
+    }
+    if (mobile.trim()) {
+      where.mobile = { [Op.like]: `%${mobile.trim()}%` };
     }
 
-    // Fetch latest appointment for each patient
+    // fetch patients + count
+    const { rows: patients, count: totalPatients } =
+      await Patient.findAndCountAll({
+        where,
+        attributes: ["id", "uhid", "name", "email", "mobile", "patientImage"],
+        order: [["id", "DESC"]],
+        limit,
+        offset
+      });
+
+    // redirect if page out of bounds
+    if (!patients.length && page > 1) {
+      const qs = new URLSearchParams({
+        page:  "1",
+        limit: limit.toString(),
+        ...(name.trim()  && { name: name.trim() }),
+        ...(email.trim() && { email: email.trim() }),
+        ...(mobile.trim()&& { mobile: mobile.trim() })
+      }).toString();
+      return res.redirect(`/patients-with-appointments?${qs}`);
+    }
+
+    // attach latest appointment
     const patientsWithAppointments = await Promise.all(
-      patients.map(async (patient) => {
-        const latestAppointment = await Appointment.findOne({
-          where: { patient_id: patient.id },
+      patients.map(async (p) => {
+        const appt = await Appointment.findOne({
+          where: { patient_id: p.id },
           order: [
             ["date", "DESC"],
-            ["time", "DESC"],
-          ], // Latest date & time first
-          attributes: ["clinic", "doctor", "date", "time"],
+            ["time", "DESC"]
+          ],
+          attributes: ["clinic", "doctor", "date", "time"]
         });
-
-        const encId = encryptDataForUrl(patient.id.toString());
         return {
-          id: encId,
-          name: patient.name,
-          mobile: patient.mobile,
-          uhid: patient.uhid,
-          patientImage: patient.patientImage,
-          latestAppointment: latestAppointment || null,
+          id:        encryptDataForUrl(p.id.toString()),
+          uhid:      p.uhid,
+          name:      p.name,
+          email:     p.email,
+          mobile:    p.mobile,
+          patientImage: p.patientImage,
+          latestAppointment: appt || null
         };
       })
     );
 
-    return res.status(200).json({ patients: patientsWithAppointments });
+    // send JSON
+    return res.json({
+      success: true,
+      patients: patientsWithAppointments,
+      pagination: {
+        totalPatients,
+        totalPages:  Math.ceil(totalPatients / limit),
+        currentPage: page,
+        perPage:     limit
+      }
+    });
   } catch (error) {
     console.error("Error fetching patients with appointments:", error);
-    return res.status(500).json({ message: "Internal Server Error" });
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error"
+    });
   }
 };
 
@@ -1333,3 +1412,231 @@ exports.PatientFilter = async (req, res) => {
   }
 };
 
+
+exports.getAllDoctors = async (req, res) => {
+  try {
+    // fetch all doctors for this clinic
+    const doctors = await Doctor.findAll({
+      where: { clinic_id: req.user.clinic_id },
+      attributes: [
+        "id",
+        "name",
+        "doctorImage",
+        "phoneNumber",
+        "email",
+        "gender",
+        "practicingSince",
+        "qualification",
+        "specialization",
+        "regNo",
+        "consultationFees",
+        "ipd",
+        "opd"
+      ],
+      order: [["name", "ASC"]],
+    });
+
+    // mask the ID
+    const payload = doctors.map((d) => ({
+      id:           encryptDataForUrl(d.id.toString()),
+      name:         d.name,
+      image:        d.doctorImage,
+      phoneNumber:  d.phoneNumber,
+      email:        d.email,
+      gender:       d.gender,
+      practicingSince: d.practicingSince,
+      qualification:   d.qualification,
+      specialization:  d.specialization,
+      regNo:           d.regNo,
+      consultationFees:d.consultationFees,
+      ipd:             d.ipd,
+      opd:             d.opd,
+    }));
+
+    return res.json({ success: true, doctors: payload });
+  } catch (err) {
+    console.error("Error fetching doctors:", err);
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+};
+
+exports.getDoctorById = async (req, res) => {
+  try {
+    const { id: encryptedId } = req.query;
+    if (!encryptedId) {
+      return res.status(400).json({ success: false, message: "Missing id" });
+    }
+
+    // 1. decrypt the incoming ID
+    let decrypted;
+    try {
+      decrypted = decryptData(encryptedId);
+    } catch (err) {
+      return res.status(400).json({ success: false, message: "Invalid id" });
+    }
+
+    // 2. fetch the doctor
+    const doctor = await Doctor.findOne({
+      where: {
+        id: decrypted,
+        clinic_id: req.user.clinic_id
+      },
+      attributes: [
+        "id",
+        "name",
+        "doctorImage",
+        "phoneNumber",
+        "email",
+        "gender",
+        "practicingSince",
+        "qualification",
+        "specialization",
+        "regNo",
+        "consultationFees",
+        "ipd",
+        "opd",
+        "otherDetails",
+        "appointmentCalendar",
+        "timeslot"
+      ]
+    });
+
+    if (!doctor) {
+      return res.status(404).json({ success: false, message: "Doctor not found" });
+    }
+
+    // 3. send back JSON
+    return res.json({
+      success: true,
+      doctor: {
+        id:           doctor.id,         // keep encrypted for round‑trip
+        name:         doctor.name,
+        doctorImage:  doctor.doctorImage,
+        phoneNumber:  doctor.phoneNumber,
+        email:        doctor.email,
+        gender:       doctor.gender,
+        practicingSince: doctor.practicingSince,
+        qualification:   doctor.qualification,
+        specialization:  doctor.specialization,
+        regNo:           doctor.regNo,
+        consultationFees:doctor.consultationFees,
+        ipd:             doctor.ipd,
+        opd:             doctor.opd,
+        otherDetails:    doctor.otherDetails,
+        appointmentCalendar: doctor.appointmentCalendar,
+        timeslot:        doctor.timeslot
+      }
+    });
+  } catch (error) {
+    console.error("Error in getDoctorById:", error);
+    return res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
+
+exports.searchMedicine = async (req, res) => {
+  const clinicId = req.user?.clinic_id;
+  const q = (req.query.q || '').trim();
+
+  if (!clinicId) {
+    return res.status(401).json({ message: 'Unauthorized: Please log in' });
+  }
+  if (!q) {
+    return res.json([]);  // no query → empty list
+  }
+
+  try {
+    const items = await Items.findAll({
+      attributes: [
+        'id',
+        'medicine_name',
+        'generic_name',
+        'molecule',
+        'cost_price',
+        'mrp',
+        'gst',
+        'uom',
+        'category',
+      ],
+      where: {
+        clinic_id: clinicId,
+        [Op.or]: [
+          // simple LIKE; default MySQL collation is usually case-insensitive
+          { medicine_name: { [Op.like]: `%${q}%` } },
+          { molecule:      { [Op.like]: `%${q}%` } },
+          // if you need to force case-insensitive regardless of collation, you can instead do:
+          // where(fn('LOWER', col('medicine_name')), Op.like, `%${q.toLowerCase()}%`),
+          // where(fn('LOWER', col('molecule')),      Op.like, `%${q.toLowerCase()}%`),
+        ],
+      },
+      order: [['medicine_name', 'ASC']],
+      limit: 20,
+    });
+
+    return res.json(items);
+  } catch (error) {
+    console.error('Item search error:', error);
+    return res.status(500).json({ message: 'Search failed' });
+  }
+};
+
+
+exports.saveEmr = async (req, res) => {
+  try {
+    // 1. Pull encrypted patientId and other fields
+    const {
+      patient_id: encryptedPatientId,
+      clinicalHistory,
+      pulse,
+      bp,
+      temp,
+      spo2,
+      diagnosis,
+      tests,
+      prescriptions,
+      doctorsAdvice,
+      nextFollowUp
+    } = req.body;
+
+    // 2. Decrypt the patient ID
+    const patientId = decryptData(encryptedPatientId);
+    if (!patientId) {
+      return res.status(400).json({ message: 'Invalid patient ID' });
+    }
+
+    // 3. Auth context
+    const clinicId = req.user?.clinic_id;
+    const doneBy   = req.user?.username;
+    if (!clinicId) {
+      return res.status(401).json({ message: "Unauthorized: Please log in" });
+    }
+
+    // 4. Create the EMR record
+    const newEmr = await EMR.create({
+      clinic_id:       clinicId,
+      patient_id:      patientId,
+      doneBy,
+      clinicalHistory,
+      pulse,
+      bp,
+      temp,
+      spo2,
+      diagnosis,
+      tests,           // JSON or TEXT column
+      prescriptions,   // JSON column
+      doctorsAdvice,
+      nextFollowUp
+    });
+
+    return res
+      .status(200)
+      .json({ message: "EMR Saved Successfully", emr: newEmr });
+
+  } catch (error) {
+    console.error("Error saving EMR:", error);
+    return res.status(500).json({ message: "Failed to save EMR" });
+  }
+};

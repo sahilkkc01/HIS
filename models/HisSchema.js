@@ -825,6 +825,71 @@ const Store = sequelize.define(
   }
 );
 
+const EMR = sequelize.define(
+  "EMR",
+  {
+    clinic_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    patient_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    clinicalHistory: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
+    pulse: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    bp: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    temp: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    spo2: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    diagnosis: {
+      type: DataTypes.STRING,
+      allowNull: true, // Optional
+    },
+    tests: {
+      type: DataTypes.JSON,
+      allowNull: true, // Optional
+    },
+    prescriptions: {
+      type: DataTypes.JSON,
+      allowNull: true, // Optional
+    },
+    doctorsAdvice: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
+    nextFollowUp: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
+    doneBy: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    }
+  },
+  {
+    timestamps: true,
+    alter: true,
+    tableName: "emr",
+  }
+);
+
+// EMR.sync()
+
 // Items.sync({ force: true });
 // ItemDetails.sync({ force: true });
 // Molecule.sync({ alter: true });
@@ -861,5 +926,6 @@ module.exports = {
   Manufacturer,
   UOM,
   HSNCode,
-  Store
+  Store,
+  EMR
 };

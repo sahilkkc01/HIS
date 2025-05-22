@@ -445,7 +445,8 @@ const IssueToStore = sequelize.define("IssueToStore", {
     tableName: "issuetostore", 
     timestamps: true, 
 });
-IssueToStore.sync()
+// IssueToStore.sync()
+// sequelize.sync()
   module.exports={
     GRN,
     Indent,

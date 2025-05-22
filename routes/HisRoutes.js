@@ -25,6 +25,11 @@ const {
   saveEmployeeData,
   addNewModal,
   PatientFilter,
+  getPatientsWithLatestAppointment,
+  getAllDoctors,
+  getDoctorById,
+  searchMedicine,
+  saveEmr,
 } = require("../controllers/HisControllers");
 const { UserTokens, Patient } = require("../models/HisSchema");
 
@@ -152,6 +157,12 @@ router.get("/purchase-order", function (req, res, next) {
 router.get("/add-prefix", function (req, res, next) {
   res.render("HIS/add-prefix");
 });
+router.get("/emr", function (req, res, next) {
+  res.render("HIS/emr");
+});
+router.get("/doctors", function (req, res, next) {
+  res.render("HIS/doctor-list");
+});
 
 // Put all render routes above this
 router.post("/login", login);
@@ -172,7 +183,7 @@ router.post(
 router.post("/addSpec", addSpecialization);
 router.post("/addDept", addDepartment);
 router.get("/getDataFromField", getDataFromField);
-router.get("/patients-with-appointments", getAllPatientsWithLatestAppointment);
+router.get("/patients-with-appointments",getPatientsWithLatestAppointment);
 router.post("/getAvailableSlots", getAvailableSlots);
 router.get("/patient/:patientId", getPatientData);
 router.get("/patientFilter", PatientFilter);
@@ -182,5 +193,9 @@ router.post("/save-item", upload.single("itemImage"), saveItems);
 router.post("/save-service", saveService);
 router.post("/save-package", savePackage);
 router.post("/addModal", addNewModal);
+router.get("/getdoctors", getAllDoctors);
+router.get("/getdoctorbyid", getDoctorById);
+router.get('/searchMedicine',  searchMedicine);
+router.post('/saveemr', saveEmr);
 
 module.exports = { router, upload };

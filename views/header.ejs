@@ -100,13 +100,18 @@
 
           <ul class="menu-sub">
             <li class="menu-item">
-              <a href="/doctor-Registration" class="menu-link">
-                <div class="text-truncate" data-i18n="Without menu">Doctor</div>
+              <a href="/doctors" class="menu-link">
+                <div class="text-truncate" data-i18n="Without menu">Doctors</div>
               </a>
             </li>
             <li class="menu-item">
               <a href="/add-employee" class="menu-link">
                 <div class="text-truncate" data-i18n="Without menu">Employee</div>
+              </a>
+            </li>
+            <li class="menu-item">
+              <a href="/hospital-registration" class="menu-link">
+                <div class="text-truncate" data-i18n="Without menu">Hospitals</div>
               </a>
             </li>
             <li class="menu-item">
@@ -135,6 +140,11 @@
             <div class="text-truncate" data-i18n="Front Pages">Doctor</div>
           </a>
           <ul class="menu-sub">
+             <li class="menu-item">
+              <a href="/emr" class="menu-link">
+                <div class="text-truncate" data-i18n="Without menu">EMR</div>
+              </a>
+            </li>
             <li class="menu-item">
               <a
                 href="#"
@@ -464,3 +474,30 @@
           </ul>
         </div>
       </nav>
+
+       <script>
+          // Add this script before closing </body>
+          document.addEventListener('DOMContentLoaded', function () {
+            // Remove all active classes first
+            document.querySelectorAll('.menu-item').forEach(item => {
+              item.classList.remove('active');
+              item.classList.remove('open');
+            });
+
+            // Get current path
+            const currentPath = window.location.pathname;
+
+            // Find matching link and activate its parents
+            document.querySelectorAll('.menu-link').forEach(link => {
+              if (link.getAttribute('href') === currentPath) {
+                link.closest('.menu-item').classList.add('active');
+                // Activate parent menu items
+                let parent = link.closest('.menu-sub').closest('.menu-item');
+                while (parent) {
+                  parent.classList.add('active', 'open');
+                  parent = parent.closest('.menu-sub')?.closest('.menu-item');
+                }
+              }
+            });
+          });
+        </script>
