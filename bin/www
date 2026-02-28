@@ -29,6 +29,20 @@ server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
 
+<<<<<<< HEAD
+=======
+// Connect to DB once the server is listening
+async function connectDb() {
+  try {
+    var { con } = require('../db');
+    await con();
+    console.log('Database connected');
+  } catch (err) {
+    console.error('Database connection error:', err);
+  }
+}
+
+>>>>>>> 15d431a (Added new features in Kamakhya_dev branch)
 /**
  * Normalize a port into a number, string, or false.
  */
@@ -87,4 +101,9 @@ function onListening() {
     ? 'pipe ' + addr
     : 'port ' + addr.port;
   debug('Listening on ' + bind);
+<<<<<<< HEAD
+=======
+  // attempt DB connection after server starts
+  connectDb();
+>>>>>>> 15d431a (Added new features in Kamakhya_dev branch)
 }

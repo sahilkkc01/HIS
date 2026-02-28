@@ -1,0 +1,86 @@
+<!doctype html>
+<html
+  lang="en"
+  class="light-style layout-menu-fixed layout-compact"
+  dir="ltr"
+  data-theme="theme-default"
+  data-assets-path="../assets/"
+  data-template="vertical-menu-template-free"
+  data-style="light"
+>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"
+    />
+    <title><%= title %></title>
+    <%- include('../header') -%>
+  </head>
+  <body>
+    <div class="content-wrapper">
+      <div class="container-xxl flex-grow-1 container-p-y">
+        <!-- Cycle configuration card -->
+        <div class="card mb-4">
+          <div class="card-header">
+            <h5 class="card-title mb-0">Embryology - Cycle</h5>
+          </div>
+          <div class="card-body">
+            <div class="row g-3 mb-3">
+              <div class="col-12">
+                <p class="text-muted mb-0">
+                  Placeholder for Embryology cycle management and tracking.
+                </p>
+              </div>
+            </div>
+            <div class="row g-3">
+              <div class="col-md-3"></div>
+              <div class="col-md-3"></div>
+              <div class="col-md-3"></div>
+              <div class="col-md-3"></div>
+            </div>
+            <div class="d-flex justify-content-end mt-4 gap-2">
+              <button type="button" class="btn btn-outline-primary">
+                <i class="bx bx-reset me-1"></i> Reset
+              </button>
+              <button type="button" class="btn btn-primary">
+                <i class="bx bx-search me-1"></i> Search
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cycle list table -->
+        <div class="card">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h6 class="mb-0">Cycles</h6>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive text-nowrap">
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th>Cycle No.</th>
+                    <th>UHID</th>
+                    <th>Patient</th>
+                    <th>Start Date</th>
+                    <th>Stage</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td colspan="6" class="text-center text-muted">
+                      No cycles to display yet.
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <%- include('../footer') -%>
+  </body>
+</html>

@@ -1,0 +1,157 @@
+<!doctype html>
+<html
+  lang="en"
+  class="light-style layout-menu-fixed layout-compact"
+  dir="ltr"
+  data-theme="theme-default"
+  data-assets-path="../assets/"
+  data-template="vertical-menu-template-free"
+  data-style="light"
+>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"
+    />
+    <title><%= title %></title>
+    <%- include('../header') -%>
+  </head>
+  <body>
+    <div class="content-wrapper">
+      <div class="container-xxl flex-grow-1 container-p-y">
+        <!-- Stimulation configuration card -->
+        <div class="card mb-4">
+          <div class="card-header">
+            <h5 class="card-title mb-0">Embryology - Stimulation</h5>
+          </div>
+          <div class="card-body">
+            <p class="text-muted mb-3">
+              Use the filters below to search for patients in stimulation phase.
+            </p>
+
+            <form class="row g-3">
+              <div class="col-md-3">
+                <label for="uhid" class="form-label">UHID</label>
+                <input type="text" class="form-control" id="uhid" placeholder="" />
+              </div>
+              <div class="col-md-3">
+                <label for="idProof" class="form-label">ID Proof No.</label>
+                <input type="text" class="form-control" id="idProof" placeholder="" />
+              </div>
+              <div class="col-md-3">
+                <label for="firstName" class="form-label">First Name</label>
+                <input type="text" class="form-control" id="firstName" placeholder="" />
+              </div>
+              <div class="col-md-3">
+                <label for="lastName" class="form-label">Last Name</label>
+                <input type="text" class="form-control" id="lastName" placeholder="" />
+              </div>
+
+              <div class="col-md-3">
+                <label for="gender" class="form-label">Gender</label>
+                <select id="gender" class="form-select">
+                  <option value=""></option>
+                  <option value="M">Male</option>
+                  <option value="F">Female</option>
+                  <option value="O">Other</option>
+                </select>
+              </div>
+              <div class="col-md-3">
+                <label for="mobile" class="form-label">Mobile No.</label>
+                <input type="text" class="form-control" id="mobile" placeholder="" />
+              </div>
+              <div class="col-md-3">
+                <label for="dob" class="form-label">DOB</label>
+                <input type="date" class="form-control" id="dob" />
+              </div>
+              <div class="col-md-3">
+                <label for="age" class="form-label">Age</label>
+                <input type="number" class="form-control" id="age" min="0" max="150" />
+              </div>
+
+              <div class="col-md-4">
+                <label for="visitedValue" class="form-label">Visited</label>
+                <div class="row g-2">
+                  <div class="col-5">
+                    <input
+                      type="number"
+                      class="form-control"
+                      id="visitedValue"
+                      min="0"
+                      placeholder=""
+                    />
+                  </div>
+                  <div class="col-7">
+                    <select id="visitedUnit" class="form-select">
+                      <option value="days">Day(s) ago</option>
+                      <option value="weeks">Week(s) ago</option>
+                      <option value="months">Month(s) ago</option>
+                      <option value="years">Year(s) ago</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </form>
+
+            <div class="d-flex justify-content-end mt-4 gap-2">
+              <button type="button" class="btn btn-outline-primary">
+                <i class="bx bx-barcode me-1"></i> Generate Barcode
+              </button>
+              <button type="button" class="btn btn-primary">
+                <i class="bx bx-search me-1"></i> Search
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stimulation monitoring table -->
+        <div class="card">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h6 class="mb-0">Search Patient</h6>
+          </div>
+          <div class="card-body">
+            <div class="mb-3">
+              <label for="searchPatient" class="form-label">Search Patient</label>
+              <input
+                type="text"
+                class="form-control"
+                id="searchPatient"
+                placeholder=""
+              />
+            </div>
+            <div class="table-responsive text-nowrap">
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th>MR. No.</th>
+                    <th>Name</th>
+                    <th>Date Of Birth</th>
+                    <th>Baby Birth Weight</th>
+                    <th>Registration Date</th>
+                    <th>Mobile No.</th>
+                    <th>Email</th>
+                    <th>Gender</th>
+                    <th>Marital Status</th>
+                    <th>Identity Type</th>
+                    <th>Identity Number</th>
+                    <th>Special Registration</th>
+                    <th>Registered From</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td colspan="13" class="text-center text-muted">
+                      Use the filters above and click <strong>Search</strong> to find patients.
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <%- include('../footer') -%>
+  </body>
+</html>

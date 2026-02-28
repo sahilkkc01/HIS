@@ -6,8 +6,14 @@ var logger = require("morgan");
 const { con } = require("./db");
 
 var { router: his, upload } = require("./routes/HisRoutes");
+<<<<<<< HEAD
 const { router:inventory } = require("./routes/InventoryRoutes");
 const { router:billing } = require("./routes/BillingRoutes");
+=======
+const { router: inventory } = require("./routes/InventoryRoutes");
+const { router: billing } = require("./routes/BillingRoutes");
+const { router: embryology } = require("./routes/embryology.routes");
+>>>>>>> 15d431a (Added new features in Kamakhya_dev branch)
 const {
   verifyToken,
   savePatientData,
@@ -45,7 +51,12 @@ app.use((req, res, next) => {
 
 app.use("/", his);
 app.use("/inventory", inventory);
+<<<<<<< HEAD
 app.use("/billing",billing );
+=======
+app.use("/billing", billing);
+app.use("/embryology", embryology);
+>>>>>>> 15d431a (Added new features in Kamakhya_dev branch)
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
@@ -62,11 +73,17 @@ app.use(function (err, req, res, next) {
   res.status(err.status || 500);
   res.render("error");
 });
+<<<<<<< HEAD
 
+=======
+>>>>>>> 15d431a (Added new features in Kamakhya_dev branch)
 const PORT = 5001;
 app.listen(PORT, async () => {
   console.log(`Server started at PORT ${PORT}`);
   await con();
 });
+<<<<<<< HEAD
 
+=======
+>>>>>>> 15d431a (Added new features in Kamakhya_dev branch)
 module.exports = app;
