@@ -1,0 +1,191 @@
+<!doctype html>
+<html
+  lang="en"
+  class="light-style layout-menu-fixed layout-compact"
+  dir="ltr"
+  data-theme="theme-default"
+  data-assets-path="../assets/"
+  data-template="vertical-menu-template-free"
+  data-style="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+
+    <title>Add Services</title>
+
+    <meta name="description" content="" />
+
+<%- include('../header') -%>
+          <!-- Content wrapper -->
+          <div class="content-wrapper">
+            <!-- Content -->
+            <div class="container-xxl flex-grow-1 container-p-y">
+              <div class="row">
+                <!-- Vertical & Horizontal Scrollbars -->
+                <div class="col-12">
+                  <div class="card">
+                    <!-- Notifications -->
+                    <div class="card-body">
+                      <h5 class="mb-1">Prifix Master</h5>
+                      <span class="card-subtitle"
+                        >Mange your Serial Numbers with Prifix Master.
+                        </span>
+                    </div>
+                    <div class="table-responsive">
+                      <table class="table">
+                        <thead>
+                          <tr>
+                            <th class="text-nowrap">Type</th>
+                            <th class="text-nowrap text-center">Prifix<label data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" title="<span>The initial Character of Serial No</span>"><i class="bx bx-info-circle"></i></label></th>
+							<th class="text-nowrap text-center">Date Formate <label data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" title="<span>If you want to add date to your Serial No</span>"><i class="bx bx-info-circle"></i></label></th>
+                            <th class="text-nowrap text-center">Serial No <label data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" title="<span>If you want to start it from any specific no or it will strat from 0001</span>"><i class="bx bx-info-circle"></i></label></th>
+                            <th class="text-nowrap text-center">Action</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td class="text-nowrap text-heading">Pharmacy Bill Invoice</td>
+                            <td>
+                              <input class="form-control" type="text" id="serno" name="serno" value="" autofocus="">
+                            </td>
+							<td>
+                              <select id="serdate" class="select2 form-select">
+                              <option value="">None</option>
+							  <option value="DD/MM/YY" selected>DD/MM/YY</option>
+							  <option value="MM/DD/YY">MM/DD/YY</option>
+							  <option value="YY/MM/DD">YY/MM/DD</option>
+                            </select>
+                            </td>
+                            <td>
+                              <input class="form-control" type="number" id="serno" name="serno" value="" autofocus="">
+                            </td>
+                            <td class="text-center">
+                              <button class="btn btn-icon">
+                                  <i class="bx bx-save bx-sm"></i>
+                                </button>
+                            </td>
+                          </tr>
+						  <tr>
+                            <td class="text-nowrap text-heading">Service Bill Invoice</td>
+                            <td>
+                              <input class="form-control" type="text" id="serno" name="serno" value="" autofocus="">
+                            </td>
+							<td>
+                              <select id="serdate" class="select2 form-select">
+                              <option value="">None</option>
+							  <option value="DD/MM/YY" selected>DD/MM/YY</option>
+							  <option value="MM/DD/YY">MM/DD/YY</option>
+							  <option value="YY/MM/DD">YY/MM/DD</option>
+                            </select>
+                            </td>
+                            <td>
+                              <input class="form-control" type="number" id="serno" name="serno" value="" autofocus="">
+                            </td>
+                            <td class="text-center">
+                              <button class="btn btn-icon">
+                                  <i class="bx bx-save bx-sm"></i>
+                                </button>
+                            </td>
+                          </tr>
+						  <tr>
+                            <td class="text-nowrap text-heading">UHID</td>
+                            <td>
+                              <input class="form-control" type="text" id="serno" name="serno" value="" autofocus="">
+                            </td>
+							<td>
+                              <select id="serdate" class="select2 form-select">
+                              <option value="">None</option>
+							  <option value="DD/MM/YY" selected>DD/MM/YY</option>
+							  <option value="MM/DD/YY">MM/DD/YY</option>
+							  <option value="YY/MM/DD">YY/MM/DD</option>
+                            </select>
+                            </td>
+                            <td>
+                              <input class="form-control" type="number" id="serno" name="serno" value="" autofocus="">
+                            </td>
+                            <td class="text-center">
+                              <button class="btn btn-icon">
+                                  <i class="bx bx-save bx-sm"></i>
+                                </button>
+                            </td>
+                          </tr>
+						  <tr>
+                            <td class="text-nowrap text-heading">Doctor Registration</td>
+                            <td>
+                              <input class="form-control" type="text" id="serno" name="serno" value="" autofocus="">
+                            </td>
+							<td>
+                              <select id="serdate" class="select2 form-select">
+                              <option value="">None</option>
+							  <option value="DD/MM/YY" selected>DD/MM/YY</option>
+							  <option value="MM/DD/YY">MM/DD/YY</option>
+							  <option value="YY/MM/DD">YY/MM/DD</option>
+                            </select>
+                            </td>
+                            <td>
+                              <input class="form-control" type="number" id="serno" name="serno" value="" autofocus="">
+                            </td>
+                            <td class="text-center">
+                              <button class="btn btn-icon">
+                                  <i class="bx bx-save bx-sm"></i>
+                                </button>
+                            </td>
+                          </tr>
+						                            <tr>
+                            <td class="text-nowrap text-heading">Staff Registration</td>
+                            <td>
+                              <input class="form-control" type="text" id="serno" name="serno" value="" autofocus="">
+                            </td>
+							<td>
+                              <select id="serdate" class="select2 form-select">
+                              <option value="">None</option>
+							  <option value="DD/MM/YY" selected>DD/MM/YY</option>
+							  <option value="MM/DD/YY">MM/DD/YY</option>
+							  <option value="YY/MM/DD">YY/MM/DD</option>
+                            </select>
+                            </td>
+                            <td>
+                              <input class="form-control" type="number" id="serno" name="serno" value="" autofocus="">
+                            </td>
+                            <td class="text-center">
+                              <button class="btn btn-icon">
+                                  <i class="bx bx-save bx-sm"></i>
+                                </button>
+                            </td>
+                          </tr>
+						  <tr>
+                            <td class="text-nowrap text-heading">Lab Report</td>
+                            <td>
+                              <input class="form-control" type="text" id="serno" name="serno" value="" autofocus="">
+                            </td>
+							<td>
+                              <select id="serdate" class="select2 form-select">
+                              <option value="">None</option>
+							  <option value="DD/MM/YY" selected>DD/MM/YY</option>
+							  <option value="MM/DD/YY">MM/DD/YY</option>
+							  <option value="YY/MM/DD">YY/MM/DD</option>
+                            </select>
+                            </td>
+                            <td>
+                              <input class="form-control" type="number" id="serno" name="serno" value="" autofocus="">
+                            </td>
+                            <td class="text-center">
+                              <button class="btn btn-icon">
+                                  <i class="bx bx-save bx-sm"></i>
+                                </button>
+                            </td>
+                          </tr>
+						  
+						</tbody>
+                      </table>
+                    </div>
+                    <!-- /Notifications -->
+                  </div>
+                <!--/ Vertical & Horizontal Scrollbars -->
+              </div>
+            </div>
+            <!-- / Content -->
+					  
+            <%- include('../footer') -%>

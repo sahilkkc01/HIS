@@ -1,0 +1,213 @@
+<!doctype html>
+<html
+  lang="en"
+  class="light-style layout-menu-fixed layout-compact"
+  dir="ltr"
+  data-theme="theme-default"
+  data-assets-path="../assets/"
+  data-template="vertical-menu-template-free"
+  data-style="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+  <title>List of Indents</title>
+
+  <%- include('../header') -%>
+
+  <style>
+    /* Highlight selected row */
+    .selected-row {
+      background-color: #cce5ff !important;
+    }
+  </style>
+</head>
+<body>
+  <!-- Content wrapper -->
+  <div class="content-wrapper">
+    <!-- Content -->
+    <div class="container-xxl flex-grow-1 container-p-y">
+      <!-- Basic Bootstrap Table -->
+      <div class="card">
+        <div class="row card-header flex-column flex-md-row pb-4">
+            <div class="d-md-flex justify-content-between align-items-center dt-layout-start col-md-auto me-auto mt-0">
+            <h5 class="card-title mb-0 text-md-start text-center">All GRN</h5></div>
+            <div class="d-md-flex justify-content-between align-items-center dt-layout-end col-md-auto ms-auto mt-0">
+            
+            <div class="dt-buttons btn-group flex-wrap mb-0"> 
+            
+            <div class="btn-group">
+            <input type="search" class="form-control ms-4" id="searchBox" placeholder="Search" aria-controls="DataTables_Table_1">
+            
+            <button class="btn buttons-collection btn-label-primary dropdown-toggle me-4" tabindex="0" id="exportIndent" aria-controls="DataTables_Table_0" type="button" aria-haspopup="dialog" aria-expanded="false"><span><span class="d-flex align-items-center gap-2"><i class="icon-base bx bx-export me-sm-1"></i> <span class="d-none d-sm-inline-block">Export</span></span></span></button></div> 
+            
+            <button class="btn create-new btn-primary" tabindex="0" onclick=" window.location.href = '/inventory/indent'" aria-controls="DataTables_Table_0" type="button"><span><span class="d-flex align-items-center gap-2"><i class="icon-base bx bx-plus icon-sm"></i> <span class="d-none d-sm-inline-block">New Indent</span></span></span></button> 
+              </div>
+             </div>
+            </div>
+
+        <div class="table-responsive text-nowrap">
+          <table class="table" id="tblid">
+            <thead>
+              <tr>
+                <th>Indent No</th>
+                <th>Indent Date</th>
+                <th>From Store</th>
+                <th>To Store</th>
+                <th>Requested By</th>
+                <th>Approved By</th>
+                <th>Status</th>
+                <th>Total Amount</th>
+                <th>Patient Name</th>
+                <th>Contact No</th>
+                <th>Remark</th>
+              </tr>
+            </thead>
+            <tbody id="indentBody" class="table-border-bottom-0"></tbody>
+          </table>
+          <div id="paginationControls"></div>
+        </div>
+
+        <!-- Indent Items Table -->
+        <div class="table-responsive text-nowrap mt-3">
+          <h5>Indent Items</h5>
+          <table class="table" id="itemsTable">
+            <thead>
+              <tr>
+                <th>Item Name</th>
+                <th>UOM</th>
+                <th>MRP</th>
+                <th>Cost Price</th>
+                <th>GST %</th>
+                <th>Indent Qty</th>
+                <th>Indent Pending Qty</th>
+             
+                
+              </tr>
+            </thead>
+            <tbody id="itemsBody" class="table-border-bottom-0"></tbody>
+          </table>
+        </div>
+      </div>
+      <!--/ Basic Bootstrap Table -->
+    </div>
+    <!-- / Content -->
+
+    <%- include('../footer') -%>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+          axios.get("/inventory/getAllIndents")
+            .then(response => {
+              const indents = response.data.indents;
+              const tbody = document.getElementById("indentBody");
+              tbody.innerHTML = "";
+      
+              indents.forEach(indent => {
+                const row = `
+                  <tr data-items='${JSON.stringify(indent.items)}'>
+                    <td>${indent.indentNo}</td>
+                    <td>${indent.indentDate}</td>
+                    <td>${indent.fromStore}</td>
+                    <td>${indent.toStore}</td>
+                    <td>${indent.requestedBy}</td>
+                    <td>${indent.approvedBy || "N/A"}</td>
+                    <td>${indent.totalAmount}</td>
+                    <td>${indent.status}</td>
+                    <td>${indent.patientName || "N/A"}</td>
+                    <td>${indent.contactNo || "N/A"}</td>
+                    <td>${indent.remark || "N/A"}</td>
+                  </tr>
+                `;
+                tbody.innerHTML += row;
+              });
+      
+              // Pagination (if applicable)
+              pagi_search('#searchBox', '#tblid', '#paginationControls');
+            })
+            .catch(error => console.error("Error fetching Indent data:", error));
+      
+          // Handle row click to show items and highlight row
+          document.getElementById("tblid").addEventListener("click", function (event) {
+            const row = event.target.closest("tr");
+            if (!row || !row.dataset.items) return;
+      
+            // Remove highlight from all rows
+            document.querySelectorAll("#tblid tr").forEach(tr => tr.classList.remove("selected-row"));
+      
+            // Highlight the selected row
+            row.classList.add("selected-row");
+      
+            const items = JSON.parse(row.dataset.items);
+            const itemsBody = document.getElementById("itemsBody");
+            itemsBody.innerHTML = "";
+      
+            items.forEach(item => {
+              const itemRow = `
+                <tr>
+                  <td>${item.item_name}</td>
+                  <td>${item.uom}</td>
+                  <td>${item.mrp}</td>
+                  <td>${item.cost_price}</td>
+                  <td>${item.gst}</td>
+                  <td>${item.indentQty}</td>
+                  <td>${item.indentPendingQty || item.indentQty}</td>
+                </tr>
+              `;
+              itemsBody.innerHTML += itemRow;
+            });
+          });
+        });
+      </script>
+       <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.3/xlsx.full.min.js"></script>
+      <script>
+        document.getElementById("exportIndent").addEventListener("click", function () {
+  let wb = XLSX.utils.book_new();
+  let wsData = [
+    [
+      "Indent No", "Indent Date", "From Store", "To Store", "Requested By",
+      "Approved By", "Total Amount", "Status", "Patient Name", "Contact No",
+      "Remark", "Item Name", "UOM", "MRP", "Indent Qty"
+    ]
+  ];
+
+  document.querySelectorAll("#indentBody tr").forEach(row => {
+    let baseData = [...row.cells].map(cell => cell.innerText); // Extract all row data
+    
+    // Retrieve items from dataset
+    let items = JSON.parse(row.dataset.items || "[]");
+
+    if (items.length > 0) {
+      items.forEach(item => {
+        wsData.push([
+          baseData[0],  // Indent No
+          baseData[1],  // Indent Date
+          baseData[2],  // From Store
+          baseData[3],  // To Store
+          baseData[4],  // Requested By
+          baseData[5],  // Approved By
+          baseData[6],  // Total Amount
+          baseData[7],  // Status
+          baseData[8],  // Patient Name
+          baseData[9],  // Contact No
+          baseData[10], // Remark
+          item.item_name || "N/A",
+          item.uom || "N/A",
+          item.mrp || "N/A",
+          item.indentQty || "N/A"  // **Indent Qty now included correctly**
+        ]);
+      });
+    } else {
+      wsData.push([...baseData, "N/A", "N/A", "N/A", "N/A"]);
+    }
+  });
+
+  let ws = XLSX.utils.aoa_to_sheet(wsData);
+  XLSX.utils.book_append_sheet(wb, ws, "Indent Records");
+  XLSX.writeFile(wb, "IndentRecords.xlsx");
+});
+
+      </script>
+      
+  </div>
+</body>
+</html>

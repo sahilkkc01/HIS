@@ -1,0 +1,527 @@
+<!doctype html>
+<html
+  lang="en"
+  class="light-style layout-menu-fixed layout-compact"
+  dir="ltr"
+  data-theme="theme-default"
+  data-assets-path="../assets/"
+  data-template="vertical-menu-template-free"
+  data-style="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+
+    <title>EMR</title>
+
+    <meta name="description" content="" />
+<%- include('../header') -%>
+
+          <!-- Content wrapper -->
+          <div class="content-wrapper">
+            <!-- Content -->
+            <style>.displaynone{display:none;}.bx-qr-scan{font-size:80px;}</style>
+            <div class="container-xxl flex-grow-1 container-p-y">
+              <div class="row">
+                <!-- Vertical & Horizontal Scrollbars -->
+                <div class="col-12">
+                  <div class="card overflow-hidden">
+                    <h5 class="card-header">Patient EMR</h5>
+         
+                    <div class="card">
+					
+                    <!-- Account -->
+					
+       <div class="card-body">
+		<div class="d-flex align-items-start align-items-sm-center gap-6 pb-4 border-bottom">
+		<img src="./images/1.png" alt="user-avatar" class="d-block w-px-50 h-px-50 rounded" id="uploadedAvatar">
+		<div class="button-wrapper">
+
+		<label class="mr-2"><strong>Patient Name:</strong> <a href="#" data-bs-toggle="modal" data-bs-target="#patienthistory">Loading...</a></label>
+		<label class="mr-2"><strong>Gender:</strong> Loading...</label>
+		<label class="mr-2"><strong>Age:</strong> Loading...</label>
+		<label class="mr-2"><strong>Blood Group:</strong> Loading...</label>
+		<label class="mr-2"><strong>UHID:</strong> Loading...</label></div>
+
+		</div>
+					  
+	
+      <!-- Patient Info -->
+
+
+     <form id="emrForm">
+      <input type="hidden" id="patientId" name="patientId">
+
+  <!-- Clinical History -->
+  <div class="form-section">
+    <h5 class="pt-4">Clinical History</h5>
+    <div class="form-floating">
+      <textarea
+        class="form-control"
+        id="clinicalHistory"
+        name="clinicalHistory"
+        style="height: 100px"
+      ></textarea>
+      <label for="clinicalHistory">Chief complaints, Past history, Allergies...</label>
+    </div>
+  </div>
+
+  <!-- Vitals -->
+  <div class="form-section">
+    <h5 class="pt-4">Vital Signs</h5>
+    <div class="row g-3">
+      <div class="col">
+        <label class="form-label" for="pulse">Pulse (bpm)</label>
+        <input type="text" id="pulse" name="pulse" class="form-control">
+      </div>
+      <div class="col">
+        <label class="form-label" for="bp">BP (mmHg)</label>
+        <input type="text" id="bp" name="bp" class="form-control">
+      </div>
+      <div class="col">
+        <label class="form-label" for="temp">Temperature (°C)</label>
+        <input type="text" id="temp" name="temp" class="form-control">
+      </div>
+      <div class="col">
+        <label class="form-label" for="spo2">SpO2 (%)</label>
+        <input type="text" id="spo2" name="spo2" class="form-control">
+      </div>
+    </div>
+  </div>
+
+  <!-- Diagnosis and Tests -->
+  <div class="form-section">
+    <h5 class="pt-4">Diagnosis and Suggested Tests</h5>
+    <div class="row g-3">
+      <div class="col-md-6">
+        <label class="form-label" for="diagnosis">Diagnosis</label>
+        <input type="text" id="diagnosis" name="diagnosis" class="form-control">
+      </div>
+      <div class="col-md-6">
+        <label class="form-label" for="testsSelect">Tests</label>
+        <select
+          id="testsSelect"
+          name="tests[]"
+          class="selectpicker form-control"
+          multiple
+          data-live-search="true"
+          data-actions-box="true"
+          data-selected-text-format="count > 3"
+          title="Choose one or more tests..."
+        >
+          <option>Blood Test</option>
+          <option>X-Ray</option>
+          <option>MRI</option>
+          <option>ECG</option>
+          <!-- etc… -->
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Prescriptions -->
+  <div class="form-section">
+    <h5 class="pt-4">Prescriptions</h5>
+    <div id="medicineRepeater">
+      <div class="row g-3 align-items-center mb-2 medicine-row">
+        <div class="col-md-4 position-relative">
+          <label class="form-label" for="medicineName">Medicine Name</label>
+          <input
+            type="text"
+            id="medicineName"
+            name="medicine_name[]"
+            class="form-control medicine-name"
+            autocomplete="off"
+          >
+          <div class="suggestions list-group position-absolute w-100"
+               style="z-index:1000; display:none;"></div>
+        </div>
+        <div class="col-md-2">
+          <label class="form-label" for="dosage">Dosage</label>
+          <input type="text" id="dosage" name="dosage[]" class="form-control dosage">
+        </div>
+        <div class="col-md-2">
+          <label class="form-label" for="frequency">Frequency</label>
+          <input type="text" id="frequency" name="frequency[]" class="form-control frequency">
+        </div>
+        <div class="col-md-2">
+          <label class="form-label" for="days">Days</label>
+          <input type="number" id="days" name="days[]" class="form-control days">
+        </div>
+        <div class="col-md-2 text-end">
+          <button type="button" class="btn btn-success addMore mt-4">+</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Doctor's Advice -->
+  <div class="form-section">
+    <h5 class="pt-4">Doctor's Advice</h5>
+    <div class="form-floating">
+      <textarea
+        class="form-control"
+        id="doctorsAdvice"
+        name="doctorsAdvice"
+        style="height: 100px"
+      ></textarea>
+      <label for="doctorsAdvice">Advice to Patient</label>
+    </div>
+  </div>
+
+  <!-- Follow-up Date -->
+  <div class="form-section pt-4">
+    <div class="row g-3">
+      <div class="col-md-6">
+        <label for="followInDays">Follow-in Days</label>
+        <select id="followInDays" name="followindays" class="form-select select2">
+          <option value="">-- Select --</option>
+          <option value="3">3 Days</option>
+          <option value="7">7 Days</option>
+          <option value="10">10 Days</option>
+          <option value="15">15 Days</option>
+        </select>
+      </div>
+      <div class="col-md-6">
+        <label for="followUpDate">Follow-up Date</label>
+        <input type="date" id="followUpDate" name="nextFollowUp" class="form-control">
+      </div>
+    </div>
+  </div>
+
+  <!-- Buttons -->
+  <div class="mt-4">
+    <button type="button" class="btn btn-primary saveBtn">Save</button>
+    <button type="button" class="btn btn-success savePrintBtn">Save & Print</button>
+    <button type="button" onclick="window.location.href='/Patient-List'" class="btn btn-secondary">Cancel</button>
+  </div>
+</form>
+
+
+    </div>
+				  
+				  
+                  </div>
+                </div>
+                <!--/ Vertical & Horizontal Scrollbars -->
+              </div>
+            </div>
+            <!-- / Content -->
+			
+			<!-- Modal -->
+                      <div class="modal fade" id="patienthistory" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog modal-xl modal-dialog-scrollable" role="document">
+                          <div class="modal-content">
+                            <div class="modal-header">
+							<h5 class="modal-title" id="modalScrollableTitle">Raghav Singh/24/M</h5>
+							<button
+							type="button"
+							class="btn-close"
+							data-bs-dismiss="modal"
+							aria-label="Close"></button>
+							</div>
+							<div class="modal-body">
+							<h5 class="mb-1">Previous Appointments</h5> 
+							
+							<div id="date1">
+							<h6>23 Dec 2024</h6>
+							<p><small><strong>Clinical History: </strong>
+							Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis
+							in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.
+							</small></p>
+							<p><small><strong>Diagnosis and Suggested Tests: </strong>
+							Urine Infection - <a href="#">Blood Test</a>
+							</small></p>
+							<p><small><strong>Prescriptions: </strong>
+							</small></p>
+							<div class="table-responsive text-nowrap">
+							<table class="table table-sm table-bordered">
+							<thead class="p-1">
+							<tr>
+							<th class="py-1">Medicine</th>
+							<th class="py-1">Dosage</th>
+							<th class="py-1">Frequency</th>
+							<th class="py-1">Days</th>
+							</tr>
+							</thead>
+							<tbody>
+							<tr>
+							<td class="py-1">Paracetamol</td>
+							<td class="py-1">10</td>
+							<td class="py-1">TAD</td>
+							<td class="py-1">5</td>
+							</tr>
+							<tr>
+							<td class="py-1">Paracetamol</td>
+							<td class="py-1">10</td>
+							<td class="py-1">TAD</td>
+							<td class="py-1">5</td>
+							</tr>
+							</tbody>
+							</table>
+							</div>
+							<p><small><strong>Advice's: </strong>
+							Cras mattis consectetur purus sit amet fermentum. Cras justo odio
+							</small></p>
+							</div>
+							<div id="date2">
+							<h6>29 Dec 2024</h6>
+							<p><small><strong>Clinical History: </strong>
+							Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis
+							in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.
+							</small></p>
+							<p><small><strong>Diagnosis and Suggested Tests: </strong>
+							Urine Infection - <a href="#">Blood Test</a>
+							</small></p>
+							<p><small><strong>Prescriptions: </strong>
+							</small></p>
+							<div class="table-responsive text-nowrap">
+							<table class="table table-sm table-bordered">
+							<thead class="p-1">
+							<tr>
+							<th class="py-1">Medicine</th>
+							<th class="py-1">Dosage</th>
+							<th class="py-1">Frequency</th>
+							<th class="py-1">Days</th>
+							</tr>
+							</thead>
+							<tbody>
+							<tr>
+							<td class="py-1">Paracetamol</td>
+							<td class="py-1">10</td>
+							<td class="py-1">TAD</td>
+							<td class="py-1">5</td>
+							</tr>
+							<tr>
+							<td class="py-1">Paracetamol</td>
+							<td class="py-1">10</td>
+							<td class="py-1">TAD</td>
+							<td class="py-1">5</td>
+							</tr>
+							</tbody>
+							</table>
+							</div>
+							<p><small><strong>Advice's: </strong>
+							Cras mattis consectetur purus sit amet fermentum. Cras justo odio
+							</small></p>
+							</div>
+							
+							
+                            </div>
+							
+							
+                            <div class="modal-footer">
+                              <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                                Close
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+					  
+
+            <!-- Footer Make footer ejs from here and add extra js for page on the bottom of footer-->
+    <%- include('../footer') -%>
+    
+   <script>
+$(function(){
+  // debounce helper
+  function debounce(fn, ms){ let t; return function(){ clearTimeout(t); t = setTimeout(()=>fn.apply(this,arguments), ms); }}
+
+  // prescription search (as before)...
+  // add/remove rows (as before)...
+
+  // auto‐fill followUpDate when followInDays changes
+  $('#followInDays').on('change', function(){
+    const d = parseInt(this.value,10);
+    if (!d) return $('#followUpDate').val('');
+    const dt = new Date(); dt.setDate(dt.getDate()+d);
+    const iso = dt.toISOString().slice(0,10);
+    $('#followUpDate').val(iso);
+  }).trigger('change');
+
+  // SAVE handler
+  $('.saveBtn').on('click', function(){
+    // build prescriptions array
+    const prescriptions = [];
+    $('#medicineRepeater .medicine-row').each(function(){
+      const $r = $(this);
+      const name = $r.find('.medicine-name').val();
+      if (!name) return;
+      prescriptions.push({
+        medicine_name: name,
+        dosage:    $r.find('.dosage').val(),
+        frequency: $r.find('.frequency').val(),
+        days:      $r.find('.days').val()
+      });
+    });
+
+    // gather all fields
+    const payload = {
+      clinic_id:       $('#clinicId').val(),
+      patient_id:      $('#patientId').val(),
+      doneBy:          $('#doneBy').val(),
+      clinicalHistory: $('#clinicalHistory').val(),
+      pulse:           $('#pulse').val(),
+      bp:              $('#bp').val(),
+      temp:            $('#temp').val(),
+      spo2:            $('#spo2').val(),
+      diagnosis:       $('#diagnosis').val(),
+      tests:           $('#testsSelect').val() || [],
+      prescriptions,
+      doctorsAdvice:   $('#doctorsAdvice').val(),
+      nextFollowUp:    $('#followUpDate').val()
+    };
+
+    $.ajax({
+      url: '/saveemr',
+      method: 'POST',
+      contentType: 'application/json',
+      data: JSON.stringify(payload),
+      success(data){
+        alert('Emr Done successfully!');
+          setTimeout(() => {
+                window.location.href = "/Patient-List";
+              }, 1500);
+        // optionally redirect or clear form
+      },
+      error(err){
+        console.error(err);
+        alert('Save failed');
+      }
+    });
+  });
+
+  // (Optional) savePrintBtn can trigger print after save...
+});
+</script>
+
+    <script>
+  $(function(){
+    // 1) grab encrypted ID from the query string
+    const params = new URLSearchParams(window.location.search);
+    const encId  = params.get("id");
+    if (!encId) return;
+
+    // 2) fetch the patient record
+    $.ajax({
+      url: `/patient/${encId}`,
+      type: "GET",
+      success: function(res){
+        console.log(res)
+        // 
+        const p = res.patient;
+        // console.log(p)
+        // 3) fill hidden ID for form submissions
+        $("#patientId").val(encId);
+
+        // 4) avatar
+        const imgUrl = p.patientImage
+          ? `/Myuploads/${p.patientImage}`
+          : "../images/1.png";
+        $("#uploadedAvatar").attr("src", imgUrl);
+
+        // 5) update labels (assumes these are the first five <label> in .button-wrapper)
+        const $labels = $(".button-wrapper label");
+        $labels.eq(0).html(`<strong>Patient Name:</strong> <a href="#" data-bs-toggle="modal" data-bs-target="#patienthistory">${p.name}</a>`);
+        $labels.eq(1).html(`<strong>Gender:</strong> ${p.gender}`);
+        $labels.eq(2).html(`<strong>Age:</strong> ${p.age} Y`);
+        $labels.eq(3).html(`<strong>Blood Group:</strong> ${p.bloodGroup}`);
+        $labels.eq(4).html(`<strong>UHID:</strong> ${p.uhid}`);
+      },
+      error: function(err){
+        console.error("Error fetching patient data:", err);
+      }
+    });
+  });
+</script>
+<!-- jQuery + Script -->
+<script>
+  $(function(){
+    // --- DEBOUNCE HELPER ---
+    function debounce(fn, delay){
+      let timer;
+      return function(){
+        clearTimeout(timer);
+        timer = setTimeout(() => fn.apply(this, arguments), delay);
+      }
+    }
+
+    // --- SEARCH & SUGGESTIONS ---
+    $('#medicineRepeater').on('input', '.medicine-name', debounce(function(){
+      const $input = $(this);
+      const q       = $input.val().trim();
+      const $sug    = $input.siblings('.suggestions');
+
+      if (!q) {
+        return $sug.hide().empty();
+      }
+
+      $.getJSON('/searchMedicine', { q })
+       .done(items => {
+         if (!items.length) {
+           return $sug.html('<div class="list-group-item">No matches</div>').show();
+         }
+         const html = items.map(i => `
+           <button 
+             type="button" 
+             class="list-group-item list-group-item-action"
+             data-item='${JSON.stringify(i)}'
+           >
+             ${i.medicine_name} <small class="text-muted">[${i.molecule}]</small>
+           </button>
+         `).join('');
+         $sug.html(html).show();
+       })
+       .fail(() => {
+         $sug.hide();
+       });
+    }, 300));
+
+    // --- SELECTING A SUGGESTION ---
+    $('#medicineRepeater').on('click', '.suggestions button', function(){
+      const item = $(this).data('item');
+      const $row = $(this).closest('.medicine-row');
+
+      $row.find('.medicine-name').val(item.medicine_name);
+      $row.find('.dosage').val(item.uom);
+      $row.find('.frequency').val('3 Times');
+      $row.find('.days').val('');
+      
+      $(this).parent().hide();
+    });
+
+    // click outside to close suggestions
+    $(document).on('click', e => {
+      if (!$(e.target).closest('.position-relative').length) {
+        $('.suggestions').hide();
+      }
+    });
+
+    // --- ADD MORE ROW ---
+    $('#medicineRepeater').on('click', '.addMore', function(){
+      const $firstRow = $('#medicineRepeater .medicine-row:first');
+      const $newRow   = $firstRow.clone();
+
+      // clear inputs in cloned row
+      $newRow.find('input').val('');
+      $newRow.find('.suggestions').hide().empty();
+
+      // change the + button in the cloned row to a remove button (optional)
+      $newRow.find('.addMore')
+             .removeClass('btn-success addMore')
+             .addClass('btn-danger removeRow')
+             .text('–');
+
+      $('#medicineRepeater').append($newRow);
+    });
+
+    // --- REMOVE A ROW ---
+    $('#medicineRepeater').on('click', '.removeRow', function(){
+      $(this).closest('.medicine-row').remove();
+    });
+  });
+</script>
+
+

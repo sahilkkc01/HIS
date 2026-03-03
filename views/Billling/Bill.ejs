@@ -1,0 +1,515 @@
+<!doctype html>
+<html
+  lang="en"
+  class="light-style layout-menu-fixed layout-compact"
+  dir="ltr"
+  data-theme="theme-default"
+  data-assets-path="../assets/"
+  data-template="vertical-menu-template-free"
+  data-style="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+
+    <title>Patient Bill</title>
+
+    <meta name="description" content="" />
+<%- include('../header') -%>
+<style>#nwp{display:none;}</style>
+          <!-- Content wrapper -->
+          <div class="content-wrapper">
+            <!-- Content -->
+            <div class="container-xxl flex-grow-1 container-p-y">
+              <div class="row">
+                <!-- Vertical & Horizontal Scrollbars -->
+                <div class="col-12">
+                  <div class="overflow-hidden">
+                    <h5 class="card-header mb-2">OP Billing</h5>
+					<div class="form-check-inline mb-3">
+                        <input type="radio" class="form-check-input" id="extpat" name="opbill" value="existing" checked="">
+                        <label class="form-check-label" for="defaultRadio2"> Existing Patient </label>
+                          </div>
+					<div class="form-check-inline mb-3">
+                            <input class="form-check-input" type="radio" id="nwpat" name="opbill" value="new">
+                            <label class="form-check-label" for="defaultRadio2"> New Patient </label>
+                          </div>
+					
+				
+                    <div class="row" id="extp">
+					 <div class="col-md-6 mb-4">
+					 <div class="card">
+					 <div class="card-body">
+					 <div class="row">
+					 
+					 <div class="col-md-5">
+					 <select id="categoryDropdown" class="select2 form-select">
+            <option value="mobile">Mobile No</option> 
+              <option value="uhid">UHID</option>
+							  <option value="email">Mail Id</option>
+                            </select>
+					</div>
+					<div class="col-md-6">
+					<input class="form-control" type="text" id="searhcValue" name="searhcValue" value="" autofocus="">
+					</div>
+					
+					<div class="col-md-1">
+					<button class="btn btn-icon" id="searchPatient">
+                                  <i class="bx bx-search bx-md"></i>
+            </button>
+					  </div>
+					  </div>
+ 					 </div>
+					</div>
+					</div>
+					
+					<div class="col-md-6 mb-4">
+            <div class="card">
+              <div class="card-body">
+                <div>
+                  <input type="hidden" id="patientId">
+                  <label class="form-label mr-2"><strong>Patient Name:</strong> <span id="patientName"></span> </label>
+                  <label class="form-label mr-2"><strong>Gender:</strong> <span id="patientGender"></span> </label>
+                  <label class="form-label mr-2"><strong>Age:</strong> <span  id="patientAge"></span> </label>
+                  <label class="form-label mr-2"><strong>Blood Group:</strong> <span id="patientBloodGroup"></span></label>
+                  <label class="form-label mr-2"><strong>UHID:</strong> <span id="patientUHID"></span> </label>
+                  <label class="form-label mr-2"><strong>Mobile:</strong> <span id="patientMobile"></span> </label>
+                </div>
+                <div>
+                  <label class="form-label mr-2"><strong id="patientAdvance">Advance:</strong> 0</label>
+                  <label class="form-label mr-2"><strong id="patientBalance">Balance:</strong> 0</label>
+                  <label class="form-label mr-2"><strong id="patientPackage">Package:</strong> N/A</label>
+                </div>
+              </div>
+            </div>
+            
+					</div>
+					</div>
+					
+					<div class="card mb-3" id="nwp">
+					<div class="card-body">
+					<div class="row">
+					<div class="col-md-4">
+					<label for="firstName" class="form-label">Patient Name*</label>
+                    <input class="form-control" type="text" id="newPatientName" name="newPatientName" value="" autofocus="">
+					</div>
+					<div class="col-md-3">
+					<label for="firstName" class="form-label">Gender</label>
+          <select id="newPatientGender" name="newPatientGender" class="select2 form-select">
+          <option value="">Select</option>
+          <option value="M">Male</option>
+          <option value="F">Female</option>
+          <option value="O">Other</option>
+        </select>
+					</div>
+					<div class="col-md-2">
+					<label for="firstName" class="form-label">Age</label>
+                    <input class="form-control" type="text" id="newPatientAge" name="newPatientAge" value="" autofocus="">
+					</div>
+					<div class="col-md-3">
+					<label for="firstName" class="form-label">Mobile No</label>
+                    <input class="form-control" type="text" id="newPatientMobile" name="newPatientMobile" value="" autofocus="">
+					</div>
+					</div>
+					</div>
+					</div>
+					
+					<div class="row">
+			
+				  
+            <div class="card">
+              <div class="card pt-4">
+                  <!-- Account -->
+                  <div class="card-body pt-2">
+                      <h5>Bill Summary</h5>
+                      <div class="col-md-12 mb-2">
+                          <input class="form-control" type="text" id="searchBox" placeholder="Search item to Add"
+                              aria-controls="DataTables_Table_1">
+                          <ul id="searchResults" class="list-group mt-2" style="display: none;"></ul>
+                      </div>
+                      <div class="text-nowrap">
+                          <div class="table-responsive">
+                              <table class="table table-bordered">
+                                  <thead class="table-light">
+                                      <tr>
+                                          <th>S No.</th>
+                                          <th>Name</th>
+                                          <th>Qty</th>
+                                          <th>UOM</th>
+                                          <th>GST</th>
+                                          <th>MRP</th>
+                                          <th>Total</th>
+                                          <th>&nbsp;</th>
+                                      </tr>
+                                  </thead>
+                                  <tbody id="mainTblBody"></tbody>
+                              </table>
+                          </div>
+          
+                          <div class="mt-2">
+                              <div class="row">
+                                  <div class="col-md-3">
+                                      <h5 class="mb-2 mt-3">Discount</h5>
+                                      <select id="discountCat" class="select2 form-select">
+                                          <option value="P">Percentage</option>
+                                          <option value="A">Amount</option>
+                                      </select>
+                                  </div>
+                                  <div class="col-md-3">
+                                      <h5 class="mb-2 mt-3">% / Amt.</h5>
+                                      <input class="form-control" type="number" id="discountVal" name="discountVal" value=""
+                                          autofocus="">
+                                  </div>
+                                  <div class="col-md-6">
+                                      <h5 class="mb-2 mt-3">Prescribing Doctor</h5>
+                                      <select id="doctor" name="doctor" class="select2 form-select">
+                                          <option value="">Select</option>
+                                      </select>
+                                  </div>
+                              </div>
+                          </div>
+          
+                          <div class="mt-2">
+                              <div class="row">
+                                  <div class="col-md-12">
+                                      <h5 class="mb-2 mt-3">Remarks</h5>
+                                  </div>
+                                  <div class="col-md-12">
+                                      <input class="form-control" type="text" id="remark" name="remark" value="" autofocus="">
+                                  </div>
+                              </div>
+                          </div>
+          
+                          <div class="table-responsive text-nowrap mt-4 mb-4">
+                              <table class="table table-bordered">
+                                  <tr>
+                                      <td>Discount</td>
+                                      <td id="dicountAmount">0</td>
+                                  </tr>
+                                  <tr>
+                                      <td>GST</td>
+                                      <td id="totalGst">0</td>
+                                  </tr>
+                                  <tr class="table-active">
+                                      <td>
+                                          <h5 class="mb-0">Net Amount</h5>
+                                      </td>
+                                      <td>
+                                          <h5 class="mb-0"><i class='bx bx-rupee'></i> <span id="netAmount">0</span></h5>
+                                      </td>
+                                  </tr>
+                              </table>
+                          </div>
+          
+                          <!-- Bill Button -->
+                          <div class="text-center mb-3">
+                              <button type="button" class="btn btn-primary btn-lg" id="generateBill">
+                                  <i class='bx bx-receipt'></i> Generate Bill
+                              </button>
+                          </div>
+          
+                      </div>
+                  </div>
+              </div>
+          </div>
+          
+					 </div>
+					 
+                  </div>
+                </div>
+                <!--/ Vertical & Horizontal Scrollbars -->
+              </div>
+            </div>
+            <!-- / Content -->
+					  <%- include('../footer') -%>
+           <script>
+            $(document).ready(function() {
+    $('input[name="opbill"]').change(function() {
+        if ($('#nwpat').is(':checked')) {
+            $('#nwp').show();  
+            $('#extp').hide().find("input, select, textarea, span").not("#categoryDropdown, #newPatientGender").val("").text(""); // Clear except specific IDs
+        } else if ($('#extpat').is(':checked')) {
+            $('#extp').show();  
+            $('#nwp').hide().find("input, select, textarea, span").not("#categoryDropdown, #newPatientGender").val("").text(""); // Clear except specific IDs
+        }
+    });
+});
+
+           </script>
+
+              <script>
+                $(document).ready(function () {
+    $("#searchPatient").click(function () {
+        let category = $("#categoryDropdown").val();
+        let searchValue = $("#searhcValue").val().trim();
+
+        if (!searchValue) {
+            alert("Please enter a search value.");
+            return;
+        }
+
+        axios.get(`/patientFilter`, {
+            params: { [category]: searchValue }
+        })
+        .then(response => {
+            if (response.data) {
+              console.log(response)
+                let patient = response.data;
+                $("#patientId").val(patient.id);
+                $("#patientName").text(patient.name);
+                $("#patientGender").text((patient.gender === "M" ? "Male" : patient.gender === "F" ? "Female" : "Other"));
+                $("#patientAge").text( patient.age + " Y");
+                $("#patientBloodGroup").text( patient.bloodGroup);
+                $("#patientUHID").text( patient.uhid);
+                $("#patientMobile").text( patient.mobile);
+                // $("#patientAdvance").text("Advance: " + (patient.advance || "N/A"));
+                // $("#patientBalance").text("Balance: " + (patient.balance || "N/A"));
+                // $("#patientPackage").text("Package: " + (patient.package || "NA"));
+            } else {
+                alert("Patient not found.");
+            }
+        })
+        .catch(error => {
+            console.error("Error fetching patient data:", error);
+            alert(error.response.data.message || 'Patient not found');
+        });
+    });
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+    const searchBox = document.getElementById("searchBox");
+    const searchResults = document.getElementById("searchResults");
+    const mainTblBody = document.getElementById("mainTblBody");
+    const netAmount = document.getElementById("netAmount");
+    const discountCat = document.getElementById("discountCat");
+    const discountVal = document.getElementById("discountVal");
+    const dicountAmount = document.getElementById("dicountAmount");
+    const totalGst = document.getElementById("totalGst");
+    const remark = document.getElementById("remark");
+    const doctor = document.getElementById("doctor");
+    const generateBillBtn = document.getElementById("generateBill");
+
+    let itemsData = [];
+
+    function fetchItems() {
+        axios.get("/inventory/getItems")
+            .then(response => {
+                itemsData = response.data.items;
+            })
+            .catch(error => {
+                console.error("Error fetching items:", error);
+            });
+    }
+    fetchItems();
+
+    searchBox.addEventListener("input", function () {
+        const query = searchBox.value.toLowerCase().trim();
+        if (query) {
+            const filteredItems = itemsData.filter(item =>
+                item.medicine_name.toLowerCase().includes(query) ||
+                item.molecule.toLowerCase().includes(query)
+            );
+            displaySearchResults(filteredItems);
+        } else {
+            searchResults.style.display = "none";
+        }
+    });
+
+    function displaySearchResults(items) {
+        searchResults.innerHTML = "";
+        if (items.length > 0) {
+            items.forEach(item => {
+                const li = document.createElement("li");
+                li.className = "list-group-item";
+                li.textContent = `${item.medicine_name} (${item.molecule}) - ${item.uom}, MRP-${item.mrp} Cost-${item.cost_price} GST-${item.gst}%`;
+                li.addEventListener("click", () => selectItem(item));
+                searchResults.appendChild(li);
+            });
+            searchResults.style.display = "block";
+        } else {
+            searchResults.style.display = "none";
+        }
+    }
+
+    function selectItem(item) {
+        if (document.querySelector(`#mainTblBody tr[data-id="${item.id}"]`)) {
+            alert("Item already added!");
+            return;
+        }
+
+        const gstRate = item.gst;
+        const basePrice = item.mrp / (1 + gstRate / 100);
+        const gstAmount = item.mrp - basePrice;
+
+        const row = document.createElement("tr");
+        row.setAttribute("data-id", item.id);
+        row.setAttribute("data-gst", gstRate);
+        row.innerHTML = `
+            <td>${mainTblBody.children.length + 1}</td>
+            <td>${item.medicine_name}</td>
+            <td><input class="form-control indentQty" type="number" value="1" min="1"></td>
+            <td>${item.uom}</td>
+            <td><input class="form-control gstAmount" type="number" value="${gstAmount.toFixed(2)}" readonly></td>
+            <td><input class="form-control mrp" type="number" value="${item.mrp}" readonly></td>
+            <td><input class="form-control totalPrice" type="number" value="${item.mrp}" readonly></td>
+            <td>
+                <button class="btn btn-icon btn-outline-danger removeItem">
+                    <i class="bx bx-trash bx-sm"></i>
+                </button>
+            </td>
+        `;
+
+        mainTblBody.appendChild(row);
+        searchResults.style.display = "none";
+        searchBox.value = "";
+
+        attachEventListeners(row);
+        updateTotalValues();
+    }
+
+    function attachEventListeners(row) {
+        const indentQty = row.querySelector(".indentQty");
+        indentQty.addEventListener("input", updateTotalValues);
+
+        const removeButton = row.querySelector(".removeItem");
+        removeButton.addEventListener("click", function () {
+            row.remove();
+            updateTotalValues();
+        });
+    }
+
+    function updateTotalValues() {
+        let totalAmount = 0;
+        let totalTax = 0;
+
+        document.querySelectorAll("#mainTblBody tr").forEach((row, index) => {
+            row.children[0].textContent = index + 1;
+
+            const indentQty = parseInt(row.querySelector(".indentQty")?.value) || 0;
+            const mrp = parseFloat(row.querySelector(".mrp")?.value) || 0;
+            const gstRate = parseFloat(row.getAttribute("data-gst")) || 0;
+
+            const basePrice = mrp / (1 + gstRate / 100);
+            const totalBasePrice = basePrice * indentQty;
+            const gstAmount = (mrp - basePrice) * indentQty;
+
+            row.querySelector(".gstAmount").value = gstAmount.toFixed(2);
+            row.querySelector(".totalPrice").value = (mrp * indentQty).toFixed(2);
+
+            totalAmount += totalBasePrice;
+            totalTax += gstAmount;
+        });
+
+        applyDiscount(totalAmount, totalTax);
+    }
+
+    function applyDiscount(totalAmount, totalTax) {
+    let discount = parseFloat(discountVal.value) || 0;
+
+    if (discountCat.value === "P") {
+        if (discount > 100) {
+            discount = 100;
+            discountVal.value = 100; // Enforce max 100 in input field
+        }
+        discount = (totalAmount * discount) / 100;
+    } else if (discountCat.value === "A") {
+        if (discount > totalAmount) {
+            discount = totalAmount;
+            discountVal.value = totalAmount.toFixed(2); // Enforce max discount to totalAmount
+        }
+    }
+
+    dicountAmount.textContent = discount.toFixed(2);
+    totalGst.textContent = totalTax.toFixed(2);
+    netAmount.textContent = (totalAmount - discount + totalTax).toFixed(2);
+}
+
+// Prevent input greater than 100% for percentage discounts
+discountVal.addEventListener("input", function () {
+    if (discountCat.value === "P" && parseFloat(discountVal.value) > 100) {
+        discountVal.value = 100; // Restrict input to 100
+    }
+    updateTotalValues(); // Recalculate totals
+});
+
+
+    discountCat.addEventListener("change", updateTotalValues);
+    discountVal.addEventListener("input", updateTotalValues);
+
+    generateBillBtn.addEventListener("click", function () {
+    const isExistingPatient = document.getElementById("extpat").checked;
+    let patientId = document.getElementById("patientId").value.trim();
+    let patientName, patientGender, patientAge, patientMobile;
+
+    if (isExistingPatient) {
+        if (!patientId) {
+            alert("Please select an existing patient before generating the bill.");
+            return;
+        }
+        patientName = document.getElementById("patientName").textContent.trim();
+        patientGender = document.getElementById("patientGender").textContent.trim();
+        patientAge = document.getElementById("patientAge").textContent.trim();
+        patientMobile = document.getElementById("patientMobile").textContent.trim();
+    } else {
+        // New patient validation
+        patientName = document.getElementById("newPatientName").value.trim();
+        patientGender = document.getElementById("newPatientGender").value.trim();
+        patientAge = document.getElementById("newPatientAge").value.trim();
+        patientMobile = document.getElementById("newPatientMobile").value.trim();
+
+        if (!patientName) {
+            alert("Please enter the new patient's name.");
+            return;
+        }
+    }
+
+    const items = [];
+    document.querySelectorAll("#mainTblBody tr").forEach(row => {
+        items.push({
+            id: row.getAttribute("data-id"),
+            name: row.children[1].textContent,
+            quantity: row.querySelector(".indentQty").value,
+            uom: row.children[3].textContent,
+            mrp: row.querySelector(".mrp").value,
+            total: row.querySelector(".totalPrice").value,
+            gstAmount: row.querySelector(".gstAmount").value
+        });
+    });
+    if (items.length === 0) {
+        alert("Please add at least one item before generating the bill.");
+        return;
+    }
+    const billData = {
+        patientId: isExistingPatient ? patientId : null, // Send null if new patient
+        patientName,
+        patientGender,
+        patientAge,
+        patientMobile,
+        items,
+        discountCategory: discountCat.value,
+        discountValue: discountVal.value,
+        discountAmount: dicountAmount.textContent,
+        taxAmount: totalGst.textContent,
+        netAmount: netAmount.textContent,
+        remark: remark.value,
+        doctor: doctor.value
+    };
+console.log(billData)
+    axios.post("/billing/generateBill", billData)
+        .then(response => {
+          console.log(response)
+            alert("Bill generated successfully!");
+            const route='billing/PrintBill'
+            ViewBtn(route,response.data.billId)
+         
+        })
+        .catch(error => {
+            console.error("Error generating bill:", error);
+        });
+});
+
+  });
+
+loadDropdown('doctor', 'Doctor', 'name', '')
+              </script>

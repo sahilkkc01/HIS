@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en" class="light-style layout-menu-fixed layout-compact" dir="ltr" data-theme="theme-default">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Item List</title>
+    <%- include('../header') -%>
+</head>
+<body>
+    <div class="content-wrapper">
+        <div class="container-xxl flex-grow-1 container-p-y">
+            <div class="card">
+                <div class="row card-header flex-column flex-md-row pb-4">
+                    <div class="d-md-flex justify-content-between align-items-center col-md-auto me-auto">
+                        <h5 class="card-title mb-0">Item List</h5>
+                    </div>
+                    <div class="d-md-flex justify-content-between align-items-center col-md-auto ms-auto">
+                        <div class="btn-group">
+                            <input type="search" class="form-control" id="searchBox" placeholder="Search Items">
+                        </div>
+                        <button class="btn btn-primary ms-2" onclick="window.location.href='/add-item'">
+                            <i class="bx bx-plus"></i> Add Item
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="table-responsive text-nowrap">
+                    <table class="table" id="itemsTable">
+                        <thead>
+                            <tr>
+                                <th>Item Name</th>
+                                <th>Generic Name</th>
+                                <th>Molecule</th>
+                                <th>Category</th>
+                                <th>UOM</th>
+                                <th>MRP</th>
+                                <th>Cost Price</th>
+                                <th>GST</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="itemsBody"></tbody>
+                    </table>
+                    <div id="paginationControls"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <%- include('../footer') -%>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            axios.get("/inventory/getItems")
+                .then(response => {
+                 
+                    const items = response.data.items;
+                    console.log(items)
+                    const tbody = document.getElementById("itemsBody");
+                    tbody.innerHTML = "";
+
+                    items.forEach(item => {
+                        const row = `
+                            <tr>
+                                <td>${item.medicine_name || "N/A"}</td>
+                                <td>${item.generic_name || "N/A"}</td>
+                                <td>${item.molecule || "N/A"}</td>
+                                <td>${item.category || "N/A"}</td>
+                                <td>${item.uom || "N/A"}</td>
+                                <td>${item.mrp}</td>
+                                <td>${item.cost_price}</td>
+                                <td>${item.gst}</td>
+                                <td>
+                                    <button class="btn btn-sm btn-warning" onclick="editItem('${item.encryptedId}')">Edit</button>
+                                   
+                                </td>
+                            </tr>
+                        `;
+                        tbody.innerHTML += row;
+                    });
+                    pagi_search('#searchBox', '#itemsTable', '#paginationControls');
+                })
+                .catch(error => {
+                    console.error("Error fetching items:", error);
+                });
+        });
+
+        function editItem(itemId) {
+    window.location.href = `/add-item?Id=${itemId}`;
+}
+
+    </script>
+</body>
+</html>

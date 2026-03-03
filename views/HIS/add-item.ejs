@@ -1,0 +1,371 @@
+<!doctype html>
+<html lang="en" class="light-style layout-menu-fixed layout-compact" dir="ltr" data-theme="theme-default"
+  data-assets-path="../assets/" data-template="vertical-menu-template-free" data-style="light">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+
+  <title>Add Item/Medicine</title>
+
+  <%- include('../header') -%>
+
+    <!-- Content wrapper -->
+    <div class="content-wrapper">
+      <!-- Content -->
+      <style>
+        .displaynone {
+          display: none;
+        }
+
+        .bx-qr-scan {
+          font-size: 80px;
+        }
+      </style>
+      <div class="container-xxl flex-grow-1 container-p-y">
+        <div class="row">
+          <!-- Vertical & Horizontal Scrollbars -->
+          <div class="col-12">
+            <div class="card overflow-hidden">
+              <h5 class="card-header">Add Medicine</h5>
+              <div class="card">
+                <!-- Account -->
+                <div class="card-body pt-4">
+                  <form id="addItemForm" method="post" enctype="multipart/form-data">
+                    <input type="hidden" name="itemId" id="itemId">
+                    <div id="errordiv"></div>
+                    <div class="row g-6">
+                      <div class="col-md-6">
+                        <label for="name" class="form-label">Medicine Name*</label>
+                        <input class="form-control" type="text" id="name" name="medicine_name"
+                          data-validation="required" data-error-message="Please Enter Medicine Name" value=""
+                          autofocus="">
+                      </div>
+                      <div class="col-md-3">
+                        <label for="language" class="form-label">Molecule*</label>
+                        <select id="Molecule" name="molecule" data-validation="required"
+                          data-error-message="Please Enter Molecule" class="select2 form-select">
+                          <option value="">Select</option>
+                          <option value="add-new">Add New</option>
+                        </select>
+                      </div>
+                      <div class="col-md-3">
+                        <label class="form-label" for="genericName">Generic Name</label>
+                        <div class="input-group">
+                          <input type="text" id="genericName" name="generic_name" class="form-control" placeholder="">
+                        </div>
+                      </div>
+                      <div class="col-md-3">
+                        <label for="language" class="form-label">Brand Name</label>
+                        <select id="ItemBrandName" name="brand_name" class="select2 form-select">
+                          <option value="">Select</option>
+                          <option value="add-new">Add New</option>
+                        </select>
+                      </div>
+                      <div class="col-md-3">
+                        <label for="language" class="form-label">Dosage Form</label>
+                        <select id="DosageForm" name="dosage_form" class="select2 form-select">
+                          <option value="">Select</option>
+                          <option value="add-new">Add New</option>
+                        </select>
+                      </div>
+
+                      <div class="col-md-3">
+                        <label for="language" class="form-label">Strength</label>
+                        <input class="form-control" type="text" id="strength" name="strength" value="" placeholder="">
+                      </div>
+                      <div class="col-md-3">
+                        <label for="language" class="form-label">Strength Unit</label>
+                        <select id="StrengthUnit" name="strength_unit" class="select2 form-select">
+                          <option value="">Select</option>
+                          <option value="add-new">Add New</option>
+                        </select>
+                      </div>
+                      <div class="col-md-3">
+                        <label for="language" class="form-label">Manufacturer</label>
+                        <select id="Manufacturer" name="manufacturer" class="select2 form-select">
+                          <option value="">Select</option>
+                          <option value="add-new">Add New</option>
+                        </select>
+                      </div>
+                      <div class="col-md-3">
+                        <label for="language" class="form-label">UOM*</label>
+                        <select id="UOM" data-validation="required" data-error-message="Please Enter UOM" name="uom"
+                          class="select2 form-select">
+                          <option value="">Select</option>
+                          <option value="add-new">Add New</option>
+                        </select>
+                      </div>
+                      <div class="col-md-3">
+                        <label for="language" class="form-label">Other UOM</label>
+                        <select id="other_uom" name="other_uom" class="select2 form-select">
+                          <option value="">Select</option>
+                          <option value="add-new">Add New</option>
+                        </select>
+                      </div>
+
+                      <div class="col-md-3">
+                        <label for="language" class="form-label">Conversion Factor</label>
+                        <input class="form-control" type="number" id="conversion" name="conversion" value=""
+                          placeholder="">
+                      </div>
+                      <div class="col-md-3">
+                        <label for="language" class="form-label">MRP*</label>
+                        <input class="form-control" data-validation="required" data-error-message="Please Enter MRP"
+                          type="number" id="mrp" name="mrp" value="" placeholder="" step="any">
+                      </div>
+                      <div class="col-md-3">
+                        <label for="language" class="form-label">Cost Price*</label>
+                        <input class="form-control" type="number" id="costPrice" name="cost_price" value="" step="any"
+                        data-validation="required" data-error-message="Please Enter Cost Price"
+                          placeholder="">
+                      </div>
+                      <div class="col-md-3">
+                        <label for="language" class="form-label">Selling Price</label>
+                        <input class="form-control" type="number" id="sellPrice" name="sell_price" value="" step="any"
+                          placeholder="">
+                      </div>
+                      <div class="col-md-3">
+                        <label for="language" class="form-label">Storage Conditions</label>
+                        <input class="form-control" type="text" id="storageCond" name="storage_condition" value=""
+                          placeholder="">
+                      </div>
+                      <div class="col-md-3">
+                        <label for="language" class="form-label">Prescription Required</label>
+                        <select id="prescReq" name="prescription_req" class="select2 form-select">
+                          <option value="">Select</option>
+                          <option value="Yes">Yes</option>
+                          <option value="No">No</option>
+                        </select>
+                      </div>
+
+                      <div class="col-md-3">
+                        <label for="language" class="form-label">Interactions</label>
+                        <input class="form-control" type="text" id="interaction" name="interactions" value=""
+                          placeholder="">
+                      </div>
+
+                      <div class="col-md-3">
+                        <label for="language" class="form-label">Category*</label>
+                        <select id="ItemCategory" name="category" data-validation="required"
+                          data-error-message="Please Enter Category" class="select2 form-select">
+                          <option value="">Select</option>
+                          <option value="add-new">Add New</option>
+                        </select>
+                      </div>
+                      <div class="col-md-3">
+                        <label for="language" class="form-label">HSN Code</label>
+                        <select id="HSNCode" name="hsn" class="select2 form-select">
+                          <option value="">Select</option>
+                          <!-- <option value="9001">90001</option> -->
+                          <option value="add-new">Add New</option>
+                        </select>
+                      </div>
+                      <div class="col-md-3">
+                        <label for="language" class="form-label">GST %*</label>
+                        <input class="form-control" data-validation="required" data-error-message="Please Enter GST"
+                          type="number" id="gst" name="gst" value="" placeholder="" step="any">
+                      </div>
+                      <div class="col-md-4">
+                        <label for="formFile" class="form-label">Item Image</label>
+                        <input class="form-control" type="file" id="itemImage" name="itemImage"
+                          accept="image/png, image/jpeg, image/jpg">
+                      </div>
+                    </div>
+                    <div id="loadingIndicator"></div>
+                    <div class="mt-6">
+                      <button type="submit" class="btn btn-primary me-3">Save</button>
+                      <button type="reset" onclick="window.location.href='/inventory/item-list'" class="btn btn-outline-secondary">Cancel</button>
+                    </div>
+                  </form>
+                </div>
+                <!-- /Account -->
+              </div>
+            </div>
+          </div>
+          <!--/ Vertical & Horizontal Scrollbars -->
+        </div>
+      </div>
+      <!-- / Content -->
+
+      <!-- Small Modal -->
+
+
+      <%- include('../footer') -%>
+        <script>
+          $(document).ready(function () {
+            // Show modal when "Add New" is selected
+            $('#Molecule').on('change', function () {
+              if ($(this).val() === 'add-new') {
+                createSmallModal("smallModal", "Molecule", "/addModal", "Molecule", "Molecule")
+              }
+            });
+            $('#ItemBrandName').on('change', function () {
+              if ($(this).val() === 'add-new') {
+                createSmallModal("brandModal", "Brand Name", "/addModal", "ItemBrandName", "ItemBrandName")
+              }
+            })
+            $('#ItemCategory').on('change', function () {
+              if ($(this).val() === 'add-new') {
+                createSmallModal("categoryModal", "Category", "/addModal", "ItemCategory", "ItemCategory")
+              }
+            })
+            $('#DosageForm').on('change', function () {
+              if ($(this).val() === 'add-new') {
+                createSmallModal("dosageModal", "Dosage Form", "/addModal", "DosageForm", "DosageForm")
+              }
+            })
+            $('#StrengthUnit').on('change', function () {
+              if ($(this).val() === 'add-new') {
+                createSmallModal("strengthUnitModal", "Strength Unit", "/addModal", "StrengthUnit", "StrengthUnit")
+              }
+            })
+            $('#Manufacturer').on('change', function () {
+              if ($(this).val() === 'add-new') {
+                createSmallModal("manufacturerModal", "Manufacturer", "/addModal", "Manufacturer", "Manufacturer")
+              }
+            })
+          $('#UOM').on('change', function () {
+              if ($(this).val() === 'add-new') {
+                createSmallModal("uomModal", "UOM", "/addModal", "UOM", "UOM")
+              }
+            })
+            $('#HSNCode').on('change', function () {
+              if ($(this).val() === 'add-new') {
+                createSmallModal("hsnModal", "HSN Code", "/addModal", "HSNCode", 'HSNCode')
+              }
+            })
+          });
+
+          loadDropdown('Molecule', 'Molecule', 'name', '');
+          loadDropdown('ItemBrandName', 'ItemBrandName', 'name', '');
+          loadDropdown('ItemCategory', 'ItemCategory', 'name', '');
+          loadDropdown('DosageForm', 'DosageForm', 'name', '');
+          loadDropdown('StrengthUnit', 'StrengthUnit', 'name', '');
+          loadDropdown('Manufacturer', 'Manufacturer', 'name', '');
+          loadDropdown('UOM', 'UOM', 'name', '');
+          loadDropdown('other_uom', 'UOM', 'name', '');
+          loadDropdown('HSNCode', 'HSNCode', 'name', '');
+        </script>
+        <script>
+
+          $(document).ready(function () {
+            console.log("Document is ready");
+
+            const formId = '#addItemForm';
+            const errorDivId = '#errordiv';
+
+            document.getElementById('itemImage').addEventListener('change', function (event) {
+              // Just validate the file input without calling previewImage
+              validateFileInput("itemImage", ["image/jpeg", "image/jpg", "image/png"], 800);
+            });
+
+            $(formId).on('submit', async function (event) {
+              event.preventDefault(); // Prevent the form from submitting
+
+              const { isValid, errorMessage } = validateForm(formId);
+
+              if (isValid) {
+                const url = '/save-item';
+                const loadingDiv = '#loadingIndicator';
+
+                try {
+                  $(loadingDiv).show(); // Show loading indicator
+
+                  const response = await saveForm(formId, url); // Perform the form submission
+
+                  console.log('Success:', response);
+                  $(errorDivId).removeClass('alert-danger').addClass('alert-success').text(response.message).show();
+                } catch (error) {
+                  console.error('Error:', error);
+                  $(errorDivId).removeClass('alert-success').addClass('alert-danger').text(` ${error.message || 'Unknown error'}`).show();
+                } finally {
+                  $(loadingDiv).hide(); // Hide loading indicator after submission
+
+                }
+              } else {
+                $(errorDivId).removeClass('alert-success').addClass('alert-danger').text(errorMessage).show();
+              }
+            });
+          });
+        
+        </script>
+
+<script>
+  $(document).ready(function () {
+  console.log("Document is ready");
+
+  const itemId = '<%= id %>'; // Get ID from EJS
+  if (itemId) {
+    fetchItemData(itemId);
+  }
+
+  // Load dropdowns first before populating the form
+  const dropdownsLoaded = [
+    loadDropdown('Molecule', 'Molecule', 'name', ''),
+    loadDropdown('ItemBrandName', 'ItemBrandName', 'name', ''),
+    loadDropdown('ItemCategory', 'ItemCategory', 'name', ''),
+    loadDropdown('DosageForm', 'DosageForm', 'name', ''),
+    loadDropdown('StrengthUnit', 'StrengthUnit', 'name', ''),
+    loadDropdown('Manufacturer', 'Manufacturer', 'name', ''),
+    loadDropdown('UOM', 'UOM', 'name', ''),
+    loadDropdown('other_uom', 'UOM', 'name', ''),
+    loadDropdown('HSNCode', 'HSNCode', 'name', '')
+  ];
+
+  // Ensure all dropdowns are loaded before populating the form
+  Promise.all(dropdownsLoaded).then(() => {
+    if (itemId) {
+      fetchItemData(itemId);
+    }
+  });
+});
+
+function fetchItemData(id) {
+  $.ajax({
+    url: `/inventory/getItem/${id}`,
+    type: 'GET',
+    success: function (response) {
+      console.log(response);
+      if (response.success) {
+        setTimeout(() => populateForm(response.data), 500); // Small delay to ensure dropdowns are ready
+      } else {
+        console.error('Failed to fetch item data:', response.message);
+      }
+    },
+    error: function (err) {
+      console.error('Error fetching data:', err);
+    }
+  });
+}
+
+function populateForm(data) {
+  $('#itemId').val(data.id);
+  $('#name').val(data.medicine_name);
+  $('#Molecule').val(data.molecule).trigger('change');
+  $('#genericName').val(data.generic_name);
+  $('#UOM').val(data.uom).trigger('change');
+  $('#other_uom').val(data.other_uom).trigger('change');
+  $('#mrp').val(data.mrp);
+  $('#costPrice').val(data.cost_price);
+  $('#gst').val(data.gst);
+  $('#ItemCategory').val(data.category).trigger('change');
+
+  // Check if `details` exist before accessing properties
+  if (data.details) {
+    $('#ItemBrandName').val(data.details.brand_name).trigger('change');
+    $('#DosageForm').val(data.details.dosage_form).trigger('change');
+    $('#conversion').val(data.details.conversion);
+    $('#strength').val(data.details.strength);
+    $('#StrengthUnit').val(data.details.strength_unit).trigger('change');
+    $('#Manufacturer').val(data.details.manufacturer).trigger('change');
+    $('#sellPrice').val(data.details.sell_price);
+    $('#storageCond').val(data.details.storage_condition);
+    $('#prescReq').val(data.details.prescription_req ? 'Yes' : 'No').trigger('change');
+    $('#interaction').val(data.details.interactions);
+    $('#HSNCode').val(data.details.hsn).trigger('change');
+  }
+}
+
+</script>

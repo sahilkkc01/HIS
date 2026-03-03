@@ -1,0 +1,443 @@
+<!doctype html>
+<!--
+  Embryology Consent Form View
+  Purpose: Display patient consent search interface for embryology department
+  Features: Patient filtering, search functionality, barcode generation
+  Route: GET /embryology/consent -> EmbryologyController.getConsent()
+-->
+<html
+  lang="en"
+  class="light-style layout-menu-fixed layout-compact"
+  dir="ltr"
+  data-theme="theme-default"
+  data-assets-path="../assets/"
+  data-template="vertical-menu-template-free"
+  data-style="light"
+>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"
+    />
+    <title><%= title %></title>
+    <!-- Include common header styles and scripts -->
+    <%- include('../header') -%>
+  </head>
+  <body>
+    <div class="content-wrapper">
+      <div class="container-xxl flex-grow-1 container-p-y">
+        <!-- Consent Search Filters Section -->
+        <!-- Provides comprehensive patient filtering options for consent management -->
+        <div class="card mb-4">
+          <div class="card-header">
+            <h5 class="card-title mb-0">Embryology - Consent</h5>
+          </div>
+          <div class="card-body">
+            <p class="text-muted mb-3">
+              Use the filters below to search for consent-related patients.
+            </p>
+
+            <!-- Patient search form with multiple filter criteria -->
+            <form class="row g-3">
+              <!-- Basic patient identification fields -->
+              <div class="col-md-3">
+                <label for="uhid" class="form-label">UHID</label>
+                <input type="text" class="form-control" id="uhid" placeholder="" />
+              </div>
+              <div class="col-md-3">
+                <label for="idProof" class="form-label">ID Proof No.</label>
+                <input type="text" class="form-control" id="idProof" placeholder="" />
+              </div>
+              <div class="col-md-3">
+                <label for="firstName" class="form-label">First Name</label>
+                <input type="text" class="form-control" id="firstName" placeholder="" />
+              </div>
+              <div class="col-md-3">
+                <label for="lastName" class="form-label">Last Name</label>
+                <input type="text" class="form-control" id="lastName" placeholder="" />
+              </div>
+
+              <!-- Patient demographic information -->
+              <div class="col-md-3">
+                <label for="gender" class="form-label">Gender</label>
+                <select id="gender" class="form-select">
+                  <option value=""></option>
+                  <option value="M">Male</option>
+                  <option value="F">Female</option>
+                  <option value="O">Other</option>
+                </select>
+              </div>
+              <div class="col-md-3">
+                <label for="mobile" class="form-label">Mobile No.</label>
+                <input type="text" class="form-control" id="mobile" placeholder="" />
+              </div>
+              <div class="col-md-3">
+                <label for="dob" class="form-label">DOB</label>
+                <input type="date" class="form-control" id="dob" />
+              </div>
+              <div class="col-md-3">
+                <label for="age" class="form-label">Age</label>
+                <input type="number" class="form-control" id="age" min="0" max="150" />
+              </div>
+
+              <!-- Visit timeframe filter with flexible time units -->
+              <div class="col-md-4">
+                <label for="visitedValue" class="form-label">Visited</label>
+                <div class="row g-2">
+                  <div class="col-5">
+                    <input
+                      type="number"
+                      class="form-control"
+                      id="visitedValue"
+                      min="0"
+                      placeholder=""
+                    />
+                  </div>
+                  <div class="col-7">
+                    <select id="visitedUnit" class="form-select">
+                      <option value="days">Day(s) ago</option>
+                      <option value="weeks">Week(s) ago</option>
+                      <option value="months">Month(s) ago</option>
+                      <option value="years">Year(s) ago</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </form>
+
+            <!-- Action buttons for search and barcode generation -->
+            <div class="d-flex justify-content-end mt-4 gap-2">
+              <button type="button" class="btn btn-outline-primary" onclick="generateBarcode()">
+                <i class="bx bx-barcode me-1"></i> Generate Barcode
+              </button>
+              <button type="button" class="btn btn-primary" onclick="searchPatients()">
+                <i class="bx bx-search me-1"></i> Search
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Patient Search Results Table -->
+        <!-- Displays filtered patient records with comprehensive information -->
+        <div class="card">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h6 class="mb-0">Search Patient</h6>
+          </div>
+          <div class="card-body">
+            <!-- Additional patient search field for quick filtering -->
+            <div class="mb-3">
+              <label for="searchPatient" class="form-label">Search Patient</label>
+              <input
+                type="text"
+                class="form-control"
+                id="searchPatient"
+                placeholder=""
+              />
+            </div>
+            <!-- Responsive table for patient records display -->
+            <div class="table-responsive text-nowrap">
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th>MR. No.</th>
+                    <th>Name</th>
+                    <th>Date Of Birth</th>
+                    <th>Baby Birth Weight</th>
+                    <th>Registration Date</th>
+                    <th>Mobile No.</th>
+                    <th>Email</th>
+                    <th>Gender</th>
+                    <th>Marital Status</th>
+                    <th>Identity Type</th>
+                    <th>Identity Number</th>
+                    <th>Special Registration</th>
+                    <th>Registered From</th>
+                  </tr>
+                </thead>
+                <tbody id="patientTableBody">
+                  <% if (typeof patients !== 'undefined' && patients.length > 0) { %>
+                    <% patients.forEach(patient => { %>
+                      <tr>
+                        <td><%= patient.mrNo %></td>
+                        <td><%= patient.name %></td>
+                        <td><%= patient.dateOfBirth %></td>
+                        <td><%= patient.babyBirthWeight %></td>
+                        <td><%= patient.registrationDate %></td>
+                        <td><%= patient.mobileNo %></td>
+                        <td><%= patient.email %></td>
+                        <td><%= patient.gender %></td>
+                        <td><%= patient.maritalStatus %></td>
+                        <td><%= patient.identityType %></td>
+                        <td><%= patient.identityNumber %></td>
+                        <td><%= patient.specialRegistration %></td>
+                        <td><%= patient.registeredFrom %></td>
+                      </tr>
+                    <% }); %>
+                  <% } else { %>
+                    <!-- Placeholder message until search is performed -->
+                    <tr>
+                      <td colspan="13" class="text-center text-muted">
+                        Use the filters above and click <strong>Search</strong> to find patients.
+                      </td>
+                    </tr>
+                  <% } %>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Include common footer scripts -->
+    <%- include('../footer') -%>
+    
+    <!-- Form functionality JavaScript -->
+    <script>
+      // Search patients using AJAX
+      function searchPatients() {
+        const form = document.querySelector('form');
+        const formData = new FormData(form);
+        
+        // Show loading state
+        const searchBtn = document.querySelector('button[onclick="searchPatients()"]');
+        const originalText = searchBtn.innerHTML;
+        searchBtn.innerHTML = '<i class="bx bx-loader-alt bx-spin me-1"></i> Searching...';
+        searchBtn.disabled = true;
+        
+        fetch('/embryology/consent/search', {
+          method: 'POST',
+          body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            updatePatientTable(data.patients);
+          } else {
+            alert('Error: ' + (data.message || 'Unknown error occurred'));
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          alert('Error searching patients. Please try again.');
+        })
+        .finally(() => {
+          // Restore button state
+          searchBtn.innerHTML = originalText;
+          searchBtn.disabled = false;
+        });
+      }
+      
+      // Generate barcode for selected patient
+      function generateBarcode() {
+        const uhid = document.getElementById('uhid').value;
+        
+        if (!uhid) {
+          alert('Please enter UHID first');
+          return;
+        }
+        
+        // Show loading state
+        const barcodeBtn = document.querySelector('button[onclick="generateBarcode()"]');
+        const originalText = barcodeBtn.innerHTML;
+        barcodeBtn.innerHTML = '<i class="bx bx-loader-alt bx-spin me-1"></i> Generating...';
+        barcodeBtn.disabled = true;
+        
+        fetch('/embryology/consent/barcode', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ uhid: uhid })
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            alert(`Barcode generated successfully!\n\nBarcode: ${data.barcodeData.barcode}\nPatient: ${data.barcodeData.patientName}\nGenerated: ${new Date(data.barcodeData.generatedAt).toLocaleString()}`);
+            // TODO: Display barcode image or print functionality
+          } else {
+            alert('Error: ' + (data.message || 'Unknown error occurred'));
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          alert('Error generating barcode. Please try again.');
+        })
+        .finally(() => {
+          // Restore button state
+          barcodeBtn.innerHTML = originalText;
+          barcodeBtn.disabled = false;
+        });
+      }
+      
+      // Update patient table with search results
+      function updatePatientTable(patients) {
+        const tableBody = document.getElementById('patientTableBody');
+        
+        if (!patients || patients.length === 0) {
+          tableBody.innerHTML = `
+            <tr>
+              <td colspan="13" class="text-center text-muted">
+                No patients found matching the criteria.
+              </td>
+            </tr>
+          `;
+          return;
+        }
+        
+        tableBody.innerHTML = patients.map(patient => `
+          <tr>
+            <td>${patient.mrNo}</td>
+            <td>${patient.name}</td>
+            <td>${patient.dateOfBirth || 'N/A'}</td>
+            <td>${patient.babyBirthWeight}</td>
+            <td>${patient.registrationDate}</td>
+            <td>${patient.mobileNo}</td>
+            <td>${patient.email}</td>
+            <td>${patient.gender}</td>
+            <td>${patient.maritalStatus}</td>
+            <td>${patient.identityType}</td>
+            <td>${patient.identityNumber}</td>
+            <td>${patient.specialRegistration}</td>
+            <td>${patient.registeredFrom}</td>
+          </tr>
+        `).join('');
+      }
+      
+      // Quick search functionality
+      document.getElementById('searchPatient')?.addEventListener('input', function(e) {
+        const searchTerm = e.target.value.toLowerCase();
+        const rows = document.querySelectorAll('#patientTableBody tr');
+        
+        rows.forEach(row => {
+          const text = row.textContent.toLowerCase();
+          row.style.display = text.includes(searchTerm) ? '' : 'none';
+        });
+      });
+      
+      // Handle Enter key in form fields
+      document.querySelectorAll('form input, form select').forEach(field => {
+        field.addEventListener('keypress', function(e) {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            searchPatients();
+          }
+        });
+      });
+    </script>
+  </body>
+</html>
+
+
+<script>
+/* =====================================================
+   EMBRYOLOGY – CONSENT SEARCH JS
+   Matches EJS IDs exactly
+===================================================== */
+
+/* ---------- MAIN SEARCH (FILTER BASED) ---------- */
+async function searchConsentPatients() {
+  try {
+    const params = {
+      uhid: document.getElementById('uhid').value.trim(),
+      idProof: document.getElementById('idProof').value.trim(),
+      firstName: document.getElementById('firstName').value.trim(),
+      lastName: document.getElementById('lastName').value.trim(),
+      gender: document.getElementById('gender').value,
+      mobile: document.getElementById('mobile').value.trim(),
+      dob: document.getElementById('dob').value,
+      age: document.getElementById('age').value,
+      visitedValue: document.getElementById('visitedValue').value,
+      visitedUnit: document.getElementById('visitedUnit').value
+    };
+
+    const res = await axios.get('/embryology/consent/search', { params });
+    renderConsentTable(res.data?.patients || []);
+
+  } catch (err) {
+    console.error('Consent search failed:', err);
+    alert('Unable to fetch patient data');
+  }
+}
+
+/* ---------- FREE TEXT SEARCH ---------- */
+let consentSearchTimer = null;
+
+function searchPatientText(value) {
+  clearTimeout(consentSearchTimer);
+
+  consentSearchTimer = setTimeout(async () => {
+    if (!value.trim()) return;
+
+    try {
+      const res = await axios.get('/embryology/consent/search-text', {
+        params: { q: value }
+      });
+      renderConsentTable(res.data || []);
+    } catch (err) {
+      console.error('Text search failed:', err);
+    }
+  }, 300);
+}
+
+/* ---------- TABLE RENDER ---------- */
+function renderConsentTable(patients) {
+  const tbody = document.querySelector('table tbody');
+  tbody.innerHTML = '';
+
+  if (!patients.length) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="13" class="text-center text-muted">
+          No patients found
+        </td>
+      </tr>`;
+    return;
+  }
+
+  patients.forEach(p => {
+    tbody.innerHTML += `
+      <tr>
+        <td>${p.uhid || '-'}</td>
+        <td>${p.name || '-'}</td>
+        <td>${p.dob || '-'}</td>
+        <td>-</td>
+        <td>${formatDate(p.createdAt)}</td>
+        <td>${p.mobile || '-'}</td>
+        <td>${p.email || '-'}</td>
+        <td>${p.gender || '-'}</td>
+        <td>-</td>
+        <td>-</td>
+        <td>-</td>
+        <td>-</td>
+        <td>HIS</td>
+      </tr>`;
+  });
+}
+
+/* ---------- DATE FORMAT ---------- */
+function formatDate(dateStr) {
+  if (!dateStr) return '-';
+  const d = new Date(dateStr);
+  return d.toLocaleDateString('en-GB');
+}
+
+/* ---------- EVENT BINDINGS ---------- */
+document.addEventListener('DOMContentLoaded', () => {
+
+  // Search button (Filter search)
+  const searchBtn = document.querySelector('.btn.btn-primary');
+  if (searchBtn) {
+    searchBtn.addEventListener('click', searchConsentPatients);
+  }
+
+  // Free text search
+  const searchInput = document.getElementById('searchPatient');
+  if (searchInput) {
+    searchInput.addEventListener('keyup', e => {
+      searchPatientText(e.target.value);
+    });
+  }
+
+});
+</script>

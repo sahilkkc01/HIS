@@ -1,0 +1,602 @@
+<meta name="description" content="" />
+
+<!-- Favicon -->
+<link rel="icon" type="image/x-icon" href="../images/favicon.ico" />
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap"
+  rel="stylesheet" />   
+  <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" />
+
+<!-- Core CSS -->
+<link rel="stylesheet" href="../stylesheets/core.css" class="template-customizer-core-css" />
+<link rel="stylesheet" href="../stylesheets/theme-default.css" class="template-customizer-theme-css" />
+<link rel="stylesheet" href="../stylesheets/demo.css" />
+
+<!-- Page CSS -->
+ 
+<style>
+  /* Highlight selected row */
+  .selected-row {
+    background-color: #cce5ff !important;
+  }
+.layout-menu {
+  height: 100vh;
+  overflow-y: auto;
+}
+
+/* Chrome, Edge, Safari */
+.layout-menu::-webkit-scrollbar {
+  width: 6px;
+}
+
+.layout-menu::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.layout-menu::-webkit-scrollbar-thumb {
+  background-color: #696cff; /* Sneat blue */
+  border-radius: 10px;
+}
+
+/* Firefox */
+.layout-menu {
+  scrollbar-width: thin;
+  scrollbar-color: #696cff transparent;
+}
+.layout-menu {
+  overflow-x: hidden !important;
+}
+</style>
+<!-- Helpers -->
+<script src="../javascripts/helpers.js"></script>
+<!--! Template customizer & Theme config files MUST be included after core stylesheets and helpers.js in the <head> section -->
+<!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
+<script src="../javascripts/config.js"></script>
+</head>
+
+<body>
+<!-- Layout wrapper -->
+<div class="layout-wrapper layout-content-navbar">
+  <div class="layout-container">
+    <!-- Menu -->
+
+    <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
+      <div class="app-brand demo">
+        <a href="/Patient-List" class="app-brand-link">
+          <span class="app-brand-logo demo">
+            
+          </span>
+          <span class="app-brand-text demo menu-text fw-bold ms-2">HIS</span>
+        </a>
+
+        <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto d-block d-xl-none">
+          <i class="bx bx-chevron-left bx-sm d-flex align-items-center justify-content-center"></i>
+        </a>
+      </div>
+
+      <div class="menu-inner-shadow"></div>
+
+      <ul class="menu-inner py-1">
+        <!-- Patient -->
+        <li class="menu-item active">
+          <a href="javascript:void(0);" class="menu-link menu-toggle">
+            <i class="menu-icon tf-icons bx bx-user"></i>
+            <div class="text-truncate" data-i18n="Layouts">Patient</div>
+          </a>
+
+          <ul class="menu-sub">
+            <li class="menu-item">
+              <a href="/patient-registration" class="menu-link">
+                <div class="text-truncate" data-i18n="Without menu">New Registration</div>
+              </a>
+            </li>
+            <li class="menu-item">
+              <a href="/Patient-List" class="menu-link">
+                <div class="text-truncate" data-i18n="Without menu">List of Patients</div>
+              </a>
+            </li>
+            <!-- <li class="menu-item">
+              <a href="#" class="menu-link">
+                <div class="text-truncate" data-i18n="Without navbar">History</div>
+              </a>
+            </li> -->
+            <li class="menu-item">
+              <a href="/calender" class="menu-link">
+                <div class="text-truncate" data-i18n="Fluid">Calender</div>
+              </a>
+            </li>
+            <!-- <li class="menu-item">
+              <a href="patient-registration.html" class="menu-link">
+                <div class="text-truncate" data-i18n="Without menu">IPD Registration</div>
+              </a>
+            </li> -->
+          </ul>
+        </li>
+
+        <!-- Masters -->
+        <li class="menu-item ">
+          <a href="javascript:void(0);" class="menu-link menu-toggle">
+            <i class="menu-icon tf-icons bx bx-list-ul"></i>
+
+            <div class="text-truncate" data-i18n="Layouts">Masters</div>
+          </a>
+
+          <ul class="menu-sub">
+            <li class="menu-item">
+              <a href="/doctors" class="menu-link">
+                <div class="text-truncate" data-i18n="Without menu">Doctors</div>
+              </a>
+            </li>
+            <li class="menu-item">
+              <a href="/add-employee" class="menu-link">
+                <div class="text-truncate" data-i18n="Without menu">Employee</div>
+              </a>
+            </li>
+            <li class="menu-item">
+              <a href="/hospital-registration" class="menu-link">
+                <div class="text-truncate" data-i18n="Without menu">Hospitals</div>
+              </a>
+            </li>
+            <li class="menu-item">
+              <a href="/add-package" class="menu-link">
+                <div class="text-truncate" data-i18n="Without menu">Package</div>
+              </a>
+            </li>
+            <li class="menu-item">
+              <a href="/add-service" class="menu-link">
+                <div class="text-truncate" data-i18n="Fluid">Service</div>
+              </a>
+            </li>
+            <li class="menu-item">
+              <a href="/add-prefix" class="menu-link">
+                <div class="text-truncate" data-i18n="Fluid">Prefix</div>
+              </a>
+            </li>
+          </ul>
+        </li>
+
+        <!-- Doctor -->
+        <li class="menu-item">
+
+          <a href="javascript:void(0);" class="menu-link menu-toggle">
+            <i class="menu-icon tf-icons bx bxs-user-plus"></i>
+            <div class="text-truncate" data-i18n="Front Pages">Doctor</div>
+          </a>
+          <ul class="menu-sub">
+             <li class="menu-item">
+              <a href="/emr" class="menu-link">
+                <div class="text-truncate" data-i18n="Without menu">EMR</div>
+              </a>
+            </li>
+            <li class="menu-item">
+              <a
+                href="#"
+                class="menu-link"
+                target="_blank">
+                <div class="text-truncate" data-i18n="Landing">OPD</div>
+              </a>
+            </li>
+            <li class="menu-item">
+              <a
+                href="#"
+                class="menu-link"
+                target="_blank">
+                <div class="text-truncate" data-i18n="Pricing">IPD</div>
+              </a>
+            </li>
+          </ul>
+        </li>
+        
+        <!-- Inventory -->
+        <li class="menu-item">
+
+          <a href="javascript:void(0);" class="menu-link menu-toggle">
+            <i class="menu-icon tf-icons bx bx-store-alt"></i>
+            <div class="text-truncate" data-i18n="Front Pages">Inventory</div>
+          </a>
+          <ul class="menu-sub">
+            <li class="menu-item">
+              <a
+                href="/inventory/Current-item-stock"
+                class="menu-link"
+              >
+                <div class="text-truncate" data-i18n="Landing">CURRENT ITEM STOCK</div>
+              </a>
+            </li>
+            <li class="menu-item">
+              <a
+                href="/inventory/stock-transaction"
+                class="menu-link"
+              >
+                <div class="text-truncate" data-i18n="Landing">STOCK TRANSACTION</div>
+              </a>
+            </li>
+            <li class="menu-item">
+              <a
+                href="/inventory/item-list"
+                class="menu-link"
+              >
+                <div class="text-truncate" data-i18n="Landing">ITEMS</div>
+              </a>
+            </li>
+           
+            <li class="menu-item">
+              <a
+                href="/inventory/po-list"
+                class="menu-link"
+               >
+                <div class="text-truncate" data-i18n="Pricing">PO</div>
+              </a>
+            </li>
+            <li class="menu-item">
+              <a
+                href="/inventory/grn-list"
+                class="menu-link"
+              >
+                <div class="text-truncate" data-i18n="Pricing">GRN</div>
+              </a>
+            </li>
+            <li class="menu-item">
+              <a
+                href="/inventory/indent-list"
+                class="menu-link"
+               >
+                <div class="text-truncate" data-i18n="Pricing">INDENT</div>
+              </a>
+            </li>
+            <li class="menu-item">
+              <a
+                href="#"
+                class="menu-link"
+                target="_blank">
+                <div class="text-truncate" data-i18n="Pricing">CONSUMPTION</div>
+              </a>
+            </li>
+            <li class="menu-item">
+              <a
+                href="/inventory/approve-grn"
+                class="menu-link"
+                target="">
+                <div class="text-truncate" data-i18n="Pricing">Approve GRN</div>
+              </a>
+            </li>
+            <li class="menu-item">
+              <a
+                href="/inventory/approve-po"
+                class="menu-link"
+                target="">
+                <div class="text-truncate" data-i18n="Pricing">Approve PO</div>
+              </a>
+            </li>
+            <li class="menu-item">
+              <a
+                href="/inventory/approve-indent"
+                class="menu-link"
+                target="">
+                <div class="text-truncate" data-i18n="Pricing">Approve Indent</div>
+              </a>
+            </li>
+          </ul>
+        </li>
+        
+        <!-- diagnostics -->
+        <li class="menu-item">
+
+          <a href="javascript:void(0);" class="menu-link menu-toggle">
+            <i class="menu-icon tf-icons bx bx-test-tube"></i>
+            <div class="text-truncate" data-i18n="Front Pages">Diagnostics</div>
+          </a>
+          <ul class="menu-sub">
+            <li class="menu-item">
+              <a
+                href="#"
+                class="menu-link"
+                target="_blank">
+                <div class="text-truncate" data-i18n="Landing">RADIOLOGY</div>
+              </a>
+            </li>
+            <li class="menu-item">
+              <a
+                href="#"
+                class="menu-link"
+                target="_blank">
+                <div class="text-truncate" data-i18n="Pricing">PATHOLOGY</div>
+              </a>
+            </li>
+          </ul>
+        </li>
+        
+        <!-- billing -->
+        <li class="menu-item">
+
+          <a href="javascript:void(0);" class="menu-link menu-toggle">
+            <i class="menu-icon tf-icons bx bx-rupee"></i>
+            <div class="text-truncate" data-i18n="Front Pages">Billing</div>
+          </a>
+          <ul class="menu-sub">
+            <li class="menu-item">
+              <a
+                href="#"
+                class="menu-link"
+                target="_blank">
+                <div class="text-truncate" data-i18n="Landing">ADVANCE & PROFILE</div>
+              </a>
+            </li>
+            <li class="menu-item">
+              <a
+                href="/billing/bill-list"
+                class="menu-link"
+                target="">
+                <div class="text-truncate" data-i18n="Pricing">PHARMACY BILL</div>
+              </a>
+            </li>
+            <li class="menu-item">
+              <a
+                href="#"
+                class="menu-link"
+                target="_blank">
+                <div class="text-truncate" data-i18n="Pricing">SERVICE BILL</div>
+              </a>
+            </li>
+            <li class="menu-item">
+              <a
+                href="#"
+                class="menu-link"
+                target="_blank">
+                <div class="text-truncate" data-i18n="Pricing">TPA</div>
+              </a>
+            </li>
+          </ul>
+        </li>
+
+        <!-- Embryology -->
+        <li class="menu-item">
+          <a href="javascript:void(0);" class="menu-link menu-toggle">
+            <i class="menu-icon tf-icons bx bx-dna"></i>
+            <div class="text-truncate" data-i18n="Front Pages">Embryology</div>
+          </a>
+          <ul class="menu-sub">
+            <li class="menu-item">
+              <a href="/embryology/patient-emr" class="menu-link">
+                <div class="text-truncate" data-i18n="Without menu">Patient EMR</div>
+              </a>
+            </li>
+            <li class="menu-item">
+              <a href="/embryology/counselling" class="menu-link">
+                <div class="text-truncate" data-i18n="Without menu">Counselling</div>
+              </a>
+            </li>
+            <li class="menu-item">
+              <a href="/embryology/consent" class="menu-link">
+                <div class="text-truncate" data-i18n="Without menu">Consent</div>
+              </a>
+            </li>
+            <li class="menu-item">
+              <a href="/embryology/cycle" class="menu-link">
+                <div class="text-truncate" data-i18n="Without menu">Cycle</div>
+              </a>
+            </li>
+            <li class="menu-item">
+              <a href="/embryology/overview" class="menu-link">
+                <div class="text-truncate" data-i18n="Without menu">Overview</div>
+              </a>
+            </li>
+            <li class="menu-item">
+              <a href="/embryology/stimulation" class="menu-link">
+                <div class="text-truncate" data-i18n="Without menu">Stimulation</div>
+              </a>
+            </li>
+            <li class="menu-item">
+              <a href="/embryology/opu" class="menu-link">
+                <div class="text-truncate" data-i18n="Without menu">OPU</div>
+              </a>
+            </li>
+            <li class="menu-item">
+              <a href="/embryology/sperm" class="menu-link">
+                <div class="text-truncate" data-i18n="Without menu">Sperm</div>
+              </a>
+            </li>
+            <li class="menu-item">
+              <a href="/embryology/culture" class="menu-link">
+                <div class="text-truncate" data-i18n="Without menu">Culture</div>
+              </a>
+            </li>
+            <li class="menu-item">
+              <a href="/embryology/et" class="menu-link">
+                <div class="text-truncate" data-i18n="Without menu">ET</div>
+              </a>
+            </li>
+            <li class="menu-item">
+              <a href="/embryology/outcome" class="menu-link">
+                <div class="text-truncate" data-i18n="Without menu">Outcome</div>
+              </a>
+            </li>
+          </ul>
+        </li>
+
+        <!-- Apps & Pages -->
+        <li class="menu-header small text-uppercase">
+          <span class="menu-header-text">Admin</span>
+        </li>
+        <li class="menu-item">
+          <a
+            href="#"
+            target="_blank"
+            class="menu-link">
+            <i class="menu-icon tf-icons bx bxs-dashboard"></i>
+            <div class="text-truncate" data-i18n="Email">Dashboard</div>
+          </a>
+        </li>
+        <li class="menu-item">
+          <a
+            href="#"
+            target="_blank"
+            class="menu-link">
+            <i class="menu-icon tf-icons bx bx-user"></i>
+            <div class="text-truncate" data-i18n="Chat">Staff</div>
+          </a>
+        </li>
+        <li class="menu-item">
+          <a
+            href="#"
+            target="_blank"
+            class="menu-link">
+            <i class="menu-icon tf-icons bx bx-edit"></i>
+            <div class="text-truncate" data-i18n="Calendar">OPD/IPD</div>
+          </a>
+        </li>
+        <li class="menu-item">
+          <a
+            href="#"
+            target="_blank"
+            class="menu-link">
+            <i class="menu-icon tf-icons bx bx-notepad"></i>
+            <div class="text-truncate" data-i18n="Kanban">Reports</div>
+          </a>
+        </li>
+
+      </ul>
+    </aside>
+    <!-- / Menu -->
+
+    <!-- Layout container -->
+    <div class="layout-page">
+      <!-- Navbar -->
+
+      <nav
+        class="layout-navbar container-xxl navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme"
+        id="layout-navbar">
+        <div class="layout-menu-toggle navbar-nav align-items-xl-center me-4 me-xl-0 d-xl-none">
+          <a class="nav-item nav-link px-0 me-xl-6" href="javascript:void(0)">
+            <i class="bx bx-menu bx-md"></i>
+          </a>
+        </div>
+
+        <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
+          <!-- Search -->
+          <div class="navbar-nav align-items-center">
+            <div class="nav-item d-flex align-items-center">
+              <i class="bx bx-search bx-md"></i>
+              <input
+                type="text"
+                class="form-control border-0 shadow-none ps-1 ps-sm-2"
+                placeholder="Search..."
+                aria-label="Search..." />
+            </div>
+          </div>
+          <!-- /Search -->
+
+          <ul class="navbar-nav flex-row align-items-center ms-auto">
+            <!-- Place this tag where you want the button to render. -->
+            <li class="nav-item lh-1 me-4">
+              <a
+                class="github-button"
+                href="#"
+                data-icon="octicon-star"
+                data-size="large"
+                data-show-count="true"
+                aria-label=""
+                >Star</a
+              >
+            </li>
+
+            <!-- User -->
+            <li class="nav-item navbar-dropdown dropdown-user dropdown">
+              <a
+                class="nav-link dropdown-toggle hide-arrow p-0"
+                href="javascript:void(0);"
+                data-bs-toggle="dropdown">
+                <div class="avatar avatar-online">
+                  <img src="../images/1.png" alt class="w-px-40 h-auto rounded-circle" />
+                </div>
+              </a>
+              <ul class="dropdown-menu dropdown-menu-end">
+                <li>
+                  <a class="dropdown-item" href="#">
+                    <div class="d-flex">
+                      <div class="flex-shrink-0 me-3">
+                        <div class="avatar avatar-online">
+                          <img src="../images/1.png" alt class="w-px-40 h-auto rounded-circle" />
+                        </div>
+                      </div>
+                      <div class="flex-grow-1">
+                        <h6 class="mb-0">Shree Ganesh</h6>
+                        <small class="text-muted">Admin</small>
+                      </div>
+                    </div>
+                  </a>
+                </li>
+                <li>
+                  <div class="dropdown-divider my-1"></div>
+                </li>
+                <li>
+                  <a class="dropdown-item" href="#">
+                    <i class="bx bx-user bx-md me-3"></i><span>My Profile</span>
+                  </a>
+                </li>
+                <li>
+                  <a class="dropdown-item" href="#"> <i class="bx bx-cog bx-md me-3"></i><span>Settings</span> </a>
+                </li>
+                <li>
+                  <a class="dropdown-item" href="#">
+                    <span class="d-flex align-items-center align-middle">
+                      <i class="flex-shrink-0 bx bx-credit-card bx-md me-3"></i
+                      ><span class="flex-grow-1 align-middle">Billing Plan</span>
+                      <span class="flex-shrink-0 badge rounded-pill bg-danger">4</span>
+                    </span>
+                  </a>
+                </li>
+                <li>
+                  <div class="dropdown-divider my-1"></div>
+                </li>
+                <li>
+                  <button class="dropdown-item" id="logoutBtn">
+                    <i class="bx bx-power-off bx-md me-3"></i><span>Log Out</span>
+                  </button>
+                </li>
+              </ul>
+            </li>
+            <!--/ User -->
+          </ul>
+        </div>
+      </nav>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const menu = document.querySelector("#layout-menu");
+    if (menu) {
+      new PerfectScrollbar(menu, {
+        suppressScrollX: true   // 🔥 THIS removes horizontal scroll
+      });
+    }
+  });
+</script>
+       <script>
+          // Add this script before closing </body>
+          document.addEventListener('DOMContentLoaded', function () {
+            // Remove all active classes first
+            document.querySelectorAll('.menu-item').forEach(item => {
+              item.classList.remove('active');
+              item.classList.remove('open');
+            });
+
+            // Get current path
+            const currentPath = window.location.pathname;
+
+            // Find matching link and activate its parents
+            document.querySelectorAll('.menu-link').forEach(link => {
+              if (link.getAttribute('href') === currentPath) {
+                link.closest('.menu-item').classList.add('active');
+                // Activate parent menu items
+                let parent = link.closest('.menu-sub').closest('.menu-item');
+                while (parent) {
+                  parent.classList.add('active', 'open');
+                  parent = parent.closest('.menu-sub')?.closest('.menu-item');
+                }
+              }
+            });
+          });
+        </script>

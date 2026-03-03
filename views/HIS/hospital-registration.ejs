@@ -1,0 +1,214 @@
+<!doctype html>
+<html
+  lang="en"
+  class="light-style layout-menu-fixed layout-compact"
+  dir="ltr"
+  data-theme="theme-default"
+  data-assets-path="../assets/"
+  data-template="vertical-menu-template-free"
+  data-style="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+
+    <title>Hospital Registration</title>
+
+   <%- include('../header') -%>
+
+          <!-- Content wrapper -->
+          <div class="content-wrapper">
+            <!-- Content -->
+            <style>.displaynone{display:none;}.bx-qr-scan{font-size:80px;}</style>
+            <div class="container-xxl flex-grow-1 container-p-y">
+              <div class="row">
+                <!-- Vertical & Horizontal Scrollbars -->
+                <div class="col-12">
+                  <div class="card overflow-hidden">
+                    <h5 class="card-header">Hospital/Clinic Registration</h5>
+                    <div class="card">
+                    <!-- Account -->
+                    <div class="card-body pt-4">
+                      <form id="HospitalRegFrom" method="POST" onsubmit="return false">
+                        <div id="errordiv"></div>
+                        <div class="row g-6">
+                          <div class="col-md-6">
+                            <label for="name" class="form-label">Name*</label>
+                            <input class="form-control" type="text" id="name" name="name" value="" autofocus="" data-validation="required" data-error-message="Please enter name">
+                          </div>
+                          <div class="col-md-6">
+                            <label class="form-label" for="contact_no">Contact No's*</label>
+                            <div class="input-group">
+                              <input type="string" id="contact_no" name="contact_no" class="form-control" placeholder="" data-validation="required" data-error-message="Please enter contant no">
+                            </div>
+                          </div>
+                          <div class="col-md-6">
+                            <label for="language" class="form-label">Email*</label>
+                            <input class="form-control" type="email" id="email" name="email" value="" placeholder="" data-validation="email required"   data-error-message="Please enter email">
+                          </div>
+						  <div class="col-md-6">
+                            <label for="address" class="form-label">Reg No.*</label>
+                            <input type="text" class="form-control" id="reg_no" name="reg_no" placeholder="" data-validation="required" data-error-message="">
+                          </div>
+						  
+                          <div class="col-md-6">
+                            <label for="address" class="form-label">Address</label>
+                            <input type="text" class="form-control" id="address" name="address" placeholder="">
+                          </div>
+						  
+						  <div class="col-md-6">
+                            <label for="address" class="form-label">Operating Hours & Days</label>
+                            <input type="text" class="form-control" id="OperatingDetails" name="OperatingDetails" placeholder="">
+                          </div>
+						  
+                          <div class="col-md-4">
+                            <label for="logo" class="form-label">Logo</label>
+                            <input class="form-control" type="file" id="logo" name="logo" accept="image/png, image/jpeg" >
+                            <img id="logoPreview" src="" alt="Logo Preview" style="display:none; margin-top: 10px; max-width: 100%; height: auto;">
+                            <button type="button" id="removeLogoBtn" style="display:none; margin-top: 5px;" class="btn btn-danger btn-sm" onclick="removeImage('logo', 'logoPreview', 'removeLogoBtn')">Remove</button>
+                          </div>
+                          
+                          <div class="col-md-4">
+                            <label for="header_image" class="form-label">Company Header</label>
+                            <input class="form-control" type="file" id="header_image" name="header_image" accept="image/png, image/jpeg" >
+                            <img id="headerPreview" src="" alt="Header Preview" style="display:none; margin-top: 10px; max-width: 100%; height: auto;">
+                            <button type="button" id="removeHeaderBtn" style="display:none;margin-top: 5px;" class="btn btn-danger btn-sm" onclick="removeImage('header_image', 'headerPreview', 'removeHeaderBtn')">Remove</button>
+                          </div>
+                          
+                          <div class="col-md-4">
+                            <label for="footer_image" class="form-label">Company Footer</label>
+                            <input class="form-control" type="file" id="footer_image" name="footer_image" accept="image/png, image/jpeg" >
+                            <img id="footerPreview" src="" alt="Footer Preview" style="display:none; margin-top: 10px; max-width: 100%; height: auto;">
+                            <button type="button" id="removeFooterBtn" style="display:none; margin-top: 5px;" class="btn btn-danger btn-sm" onclick="removeImage('footer_image', 'footerPreview', 'removeFooterBtn')">Remove</button>
+                          </div>
+                          
+                        
+
+                          <div class="col-md-6">
+						  <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="ipd_service">
+                            <label class="form-check-label" for="ipd_service"> Are you Providing IPD Services? </label>
+						   </div>
+                          </div>
+						  <div id="markvisit" class="row g-4 displaynone">
+						  <div class="col-md-2">
+                            <label for="state" class="form-label">No of Beds</label>
+                            <input class="form-control" type="number" id="no_of_beds" name="no_of_beds" placeholder="">
+                          </div>
+						  <div class="col-md-2">
+                            <label for="place" class="form-label">Emergency Services</label>
+                            <select id="emergency_services" name="emergency_services" class="select2 form-select">
+                              <option value="1">Yes</option>
+							  <option value="0">No</option>
+                            </select>
+                          </div>
+						  <div class="col-md-2">
+                            <label for="place" class="form-label">Ambulance Services</label>
+                            <select id="ambulance_service" name="ambulance_service" class="select2 form-select">
+                              <option value="1">Yes</option>
+							  <option value="0">No</option>
+                            </select>
+                          </div>
+						  <div class="col-md-2">
+                            <label for="place" class="form-label">TPA</label>
+                            <select id="TPA" name="TPA" class="select2 form-select">
+                              <option value="1">Yes</option>
+							  <option value="0">No</option>
+                            </select>
+                          </div>
+						   
+                        </div>
+						<!--Mark visit div close-->
+                        </div>
+                        <div class="mt-6">
+                          <div id="loadingIndicator"></div>
+                          <button type="submit" class="btn btn-primary me-3">Save</button>
+                          <button type="reset" class="btn btn-outline-secondary">Cancel</button>
+                        </div>
+                      </form>
+                    </div>
+                    <!-- /Account -->
+                  </div>
+                  </div>
+                </div>
+                <!--/ Vertical & Horizontal Scrollbars -->
+              </div>
+            </div>
+            <!-- / Content -->
+					  
+<%- include('../footer') -%>
+         
+	<!-- Extra Js for this Page-->
+	<script>
+	$(document).ready(function () {
+	$("#ipd_service").on("change", function () {
+	if ($(this).is(":checked")) {
+		$("#markvisit").removeClass("displaynone"); // Show the element
+	} else {
+		$("#markvisit").addClass("displaynone"); // Hide the element
+	}
+	});
+	});
+  
+  document.getElementById('logo').addEventListener('change', function(event) {
+    if (!validateFileInput("logo", ["image/jpeg", "image/jpg", "image/png"], 800)) {
+        return; // Stop the function if validation fails
+    }
+    previewImage(event, 'logoPreview', 'removeLogoBtn');
+});
+
+// Event listener for the 'header_image' file input
+document.getElementById('header_image').addEventListener('change', function(event) {
+    if (!validateFileInput("header_image", ["image/jpeg", "image/jpg", "image/png"], 800)) {
+        return; // Stop the function if validation fails
+    }
+    previewImage(event, 'headerPreview', 'removeHeaderImageBtn');
+});
+
+// Event listener for the 'footer_image' file input
+document.getElementById('footer_image').addEventListener('change', function(event) {
+    if (!validateFileInput("footer_image", ["image/jpeg", "image/jpg", "image/png"], 800)) {
+        return; // Stop the function if validation fails
+    }
+    previewImage(event, 'footerPreview', 'removeFooterImageBtn');
+});
+
+
+  $(document).ready(function () {
+    console.log("Document is ready");
+
+    const formId = '#HospitalRegFrom';
+    const errorDivId = '#errordiv';
+
+    $(formId).on('submit', async function (event) {
+        event.preventDefault(); // Prevent the form from submitting
+
+        const { isValid, errorMessage } = validateForm(formId);
+
+        if (isValid) {
+            const url = '/hospital-reg';
+            const loadingDiv = '#loadingIndicator';
+
+            try {
+                $(loadingDiv).show(); // Show loading indicator
+
+                const response = await saveForm(formId, url); // Perform the form submission
+
+                console.log('Success:', response);
+                $(errorDivId).removeClass('alert-danger').addClass('alert-success').text(response.message).show();
+            } catch (error) {
+                console.error('Error:', error);
+                $(errorDivId).removeClass('alert-success').addClass('alert-danger').text(` ${error.message || 'Unknown error'}`).show();
+            } finally {
+                $(loadingDiv).hide(); // Hide loading indicator after submission
+            }
+        } else {
+            $(errorDivId).removeClass('alert-success').addClass('alert-danger').text(errorMessage).show();
+        }
+    });
+});
+
+	</script>	
+
+ 

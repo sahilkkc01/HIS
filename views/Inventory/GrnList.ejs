@@ -1,0 +1,232 @@
+<!doctype html>
+<html
+  lang="en"
+  class="light-style layout-menu-fixed layout-compact"
+  dir="ltr"
+  data-theme="theme-default"
+  data-assets-path="../assets/"
+  data-template="vertical-menu-template-free"
+  data-style="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+
+    <title>List of GRN</title>
+
+  <%- include('../header') -%>
+
+          <!-- Content wrapper -->
+          <div class="content-wrapper">
+            <!-- Content -->
+            <div class="container-xxl flex-grow-1 container-p-y">
+              <!-- Basic Bootstrap Table -->
+              <div class="card">
+                <div class="row card-header flex-column flex-md-row pb-4">
+				<div class="d-md-flex justify-content-between align-items-center dt-layout-start col-md-auto me-auto mt-0">
+				<h5 class="card-title mb-0 text-md-start text-center">All GRN</h5></div>
+				<div class="d-md-flex justify-content-between align-items-center dt-layout-end col-md-auto ms-auto mt-0">
+				
+				<div class="dt-buttons btn-group flex-wrap mb-0"> 
+				
+				<div class="btn-group">
+				<input type="search" class="form-control ms-4" id="searchBox" placeholder="Search" aria-controls="DataTables_Table_1">
+				
+				<button class="btn buttons-collection btn-label-primary dropdown-toggle me-4" tabindex="0" id="exportGrn" aria-controls="DataTables_Table_0" type="button" aria-haspopup="dialog" aria-expanded="false"><span><span class="d-flex align-items-center gap-2"><i class="icon-base bx bx-export me-sm-1"></i> <span class="d-none d-sm-inline-block">Export</span></span></span></button></div> 
+				
+				<button class="btn create-new btn-primary" tabindex="0" onclick=" window.location.href = '/inventory/grn'" aria-controls="DataTables_Table_0" type="button"><span><span class="d-flex align-items-center gap-2"><i class="icon-base bx bx-plus icon-sm"></i> <span class="d-none d-sm-inline-block">New GRN</span></span></span></button> 
+				  </div>
+				 </div>
+				</div>
+				
+                <div class="table-responsive text-nowrap">
+                    <table class="table" id="tblid">
+                      <thead>
+                        <tr>
+                          <th>GRN NO</th>
+                          <th>GRN Date</th>
+                          <th>PO No</th>
+                          <th>Store</th>
+                          <th>Entry Gate</th>
+                          <th>Supplier</th>
+                          <th>Invoice Date</th>
+                          <th>Invoice No.</th>
+                          <th>Total Amount</th>
+                          <th>Total GST</th>
+                          <th>Other Charges</th>
+                          <th>GRN Discount</th>
+                          <th>Net Amount</th>
+                          <th>Received By</th>
+                          <th>Created By</th>
+                          <th>Status</th>
+                        </tr>
+                      </thead>
+                      <tbody id="grnBody" class="table-border-bottom-0"></tbody>
+                    </table>
+                    <div id="paginationControls"></div>
+                  </div>
+                  
+                  <!-- Items Table -->
+                  <div class="table-responsive text-nowrap mt-3">
+                    <h5>GRN Items</h5>
+                    <table class="table" id="itemsTable">
+                      <thead>
+                        <tr>
+                          <th>Item Name</th>
+                          <th>Batch Code</th>
+                          <th>Expiry Date</th>
+                          <th>MRP</th>
+                          <th>Cost Price</th>
+                          <th>GST %</th>
+                          <th>GST Amount</th>
+                          <th>Received Qty</th>
+                          <th>Free Qty</th>
+                          <th>Total Cost</th>
+                          <th>Net Amount</th>
+                        </tr>
+                      </thead>
+                      <tbody id="itemsBody" class="table-border-bottom-0"></tbody>
+                    </table>
+                  </div>
+              </div>
+              <!--/ Basic Bootstrap Table -->
+            </div>
+            <!-- / Content -->
+
+          <%- include('../footer') -%>
+
+         
+          
+          <script>
+            document.addEventListener("DOMContentLoaded", function () {
+              axios.get("/inventory/getAllGrn")
+                .then(response => {
+                  const grns = response.data.grns;
+                  const tbody = document.getElementById("grnBody");
+                  tbody.innerHTML = "";
+          
+                  grns.forEach(grn => {
+                    const row = `
+                      <tr data-items='${JSON.stringify(grn.items)}'>
+                        <td>${grn.grnNo}</td>
+                        <td>${grn.grnDate}</td>
+                        <td>${grn.poNo || ''}</td>
+                        <td>${grn.store}</td>
+                        <td>${grn.gateEntryNo || "N/A"}</td>
+                        <td>${grn.supplier}</td>
+                        <td>${grn.invoiceDate || "N/A"}</td>
+                        <td>${grn.invoiceNo || "N/A"}</td>
+                        <td>${grn.totalAmount}</td>
+                        <td>${grn.totalGst}</td>
+                        <td>${grn.otherCharges}</td>
+                        <td>${grn.grnDiscount}</td>
+                        <td>${grn.netAmount}</td>
+                        <td>${grn.receivedBy}</td>
+                        <td>${grn.requestedBy}</td>
+                        <td>${grn.status}</td>
+                      </tr>
+                    `;
+                    tbody.innerHTML += row;
+                  });
+          
+                  // Pagination (if applicable)
+                  pagi_search('#searchBox', '#tblid', '#paginationControls');
+                })
+                .catch(error => console.error("Error fetching GRN data:", error));
+          
+              // Handle row click to show items and highlight row
+              document.getElementById("tblid").addEventListener("click", function (event) {
+                const row = event.target.closest("tr");
+                if (!row || !row.dataset.items) return;
+          
+                // Remove highlight from all rows
+                document.querySelectorAll("#tblid tr").forEach(tr => tr.classList.remove("selected-row"));
+          
+                // Highlight the selected row
+                row.classList.add("selected-row");
+          
+                const items = JSON.parse(row.dataset.items);
+                const itemsBody = document.getElementById("itemsBody");
+                itemsBody.innerHTML = "";
+          
+                items.forEach(item => {
+                  const itemRow = `
+                    <tr>
+                      <td>${item.item_name}</td>
+                      <td>${item.batchCode}</td>
+                      <td>${item.expiryDate}</td>
+                      <td>${item.mrp}</td>
+                      <td>${item.costPrice}</td>
+                      <td>${item.gst}</td>
+                      <td>${item.gstAmount}</td>
+                      <td>${item.receivedQty}</td>
+                      <td>${item.freeQty}</td>
+                      <td>${item.totalCost}</td>
+                      <td>${item.netAmount}</td>
+                    </tr>
+                  `;
+                  itemsBody.innerHTML += itemRow;
+                });
+              });
+            });
+          </script>
+          <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.3/xlsx.full.min.js"></script>
+       
+          <script>
+            document.getElementById("exportGrn").addEventListener("click", function () {
+    let table = document.getElementById("tblid");
+    let wb = XLSX.utils.book_new();
+    let wsData = [];
+    
+    // Add table headers
+    let headers = [
+        "GRN No", "GRN Date", "Store", "Gate Entry No", "Supplier", "Invoice Date", "Invoice No",
+        "Total Amount", "Total GST", "Other Charges", "GRN Discount", "Net Amount", "Received By",
+        "Requested By", "Status", "Item Name", "Batch Code", "Expiry Date", "MRP", "Cost Price", 
+        "GST", "GST Amount", "Received Qty", "Free Qty", "Total Cost", "Net Amount"
+    ];
+    wsData.push(headers);
+
+    // Loop through table rows
+    document.querySelectorAll("#tblid tbody tr").forEach(row => {
+        let grnData = [
+            row.cells[0].innerText, // GRN No
+            row.cells[1].innerText, // GRN Date
+            row.cells[2].innerText, // Store
+            row.cells[3].innerText, // Gate Entry No
+            row.cells[4].innerText, // Supplier
+            row.cells[5].innerText, // Invoice Date
+            row.cells[6].innerText, // Invoice No
+            row.cells[7].innerText, // Total Amount
+            row.cells[8].innerText, // Total GST
+            row.cells[9].innerText, // Other Charges
+            row.cells[10].innerText, // GRN Discount
+            row.cells[11].innerText, // Net Amount
+            row.cells[12].innerText, // Received By
+            row.cells[13].innerText, // Requested By
+            row.cells[14].innerText  // Status
+        ];
+
+        let items = JSON.parse(row.dataset.items || "[]");
+        if (items.length > 0) {
+            items.forEach(item => {
+                wsData.push([...grnData, item.item_name, item.batchCode, item.expiryDate, item.mrp, 
+                    item.costPrice, item.gst, item.gstAmount, item.receivedQty, item.freeQty, 
+                    item.totalCost, item.netAmount]);
+            });
+        } else {
+            wsData.push([...grnData, "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A"]);
+        }
+    });
+
+    // Convert data to worksheet and add to workbook
+    let ws = XLSX.utils.aoa_to_sheet(wsData);
+    XLSX.utils.book_append_sheet(wb, ws, "GRN");
+    
+    // Export to Excel file
+    XLSX.writeFile(wb, "GRN.xlsx");
+});
+
+          </script>
+            

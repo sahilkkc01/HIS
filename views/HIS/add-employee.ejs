@@ -1,0 +1,299 @@
+<!doctype html>
+<html
+  lang="en"
+  class="light-style layout-menu-fixed layout-compact"
+  dir="ltr"
+  data-theme="theme-default"
+  data-assets-path="../assets/"
+  data-template="vertical-menu-template-free"
+  data-style="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+
+    <title>Add Employee</title>
+
+   <%- include('../header') -%>
+
+          <!-- Content wrapper -->
+          <div class="content-wrapper">
+            <!-- Content -->
+            <style>.displaynone{display:none;}.bx-qr-scan{font-size:80px;}</style>
+            <div class="container-xxl flex-grow-1 container-p-y">
+              <div class="row">
+                <!-- Vertical & Horizontal Scrollbars -->
+                <div class="col-12">
+                  <div class="card overflow-hidden">
+                    <h5 class="card-header">Add Employee</h5>
+                    <div class="card">
+                    <!-- Account -->
+                    <div class="card-body pt-4">
+                      <form id="EmpForm" method="POST" enctype="multipart/form-data">
+                        <div id="errordiv"></div>
+                        <div class="row g-6">
+                          <div class="col-md-6">
+                            <label for="firstName" class="form-label">Employee ID*</label>
+                            <input class="form-control" type="text" id="empId" name="empId" value="" autofocus="" data-validation="required" data-error-message="Please Enter Employee Id">
+                          </div>
+                          <div class="col-md-6">
+                            <label class="form-label" for="phoneNumber">Full Name*</label>
+                            <div class="input-group">
+                              <input type="text" id="name" name="name" class="form-control" placeholder="" data-validation="required" data-error-message="Please Enter Name">
+                            </div>
+                          </div>
+						  <div class="col-md-3">
+                            <label for="language" class="form-label">Date of Birth</label>
+                            <input type="date" id="dob" name="dob" class="form-control" placeholder="">
+                          </div>
+						  <div class="col-md-3">
+                            <label for="language" class="form-label">Gender*</label>
+                            <select id="gender" name="gender" class="select2 form-select" data-validation="required" data-error-message="Please Enter Gender">
+                              <option value="">Select</option>
+							  <option value="M">Male</option>
+							  <option value="F">Female</option>
+							  <option value="O">Other</option>
+                            </select>
+                          </div>
+						  
+                          <div class="col-md-3">
+                            <label for="language" class="form-label">Phone Number*</label>
+                            <input class="form-control" type="number" id="phoneNumber" name="phoneNumber" value="" placeholder="" data-validation="required mobileNum" data-error-message="Please Enter Phone Number">
+                          </div>
+						  <div class="col-md-3">
+                            <label for="language" class="form-label">Email</label>
+                            <input class="form-control" type="email" id="email" name="email" value="" placeholder="" data-validation="email">
+                          </div>
+						  <div class="col-md-6">
+                            <label for="language" class="form-label">Address</label>
+                            <input class="form-control" type="text" id="address" name="address" value="" placeholder="">
+                          </div>
+						  <div class="col-md-3">
+                            <label for="language" class="form-label">Department</label>
+                            <select id="Department" name="dept" class="select2 form-select">
+                              <option value="">Select</option>
+                          
+							  <option value="add-new">Add New</option>
+                            </select>
+                          </div>
+						  <div class="col-md-3">
+                            <label for="language" class="form-label">Designation/Title</label>
+                            <input class="form-control" type="text" id="desg" name="desg" value="" placeholder="">
+                          </div>
+						  <div class="col-md-3">
+                            <label for="language" class="form-label">Date of Joining</label>
+                            <input class="form-control" type="date" id="doj" name="doj" value="" placeholder="">
+                          </div>
+						  <div class="col-md-3">
+                            <label for="language" class="form-label">Qualifications</label>
+                            <input class="form-control" type="text" id="qualification" name="qualification" value="" placeholder="">
+                          </div>
+						  <div class="col-md-3">
+                            <label for="language" class="form-label">Experience</label>
+                            <input class="form-control" type="text" id="exp" name="exp" value="" placeholder="">
+                          </div>
+						  <div class="col-md-3">
+                            <label for="language" class="form-label">Specializations</label>
+                            <select id="Specialization" name="specialization" class="select2 form-select">
+                              <option value="">Select</option>
+                    
+							  <option value="add-new">Add New</option>
+                            </select>
+                          </div>
+						  
+						  <div class="col-md-3">
+                            <label for="language" class="form-label">Shift Timing</label>
+                            <select id="shiftTimming" name="shiftTimming" class="select2 form-select">
+                              <option value="">Select</option>
+                              <option value="Shift1">10AM-06PM</option>
+							  <option value="Shift1">06PM-02AM</option>
+							  <option value="Shift1">02AM-10AM</option>
+							  <option value="add-new">Add New</option>
+                            </select>
+                          </div>
+						  
+						  <div class="col-md-3">
+                            <label for="language" class="form-label">Emergency Contact(Name)</label>
+                            <input class="form-control" type="text" id="emerCont" name="emerCont" value="" placeholder="">
+                          </div>
+						  <div class="col-md-3">
+                            <label for="language" class="form-label">Emergency Contact(Mobile)</label>
+                            <input class="form-control" type="number" id="emerContMobile" name="emerContMobile" value="" placeholder="" data-validation="mobileNum">
+                          </div>
+						  
+						  <div class="col-md-3">
+                           <label for="formFile" class="form-label">Employee Image</label>
+                           <input class="form-control" type="file" id="empImage" name="empImage" accept="image/png, image/jpeg">
+                          </div>
+                        </div>
+                        <div id="loadingIndicator"></div>
+                        <div class="mt-6">
+                          <button type="submit" class="btn btn-primary me-3">Save</button>
+                          <button type="reset" class="btn btn-outline-secondary">Cancel</button>
+                        </div>
+                      </form>
+                    </div>
+                    <!-- /Account -->
+                  </div>
+                  </div>
+                </div>
+                <!--/ Vertical & Horizontal Scrollbars -->
+              </div>
+            </div>
+            <!-- / Content -->
+                 	<!-- Small Modal -->
+                   <div class="modal fade" id="smallModal" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-sm" role="document">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title" id="exampleModalLabel2">Add Speciality</h5>
+                          <button
+                            type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                          <div class="row">
+                            <div class="col mb-6">
+                              <label for="nameSmall" class="form-label">Speciality</label>
+                              <input type="text" id="newSpec" class="form-control" placeholder="" />
+                            </div>
+                          </div>
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                            Close
+                          </button>
+                          <button type="button" id="addSpec" class="btn btn-primary">Save</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+					  
+                  <div class="modal fade" id="smallModal2" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-sm" role="document">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title" id="exampleModalLabel2">Add Department</h5>
+                          <button
+                            type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                          <div class="row">
+                            <div class="col mb-6">
+                              <label for="nameSmall" class="form-label">Department</label>
+                              <input type="text" id="newDept" class="form-control" placeholder="" />
+                            </div>
+                          </div>
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                            Close
+                          </button>
+                          <button type="button" id="addDept" class="btn btn-primary">Save</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+            <%- include('../footer') -%>
+
+            <script>
+              $(document).ready(function () {
+    console.log("Document is ready");
+
+    const formId = '#EmpForm';
+    const errorDivId = '#errordiv';
+
+    $(formId).on('submit', async function (event) {
+        event.preventDefault(); // Prevent the form from submitting
+
+        const { isValid, errorMessage } = validateForm(formId);
+
+        if (isValid) {
+            const url = '/emp-reg';
+            const loadingDiv = '#loadingIndicator';
+
+            try {
+                $(loadingDiv).show(); // Show loading indicator
+
+                const response = await saveForm(formId, url); // Perform the form submission
+
+                console.log('Success:', response);
+                $(errorDivId).removeClass('alert-danger').addClass('alert-success').text(response.message).show();
+               
+            } catch (error) {
+                console.error('Error:', error);
+                $(errorDivId).removeClass('alert-success').addClass('alert-danger').text(` ${error.message || 'Unknown error'}`).show();
+            } finally {
+                $(loadingDiv).hide(); // Hide loading indicator after submission
+               
+            }
+        } else {
+            $(errorDivId).removeClass('alert-success').addClass('alert-danger').text(errorMessage).show();
+        }
+    });
+});
+            </script>
+<script>
+   $(document).ready(function () {
+      // Show modal when "Add New" is selected
+      $('#Specialization').on('change', function () {
+        if ($(this).val() === 'add-new') {
+          $('#smallModal').modal('show');
+        }
+      });
+    });
+   $(document).ready(function () {
+      // Show modal when "Add New" is selected
+      $('#Department').on('change', function () {
+        if ($(this).val() === 'add-new') {
+          $('#smallModal2').modal('show');
+        }
+      });
+    });
+  document.getElementById('addSpec').addEventListener('click', async () => {
+  const newSpec = document.getElementById('newSpec').value;
+  if (newSpec) {
+    try {
+      const response = await axios.post('/addSpec', { spec: newSpec });
+      $('#smallModal').modal('hide');
+      loadDropdown('Specialization','Specialization' ,'name', '');
+      document.getElementById('newSpec').value = '';
+    } catch (error) {
+     console.log(error)
+      alert(error.response.data.message);
+    }
+  } else {
+    alert('Please enter a specialty');
+  }
+});
+
+document.getElementById('addDept').addEventListener('click', async () => {
+  const newDept = document.getElementById('newDept').value;
+  if (newDept) {
+    try {
+      const response = await axios.post('/addDept', { dept: newDept });
+      $('#smallModal2').modal('hide');
+      loadDropdown('Department','Department', 'name', '');
+      document.getElementById('newDept').value = '';
+    } catch (error) {
+     console.log(error)
+      alert(error.response.data.message);
+    }
+  } else {
+    alert('Please enter a Department');
+  }
+});
+
+
+loadDropdown('Specialization','Specialization', 'name', ''); 
+loadDropdown('Department','Department', 'name', '');       
+restrictInput("phoneNumber", 10); 
+restrictInput("emerContMobile", 10); 
+</script>
