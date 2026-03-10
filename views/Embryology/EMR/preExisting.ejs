@@ -1,0 +1,229 @@
+<div class="mb-4 card PreExisting-Container">
+
+  <div class="justify-content-between align-items-center card-header d-flex">
+
+    <h5 class="mb-0">
+      <span onclick="dropToggle('#PreExistingContent')" style="cursor:pointer;">
+        <i class="fa-solid fa-angle-down me-2" id="PreExistingi"></i>
+        Pre-existing Conditions
+      </span>
+    </h5>
+
+    <button
+      type="button"
+      id="addPreExisting"
+      onclick="dropToggleButton('#PreExistingContent','#PreExistingi')"
+      class="btn btn-primary"
+    >
+      <i class="bx bx-plus me-1"></i> Add
+    </button>
+
+  </div>
+
+
+  <div class="card-body" id="PreExistingContent" style="display:none">
+
+    <div class="pre-existing-form">
+
+      <div class="mb-3 row">
+
+        <div class="col-md-6">
+          <label class="form-label" for="conditionName">Condition Name</label>
+
+          <input
+            type="text"
+            class="form-control"
+            id="conditionName"
+            placeholder="e.g., Hypertension, Diabetes"
+          >
+        </div>
+
+
+        <div class="col-md-6">
+
+          <label class="form-label" for="conditionType">Condition Type</label>
+
+          <select class="form-select" id="conditionType">
+            <option value="">Select Type</option>
+            <option value="chronic">Chronic</option>
+            <option value="acute">Acute</option>
+            <option value="congenital">Congenital</option>
+            <option value="autoimmune">Autoimmune</option>
+            <option value="cardiac">Cardiac</option>
+            <option value="respiratory">Respiratory</option>
+            <option value="endocrine">Endocrine</option>
+            <option value="neurological">Neurological</option>
+            <option value="psychiatric">Psychiatric</option>
+            <option value="other">Other</option>
+          </select>
+
+        </div>
+
+      </div>
+
+
+
+      <div class="mb-3 row">
+
+        <div class="col-md-6">
+
+          <label class="form-label" for="diagnosisDate">Diagnosis Date</label>
+
+          <input
+            type="date"
+            class="form-control"
+            id="diagnosisDate"
+          >
+
+        </div>
+
+
+        <div class="col-md-6">
+
+          <label class="form-label" for="conditionStatus">Status</label>
+
+          <select class="form-select" id="conditionStatus">
+            <option value="">Select Status</option>
+            <option value="active">Active</option>
+            <option value="controlled">Controlled</option>
+            <option value="resolved">Resolved</option>
+            <option value="improving">Improving</option>
+            <option value="worsening">Worsening</option>
+          </select>
+
+        </div>
+
+      </div>
+
+
+
+      <div class="mb-3 row">
+
+        <div class="col-md-12">
+
+          <label class="form-label" for="conditionDescription">Description</label>
+
+          <textarea
+            class="form-control"
+            id="conditionDescription"
+            rows="3"
+            placeholder="Describe the condition..."
+          ></textarea>
+
+        </div>
+
+      </div>
+
+
+
+      <div class="mb-3 row">
+
+        <div class="col-md-6">
+
+          <label class="form-label" for="conditionSeverity">Severity</label>
+
+          <select class="form-select" id="conditionSeverity">
+            <option value="">Select Severity</option>
+            <option value="mild">Mild</option>
+            <option value="moderate">Moderate</option>
+            <option value="severe">Severe</option>
+            <option value="critical">Critical</option>
+          </select>
+
+        </div>
+
+
+        <div class="col-md-6">
+
+          <label class="form-label" for="conditionImpact">Impact on Treatment</label>
+
+          <select class="form-select" id="conditionImpact">
+            <option value="">Select Impact</option>
+            <option value="none">No Impact</option>
+            <option value="minor">Minor Impact</option>
+            <option value="moderate">Moderate Impact</option>
+            <option value="major">Major Impact</option>
+            <option value="contraindication">Contraindication</option>
+          </select>
+
+        </div>
+
+      </div>
+
+
+
+      <div class="mb-3 row">
+
+        <div class="col-md-12">
+
+          <label class="form-label" for="conditionNotes">Additional Notes</label>
+
+          <textarea
+            class="form-control"
+            id="conditionNotes"
+            rows="3"
+            placeholder="Any additional information about this condition..."
+          ></textarea>
+
+        </div>
+
+      </div>
+
+
+
+      <div class="mb-4">
+
+        <button
+          type="button"
+          class="btn btn-primary"
+          id="savePreExisting"
+        >
+          Save Condition
+        </button>
+
+        <button
+          type="button"
+          class="btn btn-secondary ms-2"
+          id="cancelPreExisting"
+        >
+          Cancel
+        </button>
+
+      </div>
+
+    </div>
+
+
+
+    <div class="pre-existing-list">
+
+      <h6 class="mb-3">Pre-existing Conditions</h6>
+
+      <div class="text-nowrap table-responsive">
+
+        <table class="table table-bordered">
+
+          <thead>
+            <tr>
+              <th>Condition</th>
+              <th>Type</th>
+              <th>Diagnosed</th>
+              <th>Status</th>
+              <th>Severity</th>
+              <th>Impact</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+
+          <tbody id="preExistingTableBody">
+          </tbody>
+
+        </table>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

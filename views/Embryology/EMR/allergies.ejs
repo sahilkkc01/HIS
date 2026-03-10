@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Allergies</title>
+  <%- include("../../header") -%>
+</head>
+
+<body>
+
+<div class="content-wrapper">
+  <div class="container-xxl container-p-y flex-grow-1">
+
+    <div class="mb-4 card">
+
+      <div class="justify-content-between align-items-center card-header d-flex">
+        <h5 class="mb-0 card-title">Allergies</h5>
+
+        <button
+          type="button"
+          id="addAllergy"
+          class="btn btn-primary"
+        >
+          <i class="bx bx-plus me-1"></i> Add Allergy
+        </button>
+      </div>
+
+      <div class="card-body">
+
+        <div class="mb-3">
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="allergies" id="noKnownAllergies">
+            <label class="form-check-label" for="noKnownAllergies">No Known Allergies</label>
+          </div>
+
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="allergies" id="hasAllergies">
+            <label class="form-check-label" for="hasAllergies">Allergies</label>
+          </div>
+        </div>
+
+        <div class="Allergies-Info-Divs">
+          <!-- dynamic allergies -->
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+</div>
+<%- include("./chiefComplaint") -%>
+<%- include("./Diagnosis") -%>
+<%- include("./DoctorNotes") -%>
+<%- include("./examination") -%>
+<% include("./FollowUp") -%>
+<% include ("./history") -%>
+<% include("./preExisting") -%>
+<% include("./prescription") -%>
+<%include("./treatmentAdvice") -%>
+
+
+<%- include("../../footer") -%>
+
+
+<script>
+
+function allergiesSave(){
+  var allergiesData = [];
+
+  $(".allergy-entry").each(function () {
+    var $div = $(this);
+
+    allergiesData.push({
+      allergyName: $div.find(".allergy-name-input").val(),
+      severity: $div.find('input[type="radio"]:checked').val(),
+      isFavorite: $div.find(".favorite-icon i").hasClass("fa-solid"),
+    });
+  });
+
+  axios.post("/embrology/allergySubmit", allergiesData, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  })
+  .then(function (response) {
+    console.log("Success:", response.data);
+  })
+  .catch(function (error) {
+    console.error("Error:", error);
+  });
+}
+
+</script>
+
+
+<script>
+
+function addAllergyEntry() {
+
+  const newAllergyDiv = $("<div>", {
+    class: "allergy-entry row align-items-center mb-3"
+  });
+
+  newAllergyDiv.html(`
+
+    <div class="col-md-4">
+      <input
+        type="text"
+        class="form-control allergy-name-input"
+        placeholder="Enter allergy"
+      >
+    </div>
+
+    <div class="col-md-4">
+
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="radio" name="severity_${Date.now()}" value="Low">
+        <label class="form-check-label">Low</label>
+      </div>
+
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="radio" name="severity_${Date.now()}" value="Medium">
+        <label class="form-check-label">Medium</label>
+      </div>
+
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="radio" name="severity_${Date.now()}" value="Severe">
+        <label class="form-check-label">Severe</label>
+      </div>
+
+    </div>
+
+    <div class="col-md-4 gap-2 d-flex">
+
+      <button type="button" class="btn btn-sm btn-primary favorite-icon">
+        <i class="fa-regular fa-star"></i>
+      </button>
+
+      <button type="button" class="btn btn-sm btn-danger delete-icon">
+        <i class="fa-solid fa-trash"></i>
+      </button>
+
+    </div>
+
+  `);
+
+  $(".Allergies-Info-Divs").append(newAllergyDiv);
+
+  newAllergyDiv.find(".delete-icon").click(function () {
+    $(this).closest(".allergy-entry").remove();
+  });
+
+  newAllergyDiv.find(".favorite-icon").click(function () {
+    $(this).find("i").toggleClass("fa-regular fa-solid");
+  });
+
+}
+
+
+$("#addAllergy").click(function () {
+  addAllergyEntry();
+  $("#hasAllergies").prop("checked", true);
+});
+
+
+$("#noKnownAllergies").click(function () {
+  $(".Allergies-Info-Divs").empty();
+  $("#addAllergy").hide();
+});
+
+
+$("#hasAllergies").click(function () {
+  $(".Allergies-Info-Divs").show();
+  addAllergyEntry();
+  $("#addAllergy").show();
+});
+
+</script>
+
+</body>
+</html>

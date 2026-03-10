@@ -1,0 +1,256 @@
+<div class="container-div ServiceAdvice-Container">
+    <div class="align-items-center Head2 d-flex">
+      <div
+        class="Left-Heading"
+        onclick="dropToggle('#ServiceAdviceContent')"
+      >
+        <span><i class="fa-solid fa-angle-down" id="ServiceAdvicei"></i> </span>
+        Service Advice
+      </div>
+      
+    </div>
+
+    <div
+      class="Content-Div"
+      id="ServiceAdviceContent"
+      style="display: none"
+    >
+      <div class="right-add-icon justify-content-end py-2 mr-2 d-flex">
+        <button type="button" id="addServiceAdvice" onclick="dropToggleButton('#ServiceAdviceContent','#ServiceAdvicei')" class="btn-secondary btn-style btn"> <strong><i class="fa-solid fa-plus"></i> Add</strong> </button>
+      </div>
+      
+      <div class="service-advice-form">
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label for="adviceDate">Advice Date</label>
+              <input type="date" class="form-control" id="adviceDate">
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label for="adviceDoctor">Doctor</label>
+              <input type="text" class="form-control" id="adviceDoctor" placeholder="Doctor's name">
+            </div>
+          </div>
+        </div>
+        
+        <div class="row">
+          <div class="col-md-12">
+            <div class="form-group">
+              <label for="adviceType">Advice Type</label>
+              <select class="form-control" id="adviceType">
+                <option value="">Select Type</option>
+                <option value="lifestyle">Lifestyle Advice</option>
+                <option value="diet">Dietary Advice</option>
+                <option value="exercise">Exercise Advice</option>
+                <option value="followup">Follow-up Advice</option>
+                <option value="precaution">Precautions</option>
+                <option value="referral">Referral Advice</option>
+                <option value="education">Patient Education</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        
+        <div class="row">
+          <div class="col-md-12">
+            <div class="form-group">
+              <label for="adviceContent">Advice Content</label>
+              <textarea class="form-control" id="adviceContent" rows="5" placeholder="Detailed advice content..."></textarea>
+            </div>
+          </div>
+        </div>
+        
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label for="advicePriority">Priority</label>
+              <select class="form-control" id="advicePriority">
+                <option value="">Select Priority</option>
+                <option value="high">High</option>
+                <option value="medium">Medium</option>
+                <option value="low">Low</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label for="adviceStatus">Status</label>
+              <select class="form-control" id="adviceStatus">
+                <option value="">Select Status</option>
+                <option value="recommended">Recommended</option>
+                <option value="accepted">Accepted</option>
+                <option value="pending">Pending</option>
+                <option value="declined">Declined</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        
+        <div class="row">
+          <div class="col-md-12">
+            <div class="form-group">
+              <label for="adviceNotes">Additional Notes</label>
+              <textarea class="form-control" id="adviceNotes" rows="3" placeholder="Any additional notes..."></textarea>
+            </div>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <button type="button" class="btn btn-primary" id="saveServiceAdvice">Save Advice</button>
+          <button type="button" class="ml-2 btn btn-secondary" id="cancelServiceAdvice">Cancel</button>
+        </div>
+      </div>
+
+      <div class="mt-4 service-advice-list">
+        <h6>Service Advice History</h6>
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Type</th>
+                <th>Doctor</th>
+                <th>Priority</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="serviceAdviceTableBody">
+              <!-- Service advice entries will be populated here -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function serviceAdviceSave() {
+      const adviceData = {
+        date: $('#adviceDate').val(),
+        doctor: $('#adviceDoctor').val(),
+        type: $('#adviceType').val(),
+        content: $('#adviceContent').val(),
+        priority: $('#advicePriority').val(),
+        status: $('#adviceStatus').val(),
+        notes: $('#adviceNotes').val()
+      };
+      
+      console.log("Submitting Service Advice:", adviceData);
+      
+      // AJAX request to backend
+      axios.post("/embrology/serviceAdviceSubmit", adviceData, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+      .then(function (response) {
+        console.log("Success:", response.data);
+        addServiceAdviceToList(adviceData);
+        clearServiceAdviceForm();
+      })
+      .catch(function (error) {
+        console.error("Error:", error);
+      });
+    }
+
+    function addServiceAdviceToList(data) {
+      const content = data.content.length > 60 ? data.content.substring(0, 60) + '...' : data.content;
+      
+      const row = `
+        <tr>
+          <td>${data.date}</td>
+          <td>
+            <span class="badge ${getTypeClass(data.type)}">${data.type}</span>
+          </td>
+          <td>${data.doctor}</td>
+          <td>
+            <span class="badge ${getPriorityClass(data.priority)}">${data.priority}</span>
+          </td>
+          <td>
+            <span class="badge ${getStatusClass(data.status)}">${data.status}</span>
+          </td>
+          <td>
+            <button class="mr-2 btn btn-sm btn-outline-primary" onclick="viewServiceAdvice(this)">
+              <i class="fa-solid fa-eye"></i> View
+            </button>
+            <button class="mr-2 btn btn-sm btn-outline-primary" onclick="editServiceAdvice(this)">
+              <i class="fa-solid fa-edit"></i> Edit
+            </button>
+            <button class="btn btn-sm btn-danger" onclick="deleteServiceAdvice(this)">
+              <i class="fa-solid fa-trash"></i> Delete
+            </button>
+          </td>
+        </tr>
+      `;
+      $('#serviceAdviceTableBody').append(row);
+    }
+
+    function getTypeClass(type) {
+      switch(type) {
+        case 'lifestyle': return 'bg-primary';
+        case 'diet': return 'bg-info';
+        case 'exercise': return 'bg-success';
+        case 'followup': return 'bg-warning';
+        case 'precaution': return 'bg-danger';
+        case 'referral': return 'bg-secondary';
+        case 'education': return 'bg-dark';
+        case 'other': return 'bg-light text-dark';
+        default: return 'bg-light text-dark';
+      }
+    }
+
+    function getPriorityClass(priority) {
+      switch(priority) {
+        case 'high': return 'bg-danger';
+        case 'medium': return 'bg-warning';
+        case 'low': return 'bg-success';
+        default: return 'bg-secondary';
+      }
+    }
+
+    function getStatusClass(status) {
+      switch(status) {
+        case 'recommended': return 'bg-info';
+        case 'accepted': return 'bg-success';
+        case 'pending': return 'bg-warning';
+        case 'declined': return 'bg-danger';
+        default: return 'bg-secondary';
+      }
+    }
+
+    function clearServiceAdviceForm() {
+      $('#adviceDate').val('');
+      $('#adviceDoctor').val('');
+      $('#adviceType').val('');
+      $('#adviceContent').val('');
+      $('#advicePriority').val('');
+      $('#adviceStatus').val('');
+      $('#adviceNotes').val('');
+    }
+
+    function viewServiceAdvice(button) {
+      const row = $(button).closest('tr');
+      const type = row.find('td:eq(1) span').text();
+      const content = row.find('td:eq(1)').data('content') || 'Content not available';
+      const doctor = row.find('td:eq(2)').text();
+      alert('Type: ' + type + '\n\nDoctor: ' + doctor + '\n\nContent: ' + content);
+    }
+
+    function editServiceAdvice(button) {
+      const row = $(button).closest('tr');
+      // Implement edit functionality
+      alert('Edit functionality to be implemented');
+    }
+
+    function deleteServiceAdvice(button) {
+      $(button).closest('tr').remove();
+    }
+
+    // Event listeners
+    $('#saveServiceAdvice').click(serviceAdviceSave);
+    $('#cancelServiceAdvice').click(clearServiceAdviceForm);
+  </script>

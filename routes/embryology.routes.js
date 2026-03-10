@@ -8,13 +8,35 @@
 const express = require("express");
 const router = express.Router();
 
+exports.getPatientEmr = (req, res) => {
+  res.render("Embryology/patient-emr", { title: "Embryology - Patient EMR" });
+};
+
+exports.getCounselling = (req, res) => {
+  res.render("Embryology/counselling", { title: "Embryology - Counselling" });
+};
+
+// GET: Render consent search form
+exports.getConsent = (req, res) => {
+  res.render("Embryology/consent", { title: "Embryology - Consent" });
+};
+
+
+
+
+
 // Import embryology controller methods
 const EmbryologyController = require("../controllers/EmbryologyController");
 
 // Prefix for these routes will be /embryology (mounted in app.js)
 
-// Patient EMR (Electronic Medical Record) routes
-router.get("/patient-emr", EmbryologyController.getPatientEmr);
+//TEST
+router.get("/patient-emr", (req, res) => {
+  res.render("Embryology/EMR/allergies");
+});
+
+
+
 
 // Patient counselling management routes  
 router.get("/counselling", EmbryologyController.getCounselling);
@@ -47,6 +69,9 @@ router.get("/et", EmbryologyController.getEt);
 
 // Treatment outcome tracking routes
 router.get("/outcome", EmbryologyController.getOutcome);
+
+
+
 
 module.exports = { router };
 

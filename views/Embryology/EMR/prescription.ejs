@@ -1,0 +1,151 @@
+<div class="container-div Prescription-Container">
+    <div class="align-items-center Head2 d-flex">
+      <div
+        class="Left-Heading"
+        onclick="dropToggle('#PrescriptionContent')"
+      >
+        <span><i class="fa-solid fa-angle-down" id="Prescriptioni"></i> </span>
+        Prescription
+      </div>
+      
+    </div>
+
+    <div
+      class="Content-Div"
+      id="PrescriptionContent"
+      style="display: none"
+    >
+      <div class="right-add-icon justify-content-end py-2 mr-2 d-flex">
+        <button type="button" id="addPrescription" onclick="dropToggleButton('#PrescriptionContent','#Prescriptioni')" class="btn-secondary btn-style btn"> <strong><i class="fa-solid fa-plus"></i> Add</strong> </button>
+      </div>
+      
+      <div class="prescription-form">
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label for="prescriptionDate">Prescription Date</label>
+              <input type="date" class="form-control" id="prescriptionDate">
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label for="prescriptionDoctor">Prescribing Doctor</label>
+              <input type="text" class="form-control" id="prescriptionDoctor" placeholder="Doctor's name">
+            </div>
+          </div>
+        </div>
+        
+        <div class="row">
+          <div class="col-md-12">
+            <div class="form-group">
+              <label for="prescriptionPurpose">Purpose</label>
+              <input type="text" class="form-control" id="prescriptionPurpose" placeholder="Purpose of prescription">
+            </div>
+          </div>
+        </div>
+        
+        <div class="row">
+          <div class="col-md-12">
+            <div class="form-group">
+              <label for="prescriptionNotes">Prescription Notes</label>
+              <textarea class="form-control" id="prescriptionNotes" rows="3" placeholder="Additional notes for the prescription..."></textarea>
+            </div>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <button type="button" class="btn btn-primary" id="savePrescription">Save Prescription</button>
+          <button type="button" class="ml-2 btn btn-secondary" id="cancelPrescription">Cancel</button>
+        </div>
+      </div>
+
+      <div class="prescription-list mt-4">
+        <h6>Medication List</h6>
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Medication</th>
+                <th>Dosage</th>
+                <th>Frequency</th>
+                <th>Duration</th>
+                <th>Route</th>
+                <th>Prescribed Date</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="prescriptionTableBody">
+              <!-- Medications will be populated here -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function prescriptionSave() {
+      const prescriptionData = {
+        date: $('#prescriptionDate').val(),
+        doctor: $('#prescriptionDoctor').val(),
+        purpose: $('#prescriptionPurpose').val(),
+        notes: $('#prescriptionNotes').val()
+      };
+      
+      console.log("Submitting Prescription:", prescriptionData);
+      
+      // AJAX request to backend
+      axios.post("/embrology/prescriptionSubmit", prescriptionData, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+      .then(function (response) {
+        console.log("Success:", response.data);
+        addPrescriptionToList(prescriptionData);
+        clearPrescriptionForm();
+      })
+      .catch(function (error) {
+        console.error("Error:", error);
+      });
+    }
+
+    function addPrescriptionToList(data) {
+      const row = `
+        <tr>
+          <td colspan="7" class="text-center text-muted">
+            No medications added yet. Use the medication form to add medications to this prescription.
+          </td>
+        </tr>
+      `;
+      $('#prescriptionTableBody').append(row);
+    }
+
+    function clearPrescriptionForm() {
+      $('#prescriptionDate').val('');
+      $('#prescriptionDoctor').val('');
+      $('#prescriptionPurpose').val('');
+      $('#prescriptionNotes').val('');
+    }
+
+    function viewPrescription(button) {
+      const row = $(button).closest('tr');
+      const doctor = row.find('td:eq(5)').text();
+      const purpose = row.find('td:eq(1)').text();
+      alert('Doctor: ' + doctor + '\n\nPurpose: ' + purpose);
+    }
+
+    function editPrescription(button) {
+      const row = $(button).closest('tr');
+      // Implement edit functionality
+      alert('Edit functionality to be implemented');
+    }
+
+    function deletePrescription(button) {
+      $(button).closest('tr').remove();
+    }
+
+    // Event listeners
+    $('#savePrescription').click(prescriptionSave);
+    $('#cancelPrescription').click(clearPrescriptionForm);
+  </script>
