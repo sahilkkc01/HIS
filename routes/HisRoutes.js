@@ -92,7 +92,9 @@ router.get("/login", async (req, res) => {
   // If no valid token is found, render the login page
   res.render("HIS/login");
 });
-
+router.get("/", (req, res) => {
+  res.redirect("/Patient-List");
+});
 router.get("/Patient-Registration", async function (req, res, next) {
   try {
     const { id } = req.query;
