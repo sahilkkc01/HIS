@@ -11,144 +11,373 @@
           id="addExamination"
           class="btn btn-primary"
         >
-          <i class="bx bx-plus me-1"></i> Add
+          NAD
         </button>
       </div>
 
       <div class="card-body">
 
-        <div class="examination-form">
+       <div class="examination-form">
 
-          <div class="mb-3 row">
+  <!-- VITALS -->
+  <h6 class="text-success mb-3">Vitals</h6>
 
-            <div class="col-md-6">
-              <label class="form-label" for="examinationDate">Date</label>
-              <input type="date" class="form-control" id="examinationDate">
-            </div>
+  <div class="row g-3 mb-3">
+    <div class="col-md-2"><input class="form-control" placeholder="Height (cm)"></div>
+    <div class="col-md-2"><input class="form-control" placeholder="Weight (kg)"></div>
+    <div class="col-md-2"><input class="form-control" placeholder="Temperature (°F)"></div>
+    <div class="col-md-2"><input class="form-control" placeholder="Pulse (BPM)"></div>
 
-            <div class="col-md-6">
-              <label class="form-label" for="examinationTime">Time</label>
-              <input type="time" class="form-control" id="examinationTime">
-            </div>
+    <div class="col-md-2">
+      <select class="form-select">
+        <option>Blood Group</option>
+        <option>A+</option><option>A-</option>
+        <option>B+</option><option>B-</option>
+        <option>O+</option><option>O-</option>
+        <option>AB+</option><option>AB-</option>
+      </select>
+    </div>
 
-          </div>
+    <div class="col-md-2">
+      <select class="form-select">
+        <option>BMI</option>
+        <option>A+</option>
+        <option>A</option>
+        <option>B+</option>
+        <option>B</option>
+      </select>
+    </div>
+  </div>
 
+  <div class="row g-3 mb-3">
+    <div class="col-md-3"><input class="form-control" placeholder="Systolic"></div>
+    <div class="col-md-3"><input class="form-control" placeholder="Diastolic"></div>
+  </div>
 
-          <div class="mb-3 row">
+  <!-- GENERAL SIGNS -->
+  <div class="row g-3 mb-3">
+    <div class="col-md-2"><input class="form-control" placeholder="Pallor"></div>
+    <div class="col-md-2"><input class="form-control" placeholder="Icterus"></div>
+    <div class="col-md-2"><input class="form-control" placeholder="Edema"></div>
+    <div class="col-md-2"><input class="form-control" placeholder="Obesity"></div>
+    <div class="col-md-2"><input class="form-control" placeholder="Acne"></div>
+    <div class="col-md-2"><input class="form-control" placeholder="Thyroid"></div>
+  </div>
 
-            <div class="col-md-12">
-              <label class="form-label" for="examinationType">Examination Type</label>
+  <input class="form-control mb-3" placeholder="Notes">
 
-              <select class="form-select" id="examinationType">
-                <option value="">Select Type</option>
-                <option value="general">General Examination</option>
-                <option value="systemic">Systemic Examination</option>
-                <option value="local">Local Examination</option>
-                <option value="special">Special Examination</option>
-              </select>
-            </div>
+<!-- RADIO GROUPS -->
+<div class="row mb-3">
 
-          </div>
+  <div class="col-md-6">
+    <label>Hirsutism</label><br>
+    <input type="radio" name="hirsutism" value="Yes"> Yes
+    <input type="radio" name="hirsutism" value="No"> No
+  </div>
 
+ <div class="col-md-6">
+  <label>Respiratory System</label><br>
+  <input type="radio" name="resp" value="NAD" data-target="#respFields"> NAD
+  <input type="radio" name="resp" value="Abnormal" data-target="#respFields"> Abnormal
+</div>
 
-          <div class="mb-3 row">
+<div id="respFields" class="dependent-field mt-2">
+  <input class="form-control" placeholder="Respiratory Details">
+</div>
 
-            <div class="col-md-6">
-              <label class="form-label" for="temperature">Temperature (°C)</label>
-              <input type="number" class="form-control" id="temperature" step="0.1" placeholder="e.g., 98.6">
-            </div>
-
-            <div class="col-md-6">
-              <label class="form-label" for="bloodPressure">Blood Pressure</label>
-              <input type="text" class="form-control" id="bloodPressure" placeholder="e.g., 120/80">
-            </div>
-
-          </div>
-
-
-          <div class="mb-3 row">
-
-            <div class="col-md-6">
-              <label class="form-label" for="pulseRate">Pulse Rate (bpm)</label>
-              <input type="number" class="form-control" id="pulseRate" placeholder="e.g., 72">
-            </div>
-
-            <div class="col-md-6">
-              <label class="form-label" for="respiratoryRate">Respiratory Rate (rpm)</label>
-              <input type="number" class="form-control" id="respiratoryRate" placeholder="e.g., 16">
-            </div>
-
-          </div>
-
-
-          <div class="mb-3 row">
-
-            <div class="col-md-6">
-              <label class="form-label" for="weight">Weight (kg)</label>
-              <input type="number" class="form-control" id="weight" step="0.1" placeholder="e.g., 70.5">
-            </div>
-
-            <div class="col-md-6">
-              <label class="form-label" for="height">Height (cm)</label>
-              <input type="number" class="form-control" id="height" placeholder="e.g., 175">
-            </div>
-
-          </div>
+</div>
 
 
-          <div class="mb-3 row">
 
-            <div class="col-md-12">
-              <label class="form-label" for="examinationFindings">Findings</label>
+  <div class="row mb-3">
 
-              <textarea
-                class="form-control"
-                id="examinationFindings"
-                rows="4"
-                placeholder="Describe examination findings..."
-              ></textarea>
-            </div>
+   <div class="col-md-6">
+  <label>Galactorrhoea</label><br>
+  <input type="radio" name="galact" value="Yes"> Yes
+  <input type="radio" name="galact" value="No"> No
+</div>
 
-          </div>
+   <div class="col-md-6">
+  <label>Breast Examination</label><br>
+  <input type="radio" name="breast" value="NAD" data-target="#breastFields"> NAD
+  <input type="radio" name="breast" value="Abnormal" data-target="#breastFields"> Abnormal
+</div>
+
+<div id="breastFields" class="dependent-field mt-2">
+  <input class="form-control" placeholder="Breast Details">
+</div>
+
+  </div>
+
+  <div class="row mb-3">
+
+   <div class="col-md-6">
+  <label>Per Speculum Examination</label><br>
+
+  <input type="radio" name="speculum" value="NAD" data-target="#speculumFields"> NAD
+  <input type="radio" name="speculum" value="Abnormal" data-target="#speculumFields"> Abnormal
+</div>
+
+<div id="speculumFields" class="dependent-field mt-2">
+  <input class="form-control" placeholder="Speculum Details">
+</div>
+
+  <div class="col-md-6">
+  <label>Per Abdomen Examination</label><br>
+
+  <input type="radio" name="abdomen" value="NAD" data-target="#abdomenFields"> NAD
+  <input type="radio" name="abdomen" value="Abnormal" data-target="#abdomenFields"> Abnormal
+</div>
+
+<div id="abdomenFields" class="dependent-field mt-2">
+  <input class="form-control" placeholder="Abdomen Details">
+</div>
+
+  </div>
+
+  <div class="row mb-3">
+
+  <div class="col-md-6">
+  <label>PAP Smear Taken</label><br>
+
+  <input type="radio" name="papSmear" value="Yes"> Yes
+  <input type="radio" name="papSmear" value="No"> No
+  <input type="radio" name="papSmear" value="TakenPreviously"> Taken Previously
+</div>
+
+  <div class="col-md-6">
+  <label>Per Vaginal Examination</label><br>
+
+  <input type="radio" name="vaginal" value="NAD" data-target="#vaginalFields"> NAD
+  <input type="radio" name="vaginal" value="Abnormal" data-target="#vaginalFields"> Abnormal
+</div>
+
+<div id="vaginalFields" class="dependent-field mt-2">
+  <input class="form-control" placeholder="Vaginal Details">
+</div>
+  </div>
+
+  <div class="mb-3">
+    <label>Appointment Date</label>
+    <input type="date" class="form-control">
+  </div>
+
+  <input class="form-control mb-4" placeholder="Notes">
+
+  <!-- USG SECTION -->
+  <h6 class="text-success mb-3">USG</h6>
+
+  <div class="row g-3 mb-3">
+    <div class="col-md-3">
+      <label>TAS / TVS</label><br>
+      <input type="radio"> TAS
+      <input type="radio"> TVS
+    </div>
+
+    <div class="col-md-3">
+      <input class="form-control" placeholder="Day of Cycle">
+    </div>
+
+    <div class="col-md-3">
+      <label>AFC Right</label>
+      <input class="form-control">
+    </div>
+
+    <div class="col-md-3">
+      <label>AFC Left</label>
+      <input class="form-control">
+    </div>
+  </div>
+
+  <!-- UTERUS -->
+  <div class="row g-3 mb-3">
+    <div class="col-md-6">
+      <label>Uterus Size</label>
+      <div class="d-flex gap-2">
+        <input class="form-control" placeholder="L">
+        <input class="form-control" placeholder="B">
+        <input class="form-control" placeholder="H">
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <label>Uterus Condition</label>
+      <select class="form-select">
+        <option>Normal</option>
+        <option>Abnormal</option>
+      </select>
+    </div>
+  </div>
+
+<!-- OVARIES -->
+<h6 class="text-success mt-3">Ovaries</h6>
+
+<div class="row g-3 mb-3">
+
+  <!-- RIGHT OVARY -->
+  <div class="col-md-6">
+    <label>Right Ovary</label>
+    <select class="form-select mb-2">
+      <option>Normal</option>
+      <option>Abnormal</option>
+    </select>
+
+    <label>Size</label>
+    <div class="d-flex gap-2 mb-2">
+      <input class="form-control" placeholder="L">
+      <input class="form-control" placeholder="B">
+      <input class="form-control" placeholder="H">
+      <span class="mt-2">mm</span>
+    </div>
+
+    <input class="form-control" placeholder="Notes">
+  </div>
+
+  <!-- LEFT OVARY -->
+  <div class="col-md-6">
+    <label>Left Ovary</label>
+    <select class="form-select mb-2">
+      <option>Normal</option>
+      <option>Abnormal</option>
+    </select>
+
+    <label>Size</label>
+    <div class="d-flex gap-2 mb-2">
+      <input class="form-control" placeholder="L">
+      <input class="form-control" placeholder="B">
+      <input class="form-control" placeholder="H">
+      <span class="mt-2">mm</span>
+    </div>
+
+    <input class="form-control" placeholder="Notes">
+  </div>
+
+</div>
+<h6 class="text-success">Hydrosalpinx</h6>
+
+<div class="row g-3 mb-3">
+
+  <!-- RIGHT -->
+  <div class="col-md-6">
+    <label>Right</label><br>
+    <input type="radio" name="hydroRight" value="Yes"> Yes
+    <input type="radio" name="hydroRight" value="No"> No
+
+    <div class="mt-2 hydro-right-fields">
+      <label>Size</label>
+      <div class="d-flex gap-2 mb-2">
+        <input class="form-control">
+        <input class="form-control">
+        <span class="mt-2">mm</span>
+      </div>
+
+      <input class="form-control" placeholder="Notes">
+    </div>
+  </div>
+
+  <!-- LEFT -->
+  <div class="col-md-6">
+    <label>Left</label><br>
+    <input type="radio" name="hydroLeft" value="Yes"> Yes
+    <input type="radio" name="hydroLeft" value="No"> No
+
+    <div class="mt-2 hydro-left-fields">
+      <label>Size</label>
+      <div class="d-flex gap-2 mb-2">
+        <input class="form-control">
+        <input class="form-control">
+        <span class="mt-2">mm</span>
+      </div>
+
+      <input class="form-control" placeholder="Notes">
+    </div>
+  </div>
+
+</div>
+<h6 class="text-success">Adnexal</h6>
+
+<div class="row g-3 mb-3">
+
+  <div class="col-md-6">
+    <label>Right</label>
+    <select class="form-select">
+      <option>Para Ovarian Cyst</option>
+      <option>Normal</option>
+      <option>Mass</option>
+    </select>
+  </div>
+
+  <div class="col-md-6">
+    <label>Left</label>
+    <select class="form-select">
+      <option>Para Ovarian Cyst</option>
+      <option>Normal</option>
+      <option>Mass</option>
+    </select>
+  </div>
+
+</div>
+<!-- UTERINE CAVITY -->
+<div class="mb-3">
+  <label>Uterine Cavity</label><br>
+  <input type="radio" name="uterineCavity" value="NAD" data-target="#uterineFields"> NAD
+  <input type="radio" name="uterineCavity" value="Abnormal" data-target="#uterineFields"> Abnormal
+</div>
+
+<div id="uterineFields" class="dependent-field">
+  <input class="form-control" placeholder="Details">
+</div>
 
 
-          <div class="mb-3 row">
+<!-- ENDOMETRIUM -->
+<div class="mb-3">
+  <label>Endometrium</label><br>
 
-            <div class="col-md-12">
-              <label class="form-label" for="examinationNotes">Additional Notes</label>
+  <input type="radio" name="endo" value="NotAssessed" data-target="#endoFields"> Not Assessed
+  <input type="radio" name="endo" value="Normal" data-target="#endoFields"> Normal
+  <input type="radio" name="endo" value="Abnormal" data-target="#endoFields"> Abnormal
+</div>
 
-              <textarea
-                class="form-control"
-                id="examinationNotes"
-                rows="3"
-                placeholder="Any additional observations..."
-              ></textarea>
-            </div>
+<!-- Dependent Field -->
+<div id="endoFields" class="dependent-field mt-2">
+  <label>Endo Thickness (mm)</label>
+  <input class="form-control" placeholder="mm">
+</div>
 
-          </div>
+<div id="endoFields" class="dependent-field">
+  <label>Endo Thickness</label>
+  <input class="form-control" placeholder="mm">
+</div>
+<div class="row mb-3">
+
+  <div class="col-md-6">
+    <label>Cervix</label><br>
+    <input type="radio" name="cervix" value="NAD" data-target="#cervixFields"> NAD
+    <input type="radio" name="cervix" value="Abnormal" data-target="#cervixFields"> Abnormal
+
+    <div id="cervixFields" class="dependent-field mt-2">
+      <input class="form-control" placeholder="Notes">
+    </div>
+  </div>
+
+  <div class="col-md-6">
+    <label>Vaginismus</label><br>
+    <input type="radio" name="vaginismus"> Yes
+    <input type="radio" name="vaginismus"> No
+  </div>
+
+</div>
 
 
-          <div class="mb-4">
+  <!-- FINAL NOTES -->
+  <textarea class="form-control mb-3" placeholder="Comments"></textarea>
 
-            <button
-              type="button"
-              class="btn btn-primary"
-              id="saveExamination"
-            >
-              Save Examination
-            </button>
+  <div class="mb-4">
+    <button class="btn btn-primary">Save Examination</button>
+    <button class="btn btn-secondary ms-2">Cancel</button>
+  </div>
 
-            <button
-              type="button"
-              class="btn btn-secondary ms-2"
-              id="cancelExamination"
-            >
-              Cancel
-            </button>
-
-          </div>
-
-        </div>
+</div>
 
 
 
@@ -185,3 +414,90 @@
 
   </div>
 </div>
+
+<script>
+  $(document).ready(function () {
+
+  // -----------------------------
+  // 1. HANDLE NAD / ABNORMAL TOGGLE
+  // -----------------------------
+  $(document).on('change', 'input[type=radio][data-target]', function () {
+    const target = $(this).data('target');
+    const value = $(this).val();
+
+    if (value === "NAD" || value === "Normal" || value === "NotAssessed") {
+      $(target)
+        .hide()
+        .find('input, select, textarea')
+        .val('')
+        .prop('disabled', true);
+    } else {
+      $(target)
+        .show()
+        .find('input, select, textarea')
+        .prop('disabled', false);
+    }
+  });
+
+  // -----------------------------
+  // 2. INITIAL STATE (HIDE ALL DEPENDENT FIELDS)
+  // -----------------------------
+  $('.dependent-field')
+    .hide()
+    .find('input, select, textarea')
+    .prop('disabled', true);
+
+  // -----------------------------
+  // 3. HYDROSALPINX TOGGLE
+  // -----------------------------
+  $('input[name="hydroRight"]').on('change', function () {
+    if (this.value === 'Yes') {
+      $('.hydro-right-fields').show();
+    } else {
+      $('.hydro-right-fields').hide().find('input').val('');
+    }
+  });
+
+  $('input[name="hydroLeft"]').on('change', function () {
+    if (this.value === 'Yes') {
+      $('.hydro-left-fields').show();
+    } else {
+      $('.hydro-left-fields').hide().find('input').val('');
+    }
+  });
+
+  // Hide initially
+  $('.hydro-right-fields, .hydro-left-fields').hide();
+
+  // -----------------------------
+  // 4. NAD BUTTON (MASTER RESET)
+  // -----------------------------
+  $('#addExamination').on('click', function () {
+
+    // Select all NAD radios
+    $('input[type=radio][value="NAD"]').each(function () {
+      $(this).prop('checked', true).trigger('change');
+    });
+
+    // Select all "No"
+    $('input[type=radio][value="No"]').prop('checked', true);
+
+    // Clear all inputs
+    $('input[type=text], input[type=number], input[type=date], textarea').val('');
+
+    // Reset selects
+    $('select').prop('selectedIndex', 0);
+
+    // Hide all dependent fields
+    $('.dependent-field')
+      .hide()
+      .find('input, select, textarea')
+      .prop('disabled', true);
+
+    // Hide hydrosalpinx
+    $('.hydro-right-fields, .hydro-left-fields').hide();
+
+  });
+
+});
+</script>

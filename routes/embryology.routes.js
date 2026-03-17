@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 router.get("/patient-emr", (req, res) => {
-  res.render("Embryology/EMR/allergies");
+  res.render("Embryology/EMR/EMR");
 });
 
 router.get("/counselling",(req,res)=>{

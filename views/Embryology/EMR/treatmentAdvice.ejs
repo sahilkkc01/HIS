@@ -1,244 +1,143 @@
-<div class="mb-4 card TreatmentAdvice-Container">
+<div class="content-wrapper">
+  <div class="container-xxl container-p-y flex-grow-1">
 
-  <div class="justify-content-between align-items-center card-header d-flex">
+    <div class="mb-4 card">
 
-    <h5 class="mb-0">
-      <span onclick="dropToggle('#TreatmentAdviceContent')" style="cursor:pointer;">
-        <i class="fa-solid fa-angle-down me-2" id="TreatmentAdvicei"></i>
-        Treatment Advice
-      </span>
-    </h5>
-
-    <button
-      type="button"
-      id="addTreatmentAdvice"
-      onclick="dropToggleButton('#TreatmentAdviceContent','#TreatmentAdvicei')"
-      class="btn btn-primary"
-    >
-      <i class="bx bx-plus me-1"></i> Add
-    </button>
-
-  </div>
-
-
-  <div class="card-body" id="TreatmentAdviceContent" style="display:none">
-
-    <div class="treatment-advice-form">
-
-      <div class="mb-3 row">
-
-        <div class="col-md-6">
-
-          <label class="form-label" for="treatmentDate">Treatment Date</label>
-
-          <input
-            type="date"
-            class="form-control"
-            id="treatmentDate"
-          >
-
-        </div>
-
-
-        <div class="col-md-6">
-
-          <label class="form-label" for="treatmentDoctor">Doctor</label>
-
-          <input
-            type="text"
-            class="form-control"
-            id="treatmentDoctor"
-            placeholder="Doctor's name"
-          >
-
-        </div>
-
+      <!-- Header -->
+      <div class="justify-content-between align-items-center card-header d-flex">
+        <h5 class="mb-0 card-title">Treatment Advice</h5>
       </div>
 
+      <!-- Body -->
+      <div class="card-body">
 
+        <!-- FORM BOX -->
+        <div class="p-3 border rounded mb-3">
 
-      <div class="mb-3 row">
+          <div class="row">
 
-        <div class="col-md-12">
+            <!-- LEFT -->
+            <div class="col-md-6">
 
-          <label class="form-label" for="treatmentType">Treatment Type</label>
+              <div class="mb-3">
+                <label class="form-label">Treatment Type*</label>
+                <select class="form-control" id="treatmentType">
+                  <option value="">Select</option>
+                  <option>Medication</option>
+                  <option>Procedure</option>
+                  <option>Therapy</option>
+                </select>
+              </div>
 
-          <select class="form-select" id="treatmentType">
-            <option value="">Select Type</option>
-            <option value="medication">Medication</option>
-            <option value="procedure">Medical Procedure</option>
-            <option value="therapy">Therapy</option>
-            <option value="surgery">Surgery</option>
-            <option value="lifestyle">Lifestyle Modification</option>
-            <option value="monitoring">Monitoring</option>
-            <option value="referral">Referral</option>
-            <option value="other">Other</option>
-          </select>
+              <div class="mb-3">
+                <label class="form-label">Remarks</label>
+                <input type="text" class="form-control" id="treatmentRemarks">
+              </div>
 
-        </div>
+            </div>
 
-      </div>
+            <!-- RIGHT -->
+            <div class="col-md-6">
 
+              <div class="mb-3">
+                <label class="form-label">Doctor</label>
+                <select class="form-control" id="treatmentDoctor">
+                  <option value="">Select</option>
+                  <option>Dr. Sharma</option>
+                  <option>Dr. Gupta</option>
+                </select>
+              </div>
 
+              <div class="mb-3">
+                <label class="form-label">Choose a date:</label>
+                <input type="date" class="form-control" id="treatmentDate">
+              </div>
 
-      <div class="mb-3 row">
+            </div>
 
-        <div class="col-md-12">
+          </div>
 
-          <label class="form-label" for="treatmentDescription">Treatment Description</label>
-
-          <textarea
-            class="form-control"
-            id="treatmentDescription"
-            rows="4"
-            placeholder="Detailed description of the treatment..."
-          ></textarea>
-
-        </div>
-
-      </div>
-
-
-
-      <div class="mb-3 row">
-
-        <div class="col-md-6">
-
-          <label class="form-label" for="treatmentDuration">Expected Duration</label>
-
-          <input
-            type="text"
-            class="form-control"
-            id="treatmentDuration"
-            placeholder="e.g., 2 weeks, 3 months"
-          >
+          <!-- ADD BUTTON -->
+          <div class="text-end">
+            <button class="btn btn-primary" id="addTreatmentAdvice">
+              <i class="bx bx-plus me-1"></i> Add
+            </button>
+          </div>
 
         </div>
 
+        <!-- LIST -->
+        <div class="table-responsive">
+          <table class="table table-bordered">
 
-        <div class="col-md-6">
+            <thead>
+              <tr>
+                <th>Type</th>
+                <th>Doctor</th>
+                <th>Date</th>
+                <th>Remarks</th>
+                <th style="width:80px;">Action</th>
+              </tr>
+            </thead>
 
-          <label class="form-label" for="treatmentStatus">Status</label>
+            <tbody class="TreatmentAdvice-Info-Divs">
+              <!-- Dynamic rows -->
+            </tbody>
 
-          <select class="form-select" id="treatmentStatus">
-            <option value="">Select Status</option>
-            <option value="recommended">Recommended</option>
-            <option value="started">Started</option>
-            <option value="ongoing">Ongoing</option>
-            <option value="completed">Completed</option>
-            <option value="discontinued">Discontinued</option>
-          </select>
-
+          </table>
         </div>
-
-      </div>
-
-
-
-      <div class="mb-3 row">
-
-        <div class="col-md-6">
-
-          <label class="form-label" for="treatmentPriority">Priority</label>
-
-          <select class="form-select" id="treatmentPriority">
-            <option value="">Select Priority</option>
-            <option value="high">High</option>
-            <option value="medium">Medium</option>
-            <option value="low">Low</option>
-          </select>
-
-        </div>
-
-
-        <div class="col-md-6">
-
-          <label class="form-label" for="treatmentFollowUp">Follow-up Required</label>
-
-          <select class="form-select" id="treatmentFollowUp">
-            <option value="">Select</option>
-            <option value="yes">Yes</option>
-            <option value="no">No</option>
-          </select>
-
-        </div>
-
-      </div>
-
-
-
-      <div class="mb-3 row">
-
-        <div class="col-md-12">
-
-          <label class="form-label" for="treatmentNotes">Additional Notes</label>
-
-          <textarea
-            class="form-control"
-            id="treatmentNotes"
-            rows="3"
-            placeholder="Any additional notes about the treatment..."
-          ></textarea>
-
-        </div>
-
-      </div>
-
-
-
-      <div class="mb-4">
-
-        <button
-          type="button"
-          class="btn btn-primary"
-          id="saveTreatmentAdvice"
-        >
-          Save Treatment
-        </button>
-
-        <button
-          type="button"
-          class="btn btn-secondary ms-2"
-          id="cancelTreatmentAdvice"
-        >
-          Cancel
-        </button>
-
-      </div>
-
-    </div>
-
-
-
-    <div class="treatment-advice-list">
-
-      <h6 class="mb-3">Treatment History</h6>
-
-      <div class="text-nowrap table-responsive">
-
-        <table class="table table-bordered">
-
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Type</th>
-              <th>Doctor</th>
-              <th>Status</th>
-              <th>Duration</th>
-              <th>Priority</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-
-          <tbody id="treatmentAdviceTableBody">
-          </tbody>
-
-        </table>
 
       </div>
 
     </div>
 
   </div>
-
 </div>
+<script>
+  $(document).ready(function () {
+
+  $('#addTreatmentAdvice').on('click', function () {
+
+    let type = $('#treatmentType').val();
+    let doctor = $('#treatmentDoctor').val();
+    let date = $('#treatmentDate').val();
+    let remarks = $('#treatmentRemarks').val();
+
+    if (!type || !doctor || !date) {
+      alert("Please fill required fields");
+      return;
+    }
+
+    let row = `
+      <tr>
+
+        <td>${type}</td>
+        <td>${doctor}</td>
+        <td>${date}</td>
+        <td>${remarks || '-'}</td>
+
+        <td class="text-center">
+          <button class="btn btn-danger btn-sm remove-treatment">
+            <i class="fa-solid fa-trash"></i>
+          </button>
+        </td>
+
+      </tr>
+    `;
+
+    $('.TreatmentAdvice-Info-Divs').append(row);
+
+    // Clear form
+    $('#treatmentType').val('');
+    $('#treatmentDoctor').val('');
+    $('#treatmentDate').val('');
+    $('#treatmentRemarks').val('');
+  });
+
+  // DELETE
+  $(document).on('click', '.remove-treatment', function () {
+    $(this).closest('tr').remove();
+  });
+
+});
+</script>

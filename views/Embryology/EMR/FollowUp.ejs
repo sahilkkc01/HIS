@@ -3,189 +3,85 @@
 
     <div class="mb-4 card">
 
+      <!-- Header -->
       <div class="justify-content-between align-items-center card-header d-flex">
         <h5 class="mb-0 card-title">Follow Up</h5>
-
-        <button
-          type="button"
-          id="addFollowUp"
-          class="btn btn-primary"
-        >
-          <i class="bx bx-plus me-1"></i> Add
-        </button>
       </div>
 
+      <!-- Body -->
       <div class="card-body">
 
-        <div class="followup-form">
+        <!-- FORM -->
+        <div class="p-3 border rounded mb-3">
 
-          <div class="mb-3 row">
+          <div class="row">
 
+            <!-- LEFT -->
             <div class="col-md-6">
-              <label class="form-label" for="followUpDate">Follow-up Date</label>
-              <input type="date" class="form-control" id="followUpDate">
+
+              <div class="mb-3">
+                <label class="form-label">Follow Up Instructions</label>
+                <textarea class="form-control" id="followInstructions" maxlength="500"
+                  placeholder="Maximum of 500 characters"></textarea>
+              </div>
+
             </div>
 
+            <!-- RIGHT -->
             <div class="col-md-6">
-              <label class="form-label" for="followUpTime">Time</label>
-              <input type="time" class="form-control" id="followUpTime">
+
+              <div class="mb-3">
+                <label class="form-label">Next Follow Up</label>
+                <input type="date" class="form-control" id="nextFollowDate">
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">Next Follow Up Time</label>
+                <input type="time" class="form-control" id="nextFollowTime">
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">Requested By</label>
+                <select class="form-control" id="requestedBy">
+                  <option value="">Select</option>
+                  <option>Doctor</option>
+                  <option>Patient</option>
+                  <option>Staff</option>
+                </select>
+              </div>
+
             </div>
 
           </div>
 
-
-          <div class="mb-3 row">
-
-            <div class="col-md-12">
-              <label class="form-label" for="followUpType">Follow-up Type</label>
-
-              <select class="form-select" id="followUpType">
-                <option value="">Select Type</option>
-                <option value="routine">Routine Follow-up</option>
-                <option value="post-op">Post-operative</option>
-                <option value="post-treatment">Post-treatment</option>
-                <option value="complication">Complication Review</option>
-                <option value="review">Review</option>
-              </select>
-            </div>
-
-          </div>
-
-
-          <div class="mb-3 row">
-
-            <div class="col-md-12">
-              <label class="form-label" for="followUpReason">Reason for Follow-up</label>
-
-              <textarea
-                class="form-control"
-                id="followUpReason"
-                rows="3"
-                placeholder="Reason for this follow-up visit..."
-              ></textarea>
-            </div>
-
-          </div>
-
-
-          <div class="mb-3 row">
-
-            <div class="col-md-6">
-
-              <label class="form-label" for="followUpStatus">Status</label>
-
-              <select class="form-select" id="followUpStatus">
-                <option value="">Select Status</option>
-                <option value="scheduled">Scheduled</option>
-                <option value="completed">Completed</option>
-                <option value="cancelled">Cancelled</option>
-                <option value="rescheduled">Rescheduled</option>
-              </select>
-
-            </div>
-
-            <div class="col-md-6">
-              <label class="form-label" for="nextFollowUpDate">Next Follow-up Date</label>
-
-              <input type="date" class="form-control" id="nextFollowUpDate">
-            </div>
-
-          </div>
-
-
-          <div class="mb-3 row">
-
-            <div class="col-md-12">
-              <label class="form-label" for="followUpNotes">Follow-up Notes</label>
-
-              <textarea
-                class="form-control"
-                id="followUpNotes"
-                rows="4"
-                placeholder="Notes from this follow-up visit..."
-              ></textarea>
-            </div>
-
-          </div>
-
-
-          <div class="mb-3 row">
-
-            <div class="col-md-6">
-              <label class="form-label" for="followUpDoctor">Doctor</label>
-
-              <input
-                type="text"
-                class="form-control"
-                id="followUpDoctor"
-                placeholder="Doctor's name"
-              >
-            </div>
-
-            <div class="col-md-6">
-              <label class="form-label" for="followUpLocation">Location / Clinic</label>
-
-              <input
-                type="text"
-                class="form-control"
-                id="followUpLocation"
-                placeholder="Clinic or hospital name"
-              >
-            </div>
-
-          </div>
-
-
-          <div class="mb-4">
-
-            <button
-              type="button"
-              class="btn btn-primary"
-              id="saveFollowUp"
-            >
-              Save Follow-up
+          <!-- ADD BUTTON -->
+          <div class="text-end">
+            <button class="btn btn-primary" id="addFollowUp">
+              <i class="bx bx-plus me-1"></i> Add
             </button>
-
-            <button
-              type="button"
-              class="btn btn-secondary ms-2"
-              id="cancelFollowUp"
-            >
-              Cancel
-            </button>
-
           </div>
 
         </div>
 
+        <!-- TABLE -->
+        <div class="table-responsive">
+          <table class="table table-bordered">
 
+            <thead>
+              <tr>
+                <th>Instructions</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Requested By</th>
+                <th style="width:80px;">Action</th>
+              </tr>
+            </thead>
 
-        <div class="followup-list">
+            <tbody class="FollowUp-Info-Divs">
+              <!-- dynamic rows -->
+            </tbody>
 
-          <h6 class="mb-3">Follow-up History</h6>
-
-          <div class="text-nowrap table-responsive">
-
-            <table class="table table-bordered">
-
-              <thead>
-                <tr>
-                  <th>Date & Time</th>
-                  <th>Type</th>
-                  <th>Reason</th>
-                  <th>Status</th>
-                  <th>Next Date</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-
-              <tbody id="followUpTableBody">
-              </tbody>
-
-            </table>
-
-          </div>
-
+          </table>
         </div>
 
       </div>
@@ -194,3 +90,96 @@
 
   </div>
 </div>
+<script>
+  <div class="content-wrapper">
+  <div class="container-xxl container-p-y flex-grow-1">
+
+    <div class="mb-4 card">
+
+      <!-- Header -->
+      <div class="justify-content-between align-items-center card-header d-flex">
+        <h5 class="mb-0 card-title">Follow Up</h5>
+      </div>
+
+      <div class="card-body">
+
+  
+        <div class="p-3 border rounded mb-3">
+
+          <div class="row">
+
+     
+            <div class="col-md-6">
+
+              <div class="mb-3">
+                <label class="form-label">Follow Up Instructions</label>
+                <textarea class="form-control" id="followInstructions" maxlength="500"
+                  placeholder="Maximum of 500 characters"></textarea>
+              </div>
+
+            </div>
+
+
+            <div class="col-md-6">
+
+              <div class="mb-3">
+                <label class="form-label">Next Follow Up</label>
+                <input type="date" class="form-control" id="nextFollowDate"/>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">Next Follow Up Time</label>
+                <input type="time" class="form-control" id="nextFollowTime"/>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">Requested By</label>
+                <select class="form-control" id="requestedBy">
+                  <option value="">Select</option>
+                  <option>Doctor</option>
+                  <option>Patient</option>
+                  <option>Staff</option>
+                </select>
+              </div>
+
+            </div>
+
+          </div>
+
+   
+          <div class="text-end">
+            <button class="btn btn-primary" id="addFollowUp">
+              <i class="bx bx-plus me-1"></i> Add
+            </button>
+          </div>
+
+        </div>
+
+
+        <div class="table-responsive">
+          <table class="table table-bordered">
+
+            <thead>
+              <tr>
+                <th>Instructions</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Requested By</th>
+                <th style="width:80px;">Action</th>
+              </tr>
+            </thead>
+
+            <tbody class="FollowUp-Info-Divs">
+          
+            </tbody>
+
+          </table>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+</div>
+</script>

@@ -1,0 +1,419 @@
+<div class="content-wrapper">
+  <div class="container-xxl container-p-y flex-grow-1">
+
+    <div class="mb-4 card">
+
+      <div class="justify-content-between align-items-center card-header d-flex">
+        <h5 class="mb-0 card-title">Infertility History</h5>
+      </div>
+
+      <div class="card-body">
+
+        <!-- Chief Complaints -->
+        <div class="mb-3">
+          <label for="chiefComplaintSelect" class="form-label">Chief Complaints</label>
+          <select id="chiefComplaintSelect" class="form-select">
+            <option value="primary">Primary(Same Partner)</option>
+            <option value="secondary">Secondary</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+
+        <!-- Vitals -->
+        <h6 class="text-success mb-3">General History - Vitals</h6>
+        <div class="row g-3 mb-4">
+          <div class="col-md-3">
+            <input type="number" class="form-control" placeholder="Height (cm)" id="height">
+          </div>
+          <div class="col-md-3">
+            <input type="number" class="form-control" placeholder="Weight (kg)" id="weight">
+          </div>
+          <div class="col-md-3">
+            <input type="text" class="form-control" placeholder="BMI" id="bmi" readonly>
+          </div>
+          <div class="col-md-3">
+            <input type="number" class="form-control" placeholder="Pulse (BPM)" id="pulse">
+          </div>
+        </div>
+
+        <div class="row g-3 mb-4">
+          <div class="col-md-3">
+            <input type="text" class="form-control" placeholder="Systolic" id="bpSystolic">
+          </div>
+          <div class="col-md-3">
+            <input type="text" class="form-control" placeholder="Diastolic" id="bpDiastolic">
+          </div>
+          <div class="col-md-2">
+            <input type="text" class="form-control" placeholder="Gravida" id="gravida">
+          </div>
+          <div class="col-md-2">
+            <input type="text" class="form-control" placeholder="Preterm" id="preterm">
+          </div>
+          <div class="col-md-2">
+            <input type="text" class="form-control" placeholder="Abortions" id="abortions">
+          </div>
+          <div class="col-md-2">
+            <input type="text" class="form-control" placeholder="Living" id="living">
+          </div>
+        </div>
+
+        <!-- Duration of infertility -->
+        <div class="row g-3 mb-4">
+          <label class="form-label">Duration of infertility:</label>
+          <div class="col-md-3">
+            <input type="number" class="form-control" placeholder="Years" id="durationYears">
+          </div>
+          <div class="col-md-3">
+            <input type="number" class="form-control" placeholder="Months" id="durationMonths">
+          </div>
+        </div>
+
+        <!-- OI/TI, IVF, IUI -->
+        <div class="row g-3 mb-4">
+          <div class="col-md-4">
+            <input type="text" class="form-control" placeholder="OI/TI" id="oiTi">
+          </div>
+          <div class="col-md-4">
+            <input type="text" class="form-control" placeholder="IVF" id="ivf">
+          </div>
+          <div class="col-md-4">
+            <input type="text" class="form-control" placeholder="IUI" id="iui">
+          </div>
+        </div>
+
+        <!-- Treatment History Table -->
+        <h6>Treatment History</h6>
+        <div class="table-responsive mb-3">
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th>S.No.</th>
+                <th>Treatment</th>
+                <th>Clinic/Doctor</th>
+                <th>Date</th>
+                <th>Result</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="treatmentHistoryBody">
+              <!-- Rows added dynamically -->
+            </tbody>
+          </table>
+          <button id="addTreatmentRow" class="btn btn-primary btn-sm">
+            <i class="bx bx-plus me-1"></i> Add Treatment
+          </button>
+        </div>
+
+        <!-- Comments -->
+        <div class="mb-3">
+          <textarea class="form-control" rows="2" maxlength="2000" placeholder="Comment"></textarea>
+        </div>
+
+        <!-- Menstrual History -->
+        <h6 class="text-success">Menstrual History</h6>
+        <div class="row g-3 mb-3 align-items-center">
+          <div class="col-md-3">
+            <label class="form-label" for="lmpDate">LMP</label>
+            <input type="date" id="lmpDate" class="form-control" />
+          </div>
+          <div class="col-md-9">
+            <label class="form-label">M/H</label>
+            <div class="form-check form-check-inline">
+              <input type="radio" id="mhRegular" name="menstrualFlow" class="form-check-input" value="Regular" />
+              <label class="form-check-label" for="mhRegular">Regular</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input type="radio" id="mhIrregular" name="menstrualFlow" class="form-check-input" value="Irregular" />
+              <label class="form-check-label" for="mhIrregular">Irregular</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input type="radio" id="mhPainless" name="menstrualPain" class="form-check-input" value="Painless" />
+              <label class="form-check-label" for="mhPainless">Painless</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input type="radio" id="mhPainfull" name="menstrualPain" class="form-check-input" value="Painfull" />
+              <label class="form-check-label" for="mhPainfull">Painfull</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input type="radio" id="mhNFlow" name="menstrualFlowType" class="form-check-input" value="N flow" />
+              <label class="form-check-label" for="mhNFlow">N flow</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input type="radio" id="mhHeavy" name="menstrualFlowType" class="form-check-input" value="Heavy" />
+              <label class="form-check-label" for="mhHeavy">Heavy</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input type="radio" id="mhScanty" name="menstrualFlowType" class="form-check-input" value="Scanty" />
+              <label class="form-check-label" for="mhScanty">Scanty</label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Family History -->
+        <div class="mb-3">
+          <label class="form-label">Family History</label>
+          <div>
+            <div class="form-check form-check-inline">
+              <input type="radio" id="familyYes" name="familyHistory" class="form-check-input" value="Yes" />
+              <label class="form-check-label" for="familyYes">Yes</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input type="radio" id="familyNo" name="familyHistory" class="form-check-input" value="No" />
+              <label class="form-check-label" for="familyNo">No</label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Obstetric History -->
+        <h6 class="text-success">Obstetric History</h6>
+        <div class="table-responsive mb-3">
+          <table class="table table-bordered" id="obstetricHistoryTable">
+            <thead>
+              <tr>
+                <th>Sl.No</th>
+                <th>Year of Pregnancy</th>
+                <th>Conception</th>
+                <th>Abortion</th>
+                <th>Delivery</th>
+                <th>Birth Weight</th>
+                <th>Gender</th>
+                <th>Remarks</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1</td>
+                <td><input type="text" class="form-control"></td>
+                <td>
+                  <select class="form-select">
+                    <option>Natural</option>
+                    <option>Assisted</option>
+                    <option>Other</option>
+                  </select>
+                </td>
+                <td>
+                  <select class="form-select">
+                    <option>Yes</option>
+                    <option>No</option>
+                  </select>
+                </td>
+                <td>
+                  <select class="form-select">
+                    <option>Vaginal</option>
+                    <option>Cesarean</option>
+                    <option>Other</option>
+                  </select>
+                </td>
+                <td><input type="text" class="form-control"></td>
+                <td><input type="text" class="form-control"></td>
+                <td><input type="text" class="form-control"></td>
+                <td>
+                  <button class="btn btn-danger btn-sm remove-obstetric-row">
+                    <i class="fa-solid fa-trash"></i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <button id="addObstetricRow" class="btn btn-primary btn-sm">
+            <i class="bx bx-plus me-1"></i> Add Row
+          </button>
+        </div>
+
+        <!-- Recurrent Pregnancy Loss Toggle -->
+        <div class="form-check form-switch mb-3">
+          <input class="form-check-input" type="checkbox" id="recurrentPregnancyLoss">
+          <label class="form-check-label" for="recurrentPregnancyLoss">Recurrent Pregnancy Loss</label>
+        </div>
+
+        <!-- Past Infertility Investigations -->
+        <h6 class="text-success">Past Infertility Investigations</h6>
+        <div class="table-responsive mb-3">
+          <table class="table table-bordered" id="infertilityInvestigationsTable">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Place</th>
+                <th>Type</th>
+                <th>Remarks</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><input type="date" class="form-control"></td>
+                <td><input type="text" class="form-control"></td>
+                <td><input type="text" class="form-control"></td>
+                <td><input type="text" class="form-control"></td>
+                <td>
+                  <button class="btn btn-primary btn-sm add-investigation-row">
+                    <i class="bx bx-plus"></i>
+                  </button>
+                  <button class="btn btn-danger btn-sm remove-investigation-row">
+                    <i class="fa-solid fa-trash"></i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Partner History -->
+        <h6 class="text-success">Partner History</h6>
+        <div>
+          <textarea class="form-control" rows="3" maxlength="2000" placeholder="Partner history details..."></textarea>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+  // Calculate BMI automatically (weight / height^2)
+  $('#height, #weight').on('input', function() {
+    let heightM = parseFloat($('#height').val()) / 100;
+    let weightKg = parseFloat($('#weight').val());
+    if (heightM > 0 && weightKg > 0) {
+      let bmi = weightKg / (heightM * heightM);
+      $('#bmi').val(bmi.toFixed(2));
+    } else {
+      $('#bmi').val('');
+    }
+  });
+
+  // Treatment History Add Row
+  $('#addTreatmentRow').on('click', function() {
+    let rowCount = $('#treatmentHistoryBody tr').length + 1;
+    let newRow = `
+      <tr>
+        <td>${rowCount}</td>
+        <td><input type="text" class="form-control"></td>
+        <td><input type="text" class="form-control"></td>
+        <td><input type="date" class="form-control"></td>
+        <td><input type="text" class="form-control"></td>
+        <td>
+          <button class="btn btn-danger btn-sm remove-treatment-row">
+            <i class="fa-solid fa-trash"></i>
+          </button>
+        </td>
+      </tr>
+    `;
+    $('#treatmentHistoryBody').append(newRow);
+  });
+
+  // Remove Treatment Row
+  $(document).on('click', '.remove-treatment-row', function() {
+    $(this).closest('tr').remove();
+    // Re-index S.No
+    $('#treatmentHistoryBody tr').each(function(index) {
+      $(this).find('td:first').text(index + 1);
+    });
+  });
+
+  // Obstetric History Add Row
+  $('#addObstetricRow').on('click', function() {
+    let tbody = $('#obstetricHistoryTable tbody');
+    let rowCount = tbody.find('tr').length + 1;
+    let newRow = `
+      <tr>
+        <td>${rowCount}</td>
+        <td><input type="text" class="form-control"></td>
+        <td>
+          <select class="form-select">
+            <option>Natural</option>
+            <option>Assisted</option>
+            <option>Other</option>
+          </select>
+        </td>
+        <td>
+          <select class="form-select">
+            <option>Yes</option>
+            <option>No</option>
+          </select>
+        </td>
+        <td>
+          <select class="form-select">
+            <option>Vaginal</option>
+            <option>Cesarean</option>
+            <option>Other</option>
+          </select>
+        </td>
+        <td><input type="text" class="form-control"></td>
+        <td><input type="text" class="form-control"></td>
+        <td><input type="text" class="form-control"></td>
+        <td>
+          <button class="btn btn-danger btn-sm remove-obstetric-row">
+            <i class="fa-solid fa-trash"></i>
+          </button>
+        </td>
+      </tr>
+    `;
+    tbody.append(newRow);
+  });
+
+  // Remove Obstetric Row
+  $(document).on('click', '.remove-obstetric-row', function() {
+    $(this).closest('tr').remove();
+    // Re-index S.No
+    $('#obstetricHistoryTable tbody tr').each(function(index) {
+      $(this).find('td:first').text(index + 1);
+    });
+  });
+
+  // Past Infertility Investigations: Add Row
+  $(document).on('click', '.add-investigation-row', function() {
+    let tbody = $('#infertilityInvestigationsTable tbody');
+    let newRow = `
+      <tr>
+        <td><input type="date" class="form-control"></td>
+        <td><input type="text" class="form-control"></td>
+        <td><input type="text" class="form-control"></td>
+        <td><input type="text" class="form-control"></td>
+        <td>
+          <button class="btn btn-primary btn-sm add-investigation-row">
+            <i class="bx bx-plus"></i>
+          </button>
+          <button class="btn btn-danger btn-sm remove-investigation-row">
+            <i class="fa-solid fa-trash"></i>
+          </button>
+        </td>
+      </tr>
+    `;
+    tbody.append(newRow);
+  });
+// Add Row
+$(document).on('click', '.add-row', function () {
+  let row = `
+    <tr>
+      <td><input type="date" class="form-control"></td>
+      <td><input type="text" class="form-control"></td>
+      <td><input type="text" class="form-control"></td>
+      <td><input type="text" class="form-control"></td>
+      <td class="text-center">
+        <button class="btn btn-primary btn-sm add-row">
+          <i class="bx bx-plus"></i>
+        </button>
+        <button class="btn btn-danger btn-sm remove-row">
+          <i class="fa-solid fa-trash"></i>
+        </button>
+      </td>
+    </tr>
+  `;
+  $('#partnerInvestigationsTable tbody').append(row);
+});
+
+// Remove Row
+$(document).on('click', '.remove-row', function () {
+  $(this).closest('tr').remove();
+});
+  // Remove Past Infertility Investigation Row
+  $(document).on('click', '.remove-investigation-row', function() {
+    $(this).closest('tr').remove();
+  });
+</script>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />

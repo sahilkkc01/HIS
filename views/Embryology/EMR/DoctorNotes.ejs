@@ -3,147 +3,42 @@
 
     <div class="mb-4 card">
 
+      <!-- Header -->
       <div class="justify-content-between align-items-center card-header d-flex">
         <h5 class="mb-0 card-title">Doctor Notes</h5>
 
-        <button
-          type="button"
-          id="addDoctorNote"
-          class="btn btn-primary"
-        >
+        <button type="button" id="addDoctorNote" class="btn btn-primary">
           <i class="bx bx-plus me-1"></i> Add
         </button>
       </div>
 
       <div class="card-body">
 
-        <div class="doctor-notes-form">
+        <!-- Notes Container -->
+        <div id="notesContainer">
 
-          <div class="mb-3 row">
+          <!-- SINGLE ROW -->
+          <div class="row align-items-center mb-2 note-row">
 
-            <div class="col-md-6">
-              <label class="form-label" for="noteDate">Date</label>
-              <input type="date" class="form-control" id="noteDate">
+            <!-- Notes Input -->
+            <div class="col-md-8">
+              <input type="text" class="form-control" placeholder="Notes">
             </div>
 
-            <div class="col-md-6">
-              <label class="form-label" for="noteTime">Time</label>
-              <input type="time" class="form-control" id="noteTime">
+            <!-- Confidential Toggle -->
+            <div class="col-md-3 d-flex align-items-center gap-2">
+              <div class="form-check form-switch m-0">
+                <input class="form-check-input" type="checkbox">
+              </div>
+              <label class="mb-0">Confidential</label>
             </div>
 
-          </div>
-
-
-          <div class="mb-3 row">
-
-            <div class="col-md-12">
-              <label class="form-label" for="noteTitle">Note Title</label>
-              <input
-                type="text"
-                class="form-control"
-                id="noteTitle"
-                placeholder="e.g., Follow-up Note, Progress Note"
-              >
+            <!-- Delete Button -->
+            <div class="col-md-1 text-end">
+              <button class="btn btn-danger btn-sm remove-note">
+                <i class="fa-solid fa-trash"></i>
+              </button>
             </div>
-
-          </div>
-
-
-          <div class="mb-3 row">
-
-            <div class="col-md-12">
-              <label class="form-label" for="noteContent">Note Content</label>
-
-              <textarea
-                class="form-control"
-                id="noteContent"
-                rows="6"
-                placeholder="Enter detailed doctor's notes..."
-              ></textarea>
-            </div>
-
-          </div>
-
-
-          <div class="mb-3 row">
-
-            <div class="col-md-6">
-
-              <label class="form-label" for="noteType">Note Type</label>
-
-              <select class="form-select" id="noteType">
-                <option value="">Select Type</option>
-                <option value="progress">Progress Note</option>
-                <option value="consultation">Consultation Note</option>
-                <option value="procedure">Procedure Note</option>
-                <option value="discharge">Discharge Note</option>
-                <option value="followup">Follow-up Note</option>
-              </select>
-
-            </div>
-
-            <div class="col-md-6">
-
-              <label class="form-label" for="doctorName">Doctor Name</label>
-
-              <input
-                type="text"
-                class="form-control"
-                id="doctorName"
-                placeholder="Doctor's name"
-              >
-
-            </div>
-
-          </div>
-
-
-          <div class="mb-4">
-
-            <button
-              type="button"
-              class="btn btn-primary"
-              id="saveDoctorNote"
-            >
-              Save Note
-            </button>
-
-            <button
-              type="button"
-              class="btn btn-secondary ms-2"
-              id="cancelDoctorNote"
-            >
-              Cancel
-            </button>
-
-          </div>
-
-        </div>
-
-
-
-        <div class="doctor-notes-list">
-
-          <h6 class="mb-3">Existing Doctor Notes</h6>
-
-          <div class="text-nowrap table-responsive">
-
-            <table class="table table-bordered">
-
-              <thead>
-                <tr>
-                  <th>Date & Time</th>
-                  <th>Title</th>
-                  <th>Type</th>
-                  <th>Doctor</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-
-              <tbody id="doctorNotesTableBody">
-              </tbody>
-
-            </table>
 
           </div>
 
@@ -155,3 +50,42 @@
 
   </div>
 </div>
+<script>
+  $(document).ready(function () {
+
+  // ADD NEW ROW
+  $('#addDoctorNote').on('click', function () {
+
+    let newRow = `
+      <div class="row align-items-center mb-2 note-row">
+
+        <div class="col-md-8">
+          <input type="text" class="form-control" placeholder="Notes">
+        </div>
+
+        <div class="col-md-3 d-flex align-items-center gap-2">
+          <div class="form-check form-switch m-0">
+            <input class="form-check-input" type="checkbox">
+          </div>
+          <label class="mb-0">Confidential</label>
+        </div>
+
+        <div class="col-md-1 text-end">
+          <button class="btn btn-danger btn-sm remove-note">
+            <i class="fa-solid fa-trash"></i>
+          </button>
+        </div>
+
+      </div>
+    `;
+
+    $('#notesContainer').append(newRow);
+  });
+
+  // REMOVE ROW
+  $(document).on('click', '.remove-note', function () {
+    $(this).closest('.note-row').remove();
+  });
+
+});
+</script>

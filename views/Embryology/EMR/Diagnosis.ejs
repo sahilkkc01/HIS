@@ -1,3 +1,62 @@
+<style>
+.custom-select-wrapper {
+  position: relative;
+}
+
+.custom-dropdown {
+  position: absolute;
+  width: 100%;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 10px;
+  z-index: 999;
+  max-height: 220px;
+  overflow-y: auto;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.custom-dropdown label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  cursor: pointer;
+}
+
+/* Toggle Switch Style */
+.custom-dropdown input[type="checkbox"] {
+  appearance: none;
+  width: 36px;
+  height: 18px;
+  background: #ccc;
+  border-radius: 20px;
+  position: relative;
+  outline: none;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.custom-dropdown input[type="checkbox"]:checked {
+  background: #28c76f;
+}
+
+.custom-dropdown input[type="checkbox"]::before {
+  content: "";
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  background: #fff;
+  border-radius: 50%;
+  top: 2px;
+  left: 2px;
+  transition: 0.3s;
+}
+
+.custom-dropdown input[type="checkbox"]:checked::before {
+  transform: translateX(18px);
+}
+</style>
 <div class="content-wrapper">
   <div class="container-xxl container-p-y flex-grow-1">
 
@@ -17,160 +76,101 @@
 
       <div class="card-body">
 
-        <div class="diagnosis-form">
+   <div class="diagnosis-form">
 
-          <div class="mb-3 row">
+  <h6 class="text-success mb-3">Diagnosis</h6>
 
-            <div class="col-md-6">
-              <label class="form-label" for="diagnosisCode">ICD Code</label>
-              <input
-                type="text"
-                class="form-control"
-                id="diagnosisCode"
-                placeholder="e.g., E11.9"
-              >
-            </div>
+  <!-- Male Factor -->
+  <div class="row mb-3 align-items-center">
+    <div class="col-md-3">
+      <label>Male Factor</label>
+    </div>
 
-            <div class="col-md-6">
-              <label class="form-label" for="diagnosisName">Diagnosis Name</label>
-              <input
-                type="text"
-                class="form-control"
-                id="diagnosisName"
-                placeholder="e.g., Type 2 Diabetes"
-              >
-            </div>
-
-          </div>
-
-
-          <div class="mb-3 row">
-
-            <div class="col-md-6">
-              <label class="form-label" for="diagnosisType">Diagnosis Type</label>
-
-              <select class="form-select" id="diagnosisType">
-                <option value="">Select Type</option>
-                <option value="primary">Primary</option>
-                <option value="secondary">Secondary</option>
-                <option value="differential">Differential</option>
-                <option value="provisional">Provisional</option>
-              </select>
-            </div>
-
-            <div class="col-md-6">
-              <label class="form-label" for="diagnosisDate">Date</label>
-
-              <input
-                type="date"
-                class="form-control"
-                id="diagnosisDate"
-              >
-            </div>
-
-          </div>
-
-
-          <div class="mb-3 row">
-
-            <div class="col-md-12">
-              <label class="form-label" for="diagnosisDescription">Description</label>
-
-              <textarea
-                class="form-control"
-                id="diagnosisDescription"
-                rows="3"
-                placeholder="Detailed description of the diagnosis..."
-              ></textarea>
-            </div>
-
-          </div>
-
-
-          <div class="mb-3 row">
-
-            <div class="col-md-6">
-
-              <label class="form-label" for="diagnosisStatus">Status</label>
-
-              <select class="form-select" id="diagnosisStatus">
-                <option value="">Select Status</option>
-                <option value="confirmed">Confirmed</option>
-                <option value="suspected">Suspected</option>
-                <option value="ruled-out">Ruled Out</option>
-                <option value="resolved">Resolved</option>
-              </select>
-
-            </div>
-
-            <div class="col-md-6">
-
-              <label class="form-label" for="diagnosisPriority">Priority</label>
-
-              <select class="form-select" id="diagnosisPriority">
-                <option value="">Select Priority</option>
-                <option value="high">High</option>
-                <option value="medium">Medium</option>
-                <option value="low">Low</option>
-              </select>
-
-            </div>
-
-          </div>
-
-
-          <div class="mb-4">
-
-            <button
-              type="button"
-              class="btn btn-primary"
-              id="saveDiagnosis"
-            >
-              Save Diagnosis
-            </button>
-
-            <button
-              type="button"
-              class="btn btn-secondary ms-2"
-              id="cancelDiagnosis"
-            >
-              Cancel
-            </button>
-
-          </div>
-
+    <div class="col-md-5">
+      <div class="custom-select-wrapper">
+        <input type="text" class="form-control custom-input" placeholder="Select options" readonly>
+        <div class="custom-dropdown d-none">
+          <label><span>Azoospermia</span><input type="checkbox" value="Azoospermia"></label>
+          <label><span>Oligospermia</span><input type="checkbox" value="Oligospermia"></label>
+          <label><span>Asthenozoospermia</span><input type="checkbox" value="Asthenozoospermia"></label>
+          <label><span>Teratozoospermia</span><input type="checkbox" value="Teratozoospermia"></label>
         </div>
+      </div>
+    </div>
 
+    <div class="col-md-4">
+      <input class="form-control" placeholder="Others">
+    </div>
+  </div>
 
+  <!-- Female Factor -->
+  <div class="row mb-3 align-items-center">
+    <div class="col-md-3">
+      <label>Female Factor</label>
+    </div>
 
-        <div class="diagnosis-list">
-
-          <h6 class="mb-3">Existing Diagnoses</h6>
-
-          <div class="text-nowrap table-responsive">
-
-            <table class="table table-bordered">
-
-              <thead>
-                <tr>
-                  <th>ICD Code</th>
-                  <th>Diagnosis</th>
-                  <th>Type</th>
-                  <th>Date</th>
-                  <th>Status</th>
-                  <th>Priority</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-
-              <tbody id="diagnosisTableBody">
-              </tbody>
-
-            </table>
-
-          </div>
-
+    <div class="col-md-5">
+      <div class="custom-select-wrapper">
+        <input type="text" class="form-control custom-input" placeholder="Select options" readonly>
+        <div class="custom-dropdown d-none">
+          <label><span>Ovulatory disorder</span><input type="checkbox" value="Ovulatory disorder"></label>
+          <label><span>Tubal factor</span><input type="checkbox" value="Tubal factor"></label>
+          <label><span>Low reserve</span><input type="checkbox" value="Low reserve"></label>
+          <label><span>Endometriosis</span><input type="checkbox" value="Endometriosis"></label>
         </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <input class="form-control" placeholder="Others">
+    </div>
+  </div>
+
+  <!-- Karyotype -->
+  <div class="row mb-3 align-items-center">
+    <div class="col-md-3">
+      <label>Karyotype Abnormality</label>
+    </div>
+
+    <div class="col-md-5">
+      <div class="custom-select-wrapper">
+        <input type="text" class="form-control custom-input" placeholder="Select options" readonly>
+        <div class="custom-dropdown d-none">
+          <label><span>Inversion</span><input type="checkbox" value="Inversion"></label>
+          <label><span>Deletion</span><input type="checkbox" value="Deletion"></label>
+          <label><span>Translocation</span><input type="checkbox" value="Translocation"></label>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <input class="form-control" placeholder="Others">
+    </div>
+  </div>
+
+  <!-- Years -->
+  <div class="row mb-3 align-items-center">
+    <div class="col-md-3">
+      <label>No. of years infertile</label>
+    </div>
+
+    <div class="col-md-9">
+      <input type="number" class="form-control">
+    </div>
+  </div>
+
+  <!-- Others -->
+  <div class="row mb-3 align-items-center">
+    <div class="col-md-3">
+      <label>Others</label>
+    </div>
+
+    <div class="col-md-9">
+      <input class="form-control">
+    </div>
+  </div>
+
+</div>
 
       </div>
 
@@ -178,3 +178,35 @@
 
   </div>
 </div>
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+$(document).ready(function () {
+
+  // Open dropdown
+  $('.custom-input').on('click', function () {
+    $('.custom-dropdown').addClass('d-none'); // close others
+    $(this).siblings('.custom-dropdown').toggleClass('d-none');
+  });
+
+  // Checkbox change
+  $('.custom-dropdown input[type="checkbox"]').on('change', function () {
+    const wrapper = $(this).closest('.custom-select-wrapper');
+    let selected = [];
+
+    wrapper.find('input[type="checkbox"]:checked').each(function () {
+      selected.push($(this).val());
+    });
+
+    wrapper.find('.custom-input').val(selected.join(', '));
+  });
+
+  // Close on outside click
+  $(document).on('click', function (e) {
+    if (!$(e.target).closest('.custom-select-wrapper').length) {
+      $('.custom-dropdown').addClass('d-none');
+    }
+  });
+
+});
+</script>

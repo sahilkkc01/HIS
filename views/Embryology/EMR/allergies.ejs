@@ -1,19 +1,9 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Allergies</title>
-  <%- include("../../header") -%>
-</head>
-
-<body>
-
 <div class="content-wrapper">
   <div class="container-xxl container-p-y flex-grow-1">
 
     <div class="mb-4 card">
 
+      <!-- Header -->
       <div class="justify-content-between align-items-center card-header d-flex">
         <h5 class="mb-0 card-title">Allergies</h5>
 
@@ -22,12 +12,14 @@
           id="addAllergy"
           class="btn btn-primary"
         >
-          <i class="bx bx-plus me-1"></i> Add Allergy
+          <i class="bx bx-plus me-1"></i> Add 
         </button>
       </div>
 
+      <!-- Body -->
       <div class="card-body">
 
+        <!-- Radio buttons -->
         <div class="mb-3">
           <div class="form-check form-check-inline">
             <input class="form-check-input" type="radio" name="allergies" id="noKnownAllergies">
@@ -40,8 +32,9 @@
           </div>
         </div>
 
+        <!-- Dynamic Allergies Container -->
         <div class="Allergies-Info-Divs">
-          <!-- dynamic allergies -->
+          <!-- Allergy rows will be added here -->
         </div>
 
       </div>
@@ -50,62 +43,17 @@
 
   </div>
 </div>
-<%- include("./chiefComplaint") -%>
-<%- include("./Diagnosis") -%>
-<%- include("./DoctorNotes") -%>
-<%- include("./examination") -%>
-<% include("./FollowUp") -%>
-<% include ("./history") -%>
-<% include("./preExisting") -%>
-<% include("./prescription") -%>
-<%include("./treatmentAdvice") -%>
 
-
-<%- include("../../footer") -%>
-
-
+<!-- Script -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-
-function allergiesSave(){
-  var allergiesData = [];
-
-  $(".allergy-entry").each(function () {
-    var $div = $(this);
-
-    allergiesData.push({
-      allergyName: $div.find(".allergy-name-input").val(),
-      severity: $div.find('input[type="radio"]:checked').val(),
-      isFavorite: $div.find(".favorite-icon i").hasClass("fa-solid"),
-    });
-  });
-
-  axios.post("/embrology/allergySubmit", allergiesData, {
-    headers: {
-      "Content-Type": "application/json",
-    },
-  })
-  .then(function (response) {
-    console.log("Success:", response.data);
-  })
-  .catch(function (error) {
-    console.error("Error:", error);
-  });
-}
-
-</script>
-
-
-<script>
-
 function addAllergyEntry() {
-
-  const newAllergyDiv = $("<div>", {
+  const newDiv = $("<div>", {
     class: "allergy-entry row align-items-center mb-3"
   });
 
-  newAllergyDiv.html(`
-
-    <div class="col-md-4">
+  newDiv.html(`
+    <div class="col-md-6">
       <input
         type="text"
         class="form-control allergy-name-input"
@@ -114,70 +62,51 @@ function addAllergyEntry() {
     </div>
 
     <div class="col-md-4">
-
-      <div class="form-check form-check-inline">
-        <input class="form-check-input" type="radio" name="severity_${Date.now()}" value="Low">
-        <label class="form-check-label">Low</label>
-      </div>
-
-      <div class="form-check form-check-inline">
-        <input class="form-check-input" type="radio" name="severity_${Date.now()}" value="Medium">
-        <label class="form-check-label">Medium</label>
-      </div>
-
-      <div class="form-check form-check-inline">
-        <input class="form-check-input" type="radio" name="severity_${Date.now()}" value="Severe">
-        <label class="form-check-label">Severe</label>
-      </div>
-
+      <select class="form-select allergy-severity">
+        <option value="">Severity</option>
+        <option value="low">Low</option>
+        <option value="medium">Medium</option>
+        <option value="high">High</option>
+      </select>
     </div>
 
-    <div class="col-md-4 gap-2 d-flex">
-
-      <button type="button" class="btn btn-sm btn-primary favorite-icon">
-        <i class="fa-regular fa-star"></i>
-      </button>
-
+    <div class="col-md-2 d-flex gap-2">
       <button type="button" class="btn btn-sm btn-danger delete-icon">
         <i class="fa-solid fa-trash"></i>
       </button>
-
     </div>
-
   `);
 
-  $(".Allergies-Info-Divs").append(newAllergyDiv);
+  $(".Allergies-Info-Divs").append(newDiv);
 
-  newAllergyDiv.find(".delete-icon").click(function () {
+  // Delete row
+  newDiv.find(".delete-icon").click(function() {
     $(this).closest(".allergy-entry").remove();
   });
-
-  newAllergyDiv.find(".favorite-icon").click(function () {
-    $(this).find("i").toggleClass("fa-regular fa-solid");
-  });
-
 }
 
-
-$("#addAllergy").click(function () {
+// Add button click
+$("#addAllergy").click(function() {
   addAllergyEntry();
   $("#hasAllergies").prop("checked", true);
 });
 
-
-$("#noKnownAllergies").click(function () {
+// Radio: No Known Allergies
+$("#noKnownAllergies").click(function() {
   $(".Allergies-Info-Divs").empty();
   $("#addAllergy").hide();
 });
 
-
-$("#hasAllergies").click(function () {
+// Radio: Has Allergies
+$("#hasAllergies").click(function() {
   $(".Allergies-Info-Divs").show();
   addAllergyEntry();
   $("#addAllergy").show();
 });
 
+// Optional: initialize with no allergies
+$(document).ready(function() {
+  $("#addAllergy").hide();
+});
 </script>
-
-</body>
-</html>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
