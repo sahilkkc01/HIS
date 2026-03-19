@@ -230,8 +230,31 @@ router.get('/getMasterAdmin',getMasterAdmin);
 router.post("/login", login);
 router.post("/logout", logout);
 router.post("/logoutFromEverywhere", logoutFromEverywhere);
-router.post("/patient/save ", upload.single("patientImage"), savePatientData);
+// router.post("/patient/save ", upload.single("patientImage"), savePatientData);
 // router.post("/doctor-reg", upload.single("doctorImage"), saveDoctorData);
+
+//test
+router.post("/patient/save", upload.fields([
+  { name: "patientImage", maxCount: 1 },
+  { name: "spouseImage", maxCount: 1 }
+]), savePatientData);
+
+//test2
+const { verifyToken } = require("../controllers/HisControllers");
+
+router.post(
+  "/patient/save",
+  verifyToken,
+  upload.fields([
+    { name: "patientImage", maxCount: 1 },
+    { name: "spouseImage", maxCount: 1 }
+  ]),
+  savePatientData
+);
+
+
+
+
 router.post("/emp-reg", upload.single("empImage"), saveEmployeeData);
 router.post(
   "/hospital-reg",

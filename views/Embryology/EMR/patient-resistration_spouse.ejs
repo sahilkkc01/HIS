@@ -1,0 +1,126 @@
+<form>
+  <div class="row g-3">
+
+    <!-- Row 1 -->
+    <div class="col-md-4">
+      <label class="form-label">Prefix</label>
+      <select class="form-select"><option>Select</option></select>
+    </div>
+
+    <div class="col-md-4">
+      <label class="form-label">First Name</label>
+      <input type="text" class="form-control">
+    </div>
+
+    <div class="col-md-4">
+      <label class="form-label">Middle Name</label>
+      <input type="text" class="form-control">
+    </div>
+
+    <!-- Row 2 -->
+    <div class="col-md-4">
+      <label class="form-label">Last Name</label>
+      <input type="text" class="form-control">
+    </div>
+
+    <div class="col-md-4">
+      <label class="form-label">Family Name</label>
+      <input type="text" class="form-control">
+    </div>
+
+    <div class="col-md-4">
+      <label class="form-label">Mother's Name</label>
+      <input type="text" class="form-control">
+    </div>
+
+    <!-- Row 3 -->
+    <div class="col-md-4">
+      <label class="form-label">D.O.B</label>
+      <input type="date" class="form-control">
+    </div>
+
+    <div class="col-md-4">
+      <label class="form-label">Age</label>
+      <div class="gap-2 d-flex">
+        <input class="form-control" placeholder="Y">
+        <input class="form-control" placeholder="M">
+        <input class="form-control" placeholder="D">
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <label class="form-label">Education</label>
+      <select class="form-select"><option>Select</option></select>
+    </div>
+
+    <!-- Row 4 -->
+    <div class="col-md-4">
+      <label class="form-label">Marital Status</label>
+      <select class="form-select"><option>Select</option></select>
+    </div>
+
+    <div class="col-md-4">
+      <label class="form-label">Marriage Anniversary</label>
+      <input type="date" class="form-control">
+    </div>
+
+    <div class="col-md-4">
+      <label class="form-label">Occupation</label>
+      <select class="form-select"><option>Select</option></select>
+    </div>
+
+    <!-- Row 5 -->
+    <div class="col-md-4">
+      <label class="form-label">Company Name</label>
+      <select class="form-select"><option>Select</option></select>
+    </div>
+
+    <div class="col-md-4">
+      <label class="form-label">Monthly Income</label>
+      <select class="form-select"><option>Select</option></select>
+    </div>
+
+    <div class="col-md-4">
+      <label class="form-label">Blood Group</label>
+      <select class="form-select"><option>Select</option></select>
+    </div>
+
+    <!-- Row 6 -->
+    <div class="col-md-4">
+      <label class="form-label">Language Known</label>
+      <select class="form-select"><option>Select</option></select>
+    </div>
+
+    <div class="col-md-4">
+      <label class="form-label">Work Experience</label>
+      <select class="form-select"><option>Select</option></select>
+    </div>
+
+    <div class="col-md-4">
+      <label class="form-label">Skill</label>
+      <select class="form-select"><option>Select</option></select>
+    </div>
+
+    <!-- Row 7 -->
+    <div class="col-md-4">
+      <label class="form-label">Vehicle Type</label>
+      <select class="form-select"><option>Select</option></select>
+    </div>
+
+  </div>
+
+  <!-- Buttons -->
+  <div class="mt-4">
+    <button class="btn btn-primary">Save</button>
+    <button class="btn btn-secondary" type="reset">Cancel</button>
+  </div>
+</form>
+
+<script>
+document.querySelector('input[type="date"]').addEventListener('change', function() {
+  const dob = new Date(this.value);
+  const today = new Date();
+  let age = today.getFullYear() - dob.getFullYear();
+  alert("Age: " + age);
+});
+</script>

@@ -5,9 +5,22 @@
 
       <div class="justify-content-between align-items-center card-header d-flex">
         <h5 class="mb-0 card-title">Infertility History</h5>
+        <button onclick="toggleSection()" style="border:none; background:none; cursor:pointer;">
+      ▼
+    </button>
       </div>
+<script>
+  function toggleSection() {
+    const div = document.getElementById("tobeclosed");
 
-      <div class="card-body">
+    if (div.style.display === "none") {
+      div.style.display = "block";
+    } else {
+      div.style.display = "none";
+    }
+  }
+</script>
+      <div class="card-body" style="display: none;" id="tobeclosed">
 
         <!-- Chief Complaints -->
         <div class="mb-3">
@@ -20,8 +33,8 @@
         </div>
 
         <!-- Vitals -->
-        <h6 class="text-success mb-3">General History - Vitals</h6>
-        <div class="row g-3 mb-4">
+        <h6 class="mb-3 text-success">General History - Vitals</h6>
+        <div class="mb-4 row g-3">
           <div class="col-md-3">
             <input type="number" class="form-control" placeholder="Height (cm)" id="height">
           </div>
@@ -36,7 +49,7 @@
           </div>
         </div>
 
-        <div class="row g-3 mb-4">
+        <div class="mb-4 row g-3">
           <div class="col-md-3">
             <input type="text" class="form-control" placeholder="Systolic" id="bpSystolic">
           </div>
@@ -58,7 +71,7 @@
         </div>
 
         <!-- Duration of infertility -->
-        <div class="row g-3 mb-4">
+        <div class="mb-4 row g-3">
           <label class="form-label">Duration of infertility:</label>
           <div class="col-md-3">
             <input type="number" class="form-control" placeholder="Years" id="durationYears">
@@ -69,7 +82,7 @@
         </div>
 
         <!-- OI/TI, IVF, IUI -->
-        <div class="row g-3 mb-4">
+        <div class="mb-4 row g-3">
           <div class="col-md-4">
             <input type="text" class="form-control" placeholder="OI/TI" id="oiTi">
           </div>
@@ -83,7 +96,7 @@
 
         <!-- Treatment History Table -->
         <h6>Treatment History</h6>
-        <div class="table-responsive mb-3">
+        <div class="mb-3 table-responsive">
           <table class="table table-bordered">
             <thead>
               <tr>
@@ -111,7 +124,7 @@
 
         <!-- Menstrual History -->
         <h6 class="text-success">Menstrual History</h6>
-        <div class="row g-3 mb-3 align-items-center">
+        <div class="mb-3 align-items-center row g-3">
           <div class="col-md-3">
             <label class="form-label" for="lmpDate">LMP</label>
             <input type="date" id="lmpDate" class="form-control" />
@@ -166,7 +179,7 @@
 
         <!-- Obstetric History -->
         <h6 class="text-success">Obstetric History</h6>
-        <div class="table-responsive mb-3">
+        <div class="mb-3 table-responsive">
           <table class="table table-bordered" id="obstetricHistoryTable">
             <thead>
               <tr>
@@ -222,14 +235,14 @@
         </div>
 
         <!-- Recurrent Pregnancy Loss Toggle -->
-        <div class="form-check form-switch mb-3">
+        <div class="mb-3 form-check form-switch">
           <input class="form-check-input" type="checkbox" id="recurrentPregnancyLoss">
           <label class="form-check-label" for="recurrentPregnancyLoss">Recurrent Pregnancy Loss</label>
         </div>
 
         <!-- Past Infertility Investigations -->
         <h6 class="text-success">Past Infertility Investigations</h6>
-        <div class="table-responsive mb-3">
+        <div class="mb-3 table-responsive">
           <table class="table table-bordered" id="infertilityInvestigationsTable">
             <thead>
               <tr>

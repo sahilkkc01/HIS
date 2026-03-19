@@ -17,10 +17,10 @@
     .bx-qr-scan  { font-size: 80px; }
   </style>
 
-  <div class="container-xxl flex-grow-1 container-p-y">
+  <div class="container-xxl container-p-y flex-grow-1">
     <div class="row">
       <div class="col-12">
-        <div class="card overflow-hidden">
+        <div class="overflow-hidden card">
           <h5 class="card-header">Patient Registration</h5>
           <div class="card">
             <div class="card-body">
@@ -28,33 +28,34 @@
               <!-- ═══════════════════════════════════════════
                    MAIN FORM
               ════════════════════════════════════════════ -->
-              <form id="formAccountSettings" method="POST" enctype="multipart/form-data" onsubmit="return false">
+              <!-- <form id="formAccountSettings" method="POST" enctype="multipart/form-data" onsubmit="return false"> -->
+                <form id="formAccountSettings" method="POST" enctype="multipart/form-data" onsubmit="return false">
 
                 <!-- Hidden flag: marks this as an update when patientId is set -->
                 <input type="hidden" id="patientId" name="patientId" value="">
 
                 <!-- ── Patient Photo ───────────────────────── -->
-                <div class="row border-bottom">
+                <div class="border-bottom row">
                   <div class="col-10 col-xs-12">
-                    <div class="d-flex align-items-start align-items-sm-center gap-6 pb-4">
+                    <div class="gap-6 pb-4 align-items-start align-items-sm-center d-flex">
                       <img src="../images/1.png" alt="user-avatar"
-                           class="d-block w-px-100 h-px-100 rounded" id="uploadedAvatar">
+                           class="w-px-100 h-px-100 d-block rounded" id="uploadedAvatar">
                       <div class="button-wrapper">
                         <label data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top"
                                data-bs-html="true" title="<span>Upload from local Storage</span>"
-                               for="patientImageInput" class="btn btn-primary me-3 mb-4" tabindex="0">
+                               for="patientImageInput" class="mb-4 btn btn-primary me-3" tabindex="0">
                           <span class="bx bx-upload"></span>
                           <input type="file" id="patientImageInput" name="patientImage"
                                  class="account-file-input" hidden accept="image/png, image/jpeg">
                         </label>
                         <label data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top"
                                data-bs-html="true" title="<span>Upload from Webcam</span>"
-                               class="btn btn-primary me-3 mb-4" tabindex="0">
+                               class="mb-4 btn btn-primary me-3" tabindex="0">
                           <span class="bx bxs-webcam"></span>
                         </label>
                         <button data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top"
                                 data-bs-html="true" title="<span>Reset</span>"
-                                type="button" class="btn btn-outline-secondary account-image-reset mb-4"
+                                type="button" class="mb-4 btn btn-outline-secondary account-image-reset"
                                 id="resetPatientImage">
                           <span class="bx bx-reset"></span>
                         </button>
@@ -70,7 +71,7 @@
                 <!-- /Patient Photo -->
 
                 <!-- ── Patient Fields ─────────────────────── -->
-                <div class="card-body pt-4">
+                <div class="pt-4 card-body">
                   <div class="row g-6">
 
                     <!-- Prefix -->
@@ -305,7 +306,7 @@
                 <!-- ════════════════════════════════════════
                      SPOUSE SECTION
                 ═════════════════════════════════════════ -->
-                <div class="row mt-6">
+                <div class="mt-6 row">
                   <div class="col-md-12">
                     <div class="form-check">
                       <input class="form-check-input" type="checkbox" id="defaultCheck4">
@@ -323,16 +324,16 @@
                       <h3>Spouse Details</h3>
 
                       <!-- Spouse Photo -->
-                      <div class="row border-bottom">
+                      <div class="border-bottom row">
                         <div class="col-10 col-xs-12">
-                          <div class="d-flex align-items-start align-items-sm-center gap-6 pb-4">
+                          <div class="gap-6 pb-4 align-items-start align-items-sm-center d-flex">
                             <img src="../images/1.png" alt="spouse-avatar"
-                                 class="d-block w-px-100 h-px-100 rounded" id="uploadedSpouseAvatar">
+                                 class="w-px-100 h-px-100 d-block rounded" id="uploadedSpouseAvatar">
                             <div class="button-wrapper">
                               <label data-bs-toggle="tooltip" data-bs-offset="0,4"
                                      data-bs-placement="top" data-bs-html="true"
                                      title="<span>Upload from local Storage</span>"
-                                     for="spouseImageInput" class="btn btn-primary me-3 mb-4" tabindex="0">
+                                     for="spouseImageInput" class="mb-4 btn btn-primary me-3" tabindex="0">
                                 <span class="bx bx-upload"></span>
                                 <input type="file" id="spouseImageInput" name="spouseImage"
                                        class="account-file-input" hidden accept="image/png, image/jpeg">
@@ -340,13 +341,13 @@
                               <label data-bs-toggle="tooltip" data-bs-offset="0,4"
                                      data-bs-placement="top" data-bs-html="true"
                                      title="<span>Upload from Webcam</span>"
-                                     class="btn btn-primary me-3 mb-4" tabindex="0">
+                                     class="mb-4 btn btn-primary me-3" tabindex="0">
                                 <span class="bx bxs-webcam"></span>
                               </label>
                               <button data-bs-toggle="tooltip" data-bs-offset="0,4"
                                       data-bs-placement="top" data-bs-html="true"
                                       title="<span>Reset</span>" type="button"
-                                      class="btn btn-outline-secondary account-image-reset mb-4"
+                                      class="mb-4 btn btn-outline-secondary account-image-reset"
                                       id="resetSpouseImage">
                                 <span class="bx bx-reset"></span>
                               </button>
@@ -470,7 +471,7 @@
 
                         <!-- Languages Known -->
                         <div class="col-md-4 mt-4">
-                          <label class="form-label d-block mt-4">Language Known</label>
+                          <label class="mt-4 form-label d-block">Language Known</label>
                           <div class="form-check form-check-inline">
                             <input class="form-check-input" type="checkbox" id="langHindi"
                                    name="languages[]" value="Hindi">

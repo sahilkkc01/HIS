@@ -3,7 +3,7 @@
 
     <div class="mb-4 card">
 
-      <div class="justify-content-between align-items-center card-header d-flex">
+      <!-- <div class="justify-content-between align-items-center card-header d-flex">
         <h5 class="mb-0 card-title">Examination</h5>
 
         <button
@@ -13,16 +13,37 @@
         >
           NAD
         </button>
-      </div>
+      </div> -->
 
+<div class="justify-content-between align-items-center card-header d-flex">
+  
+  <h5 class="mb-0 card-title">Examination</h5>
+
+  <div>
+    <button type="button" id="addExamination" class="btn btn-primary">
+      NAD
+    </button>
+
+    <!-- Arrow Button -->
+    <button onclick="toggleExam()" 
+            style="border:none; background:none; font-size:18px; margin-left:10px;">
+      ▼
+    </button>
+  </div>
+
+</div>
+
+
+    
+<div id="examSection">
       <div class="card-body">
 
        <div class="examination-form">
 
   <!-- VITALS -->
-  <h6 class="text-success mb-3">Vitals</h6>
+  <h6 class="mb-3 text-success">Vitals</h6>
 
-  <div class="row g-3 mb-3">
+  <div class="mb-3 row g-3">
     <div class="col-md-2"><input class="form-control" placeholder="Height (cm)"></div>
     <div class="col-md-2"><input class="form-control" placeholder="Weight (kg)"></div>
     <div class="col-md-2"><input class="form-control" placeholder="Temperature (°F)"></div>
@@ -49,13 +70,13 @@
     </div>
   </div>
 
-  <div class="row g-3 mb-3">
+  <div class="mb-3 row g-3">
     <div class="col-md-3"><input class="form-control" placeholder="Systolic"></div>
     <div class="col-md-3"><input class="form-control" placeholder="Diastolic"></div>
   </div>
 
   <!-- GENERAL SIGNS -->
-  <div class="row g-3 mb-3">
+  <div class="mb-3 row g-3">
     <div class="col-md-2"><input class="form-control" placeholder="Pallor"></div>
     <div class="col-md-2"><input class="form-control" placeholder="Icterus"></div>
     <div class="col-md-2"><input class="form-control" placeholder="Edema"></div>
@@ -64,10 +85,10 @@
     <div class="col-md-2"><input class="form-control" placeholder="Thyroid"></div>
   </div>
 
-  <input class="form-control mb-3" placeholder="Notes">
+  <input class="mb-3 form-control" placeholder="Notes">
 
 <!-- RADIO GROUPS -->
-<div class="row mb-3">
+<div class="mb-3 row">
 
   <div class="col-md-6">
     <label>Hirsutism</label><br>
@@ -81,7 +102,7 @@
   <input type="radio" name="resp" value="Abnormal" data-target="#respFields"> Abnormal
 </div>
 
-<div id="respFields" class="dependent-field mt-2">
+<div id="respFields" class="mt-2 dependent-field">
   <input class="form-control" placeholder="Respiratory Details">
 </div>
 
@@ -89,7 +110,7 @@
 
 
 
-  <div class="row mb-3">
+  <div class="mb-3 row">
 
    <div class="col-md-6">
   <label>Galactorrhoea</label><br>
@@ -103,13 +124,13 @@
   <input type="radio" name="breast" value="Abnormal" data-target="#breastFields"> Abnormal
 </div>
 
-<div id="breastFields" class="dependent-field mt-2">
+<div id="breastFields" class="mt-2 dependent-field">
   <input class="form-control" placeholder="Breast Details">
 </div>
 
   </div>
 
-  <div class="row mb-3">
+  <div class="mb-3 row">
 
    <div class="col-md-6">
   <label>Per Speculum Examination</label><br>
@@ -118,7 +139,7 @@
   <input type="radio" name="speculum" value="Abnormal" data-target="#speculumFields"> Abnormal
 </div>
 
-<div id="speculumFields" class="dependent-field mt-2">
+<div id="speculumFields" class="mt-2 dependent-field">
   <input class="form-control" placeholder="Speculum Details">
 </div>
 
@@ -129,13 +150,13 @@
   <input type="radio" name="abdomen" value="Abnormal" data-target="#abdomenFields"> Abnormal
 </div>
 
-<div id="abdomenFields" class="dependent-field mt-2">
+<div id="abdomenFields" class="mt-2 dependent-field">
   <input class="form-control" placeholder="Abdomen Details">
 </div>
 
   </div>
 
-  <div class="row mb-3">
+  <div class="mb-3 row">
 
   <div class="col-md-6">
   <label>PAP Smear Taken</label><br>
@@ -152,7 +173,7 @@
   <input type="radio" name="vaginal" value="Abnormal" data-target="#vaginalFields"> Abnormal
 </div>
 
-<div id="vaginalFields" class="dependent-field mt-2">
+<div id="vaginalFields" class="mt-2 dependent-field">
   <input class="form-control" placeholder="Vaginal Details">
 </div>
   </div>
@@ -162,12 +183,12 @@
     <input type="date" class="form-control">
   </div>
 
-  <input class="form-control mb-4" placeholder="Notes">
+  <input class="mb-4 form-control" placeholder="Notes">
 
   <!-- USG SECTION -->
-  <h6 class="text-success mb-3">USG</h6>
+  <h6 class="mb-3 text-success">USG</h6>
 
-  <div class="row g-3 mb-3">
+  <div class="mb-3 row g-3">
     <div class="col-md-3">
       <label>TAS / TVS</label><br>
       <input type="radio"> TAS
@@ -190,10 +211,10 @@
   </div>
 
   <!-- UTERUS -->
-  <div class="row g-3 mb-3">
+  <div class="mb-3 row g-3">
     <div class="col-md-6">
       <label>Uterus Size</label>
-      <div class="d-flex gap-2">
+      <div class="gap-2 d-flex">
         <input class="form-control" placeholder="L">
         <input class="form-control" placeholder="B">
         <input class="form-control" placeholder="H">
@@ -210,20 +231,20 @@
   </div>
 
 <!-- OVARIES -->
-<h6 class="text-success mt-3">Ovaries</h6>
+<h6 class="mt-3 text-success">Ovaries</h6>
 
-<div class="row g-3 mb-3">
+<div class="mb-3 row g-3">
 
   <!-- RIGHT OVARY -->
   <div class="col-md-6">
     <label>Right Ovary</label>
-    <select class="form-select mb-2">
+    <select class="mb-2 form-select">
       <option>Normal</option>
       <option>Abnormal</option>
     </select>
 
     <label>Size</label>
-    <div class="d-flex gap-2 mb-2">
+    <div class="gap-2 mb-2 d-flex">
       <input class="form-control" placeholder="L">
       <input class="form-control" placeholder="B">
       <input class="form-control" placeholder="H">
@@ -236,13 +257,13 @@
   <!-- LEFT OVARY -->
   <div class="col-md-6">
     <label>Left Ovary</label>
-    <select class="form-select mb-2">
+    <select class="mb-2 form-select">
       <option>Normal</option>
       <option>Abnormal</option>
     </select>
 
     <label>Size</label>
-    <div class="d-flex gap-2 mb-2">
+    <div class="gap-2 mb-2 d-flex">
       <input class="form-control" placeholder="L">
       <input class="form-control" placeholder="B">
       <input class="form-control" placeholder="H">
@@ -255,7 +276,7 @@
 </div>
 <h6 class="text-success">Hydrosalpinx</h6>
 
-<div class="row g-3 mb-3">
+<div class="mb-3 row g-3">
 
   <!-- RIGHT -->
   <div class="col-md-6">
@@ -265,7 +286,7 @@
 
     <div class="mt-2 hydro-right-fields">
       <label>Size</label>
-      <div class="d-flex gap-2 mb-2">
+      <div class="gap-2 mb-2 d-flex">
         <input class="form-control">
         <input class="form-control">
         <span class="mt-2">mm</span>
@@ -283,7 +304,7 @@
 
     <div class="mt-2 hydro-left-fields">
       <label>Size</label>
-      <div class="d-flex gap-2 mb-2">
+      <div class="gap-2 mb-2 d-flex">
         <input class="form-control">
         <input class="form-control">
         <span class="mt-2">mm</span>
@@ -296,7 +317,7 @@
 </div>
 <h6 class="text-success">Adnexal</h6>
 
-<div class="row g-3 mb-3">
+<div class="mb-3 row g-3">
 
   <div class="col-md-6">
     <label>Right</label>
@@ -339,7 +360,7 @@
 </div>
 
 <!-- Dependent Field -->
-<div id="endoFields" class="dependent-field mt-2">
+<div id="endoFields" class="mt-2 dependent-field">
   <label>Endo Thickness (mm)</label>
   <input class="form-control" placeholder="mm">
 </div>
@@ -348,14 +369,14 @@
   <label>Endo Thickness</label>
   <input class="form-control" placeholder="mm">
 </div>
-<div class="row mb-3">
+<div class="mb-3 row">
 
   <div class="col-md-6">
     <label>Cervix</label><br>
     <input type="radio" name="cervix" value="NAD" data-target="#cervixFields"> NAD
     <input type="radio" name="cervix" value="Abnormal" data-target="#cervixFields"> Abnormal
 
-    <div id="cervixFields" class="dependent-field mt-2">
+    <div id="cervixFields" class="mt-2 dependent-field">
       <input class="form-control" placeholder="Notes">
     </div>
   </div>
@@ -370,7 +391,7 @@
 
 
   <!-- FINAL NOTES -->
-  <textarea class="form-control mb-3" placeholder="Comments"></textarea>
+  <textarea class="mb-3 form-control" placeholder="Comments"></textarea>
 
   <div class="mb-4">
     <button class="btn btn-primary">Save Examination</button>
@@ -408,7 +429,10 @@
 
         </div>
 
+      
+      
       </div>
+    </div>
 
     </div>
 
@@ -500,4 +524,16 @@
   });
 
 });
+
+
+
+function toggleExam() {
+    const section = document.getElementById("examSection");
+
+    if (section.style.display === "none") {
+      section.style.display = "block";
+    } else {
+      section.style.display = "none";
+    }
+  }
 </script>

@@ -5,18 +5,6 @@ const { Patient } = require("../models/HisSchema");
 // Simple render helpers following existing HIS/Billing patterns.
 // Each handler renders its corresponding Embryology view.
 
-exports.getPatientEmr = (req, res) => {
-  res.render("Embryology/patient-emr", { title: "Embryology - Patient EMR" });
-};
-
-exports.getCounselling = (req, res) => {
-  res.render("Embryology/counselling", { title: "Embryology - Counselling" });
-};
-
-// GET: Render consent search form
-exports.getConsent = (req, res) => {
-  res.render("Embryology/consent", { title: "Embryology - Consent" });
-};
 
 // POST: Handle patient search based on form filters
 exports.searchPatients = async (req, res) => {
