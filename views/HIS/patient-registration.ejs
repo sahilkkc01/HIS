@@ -6,535 +6,1072 @@
   <meta charset="utf-8" />
   <meta name="viewport"
     content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
-
   <title>Patient Registration</title>
-
   <%- include('../header') -%>
-    <!-- / Navbar -->
-    <!-- Header and Menu ends here create a header ejs file -->
+</head>
 
-    <!-- Content wrapper -->
-    <div class="content-wrapper">
-      <!-- Content -->
-      <style>
-        .displaynone {
-          display: none;
-        }
+<div class="content-wrapper">
+  <!-- Content -->
+  <style>
+    .displaynone { display: none; }
+    .bx-qr-scan  { font-size: 80px; }
+  </style>
 
-        .bx-qr-scan {
-          font-size: 80px;
-        }
-      </style>
-      <div class="container-xxl flex-grow-1 container-p-y">
-        <div class="row">
-          <!-- Vertical & Horizontal Scrollbars -->
-          <div class="col-12">
-            <div class="card overflow-hidden">
-              <h5 class="card-header">Patient Registration</h5>
-              <form id="PatientRegForm" method="post" enctype="multipart/form-data">
-                <input type="hidden" id="patientId" name="patientId">
-                <div class="card">
-                  <!-- Account -->
+  <div class="container-xxl flex-grow-1 container-p-y">
+    <div class="row">
+      <div class="col-12">
+        <div class="card overflow-hidden">
+          <h5 class="card-header">Patient Registration</h5>
+          <div class="card">
+            <div class="card-body">
 
-                  <div class="card-body">
-                    <div class="row border-bottom">
-                      <div class="col-10 col-xs-12">
+              <!-- ═══════════════════════════════════════════
+                   MAIN FORM
+              ════════════════════════════════════════════ -->
+              <form id="formAccountSettings" method="POST" enctype="multipart/form-data" onsubmit="return false">
 
+                <!-- Hidden flag: marks this as an update when patientId is set -->
+                <input type="hidden" id="patientId" name="patientId" value="">
 
-                        <div class="d-flex align-items-start align-items-sm-center gap-6 pb-4">
-                          <img src="../images/1.png" alt="user-avatar" class="d-block w-px-100 h-px-100 rounded"
-                            id="uploadedAvatar">
-                          <div class="button-wrapper">
-                            <!-- Upload from Local Storage -->
-                            <label data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top"
-                              data-bs-html="true" title="<span>Upload from local Storage</span>" for="patientImage"
-                              class="btn btn-primary me-3 mb-4" tabindex="0">
-                              <span class="bx bx-upload"></span>
-                              <input type="file" id="patientImage" name="patientImage" class="account-file-input" hidden
-                                accept="image/png, image/jpeg">
-                            </label>
-
-                            <!-- Upload from Webcam (no input field here, will start webcam directly) -->
-                            <button type="button" data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top"
-                              data-bs-html="true" title="<span>Upload from Webcam</span>" id="webcamBtn"
-                              class="btn btn-primary me-3 mb-4">
-                              <span class="bx bxs-webcam"></span>
-                            </button>
-
-                            <!-- Reset Button -->
-                            <button data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top"
-                              data-bs-html="true" title="<span>Reset</span>" type="button"
-                              class="btn btn-outline-secondary account-image-reset mb-4" id="resetBtn">
-                              <span class="bx bx-reset"></span> Reset
-                            </button>
-
-                            <!-- File Type and Size Information -->
-                            <div class="text-muted">Allowed JPG, JPEG or PNG. Max size of 800K</div>
-                          </div>
-
-                          <!-- Video and Canvas for Webcam -->
-
-                        </div>
-
-
-                      </div>
-                      <div class="col-2 text-center d-none d-sm-block">
-                        <!-- <i class='bx bx-qr-scan'></i> -->
-                        <div id="qrcode"></div>
-                        <div class="pb-2">Scan to Register</div>
+                <!-- ── Patient Photo ───────────────────────── -->
+                <div class="row border-bottom">
+                  <div class="col-10 col-xs-12">
+                    <div class="d-flex align-items-start align-items-sm-center gap-6 pb-4">
+                      <img src="../images/1.png" alt="user-avatar"
+                           class="d-block w-px-100 h-px-100 rounded" id="uploadedAvatar">
+                      <div class="button-wrapper">
+                        <label data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top"
+                               data-bs-html="true" title="<span>Upload from local Storage</span>"
+                               for="patientImageInput" class="btn btn-primary me-3 mb-4" tabindex="0">
+                          <span class="bx bx-upload"></span>
+                          <input type="file" id="patientImageInput" name="patientImage"
+                                 class="account-file-input" hidden accept="image/png, image/jpeg">
+                        </label>
+                        <label data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top"
+                               data-bs-html="true" title="<span>Upload from Webcam</span>"
+                               class="btn btn-primary me-3 mb-4" tabindex="0">
+                          <span class="bx bxs-webcam"></span>
+                        </label>
+                        <button data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top"
+                                data-bs-html="true" title="<span>Reset</span>"
+                                type="button" class="btn btn-outline-secondary account-image-reset mb-4"
+                                id="resetPatientImage">
+                          <span class="bx bx-reset"></span>
+                        </button>
+                        <div>Allowed JPG, JPEG or PNG. Max size of 800K</div>
                       </div>
                     </div>
                   </div>
-                  <div class="card-body pt-4">
-
-                    <div id="errordiv"></div>
-                    <div class="row g-6">
-                      <div class="col-md-6">
-                        <label for="name" class="form-label">Name*</label>
-                        <input class="form-control" type="text" id="name" name="name" value="" autofocus=""
-                          data-validation="required" data-error-message="Please Enter Name">
-                      </div>
-                      <div class="col-md-6">
-                        <label class="form-label" for="mobile">Mobile Number*</label>
-                        <div class="input-group input-group-merge">
-                          <span class="input-group-text">IND (+91)</span>
-                          <input type="number" id="mobile" name="mobile" class="form-control" placeholder=""
-                            data-validation="required mobileNum" data-error-message="Please Enter Mobile Number">
-                        </div>
-                      </div>
-                      <div class="col-md-3">
-                        <label for="email" class="form-label">E-mail</label>
-                        <input class="form-control" type="email" id="email" name="email" value=""
-                          data-validation="email" placeholder="">
-                      </div>
-                      <div class="col-md-3">
-                        <label for="language" class="form-label">Gender*</label>
-                        <select id="gender" name="gender" class="select2 form-select" data-validation="required"
-                          data-error-message="Please Enter Gender">
-                          <option value="">Select</option>
-                          <option value="M">Male</option>
-                          <option value="F">Female</option>
-                          <option value="O">Other</option>
-                        </select>
-                      </div>
-                      <div class="col-md-3">
-                        <label for="language" class="form-label">Blood Group*</label>
-                        <select id="bloodGroup" name="bloodGroup" class="select2 form-select" data-validation="required"
-                        data-error-message="Please Enter Blood Group">
-                          <option value="">Select</option>
-                          <option value="A+">A+</option>
-                          <option value="A-">A-</option>
-                          <option value="B+">B+</option>
-                          <option value="B-">B-</option>
-                          <option value="O+">O+</option>
-                          <option value="O-">O-</option>
-                          <option value="AB+">AB+</option>
-                          <option value="AB-">AB-</option>
-                      </select>
-                      </div>
-                      <div class="col-md-3">
-                        <label for="address" class="form-label">Age*</label>
-                        <input type="number" class="form-control" id="age" name="age" placeholder=""
-                          data-validation="required" data-error-message="Please Enter Age">
-                      </div>
-                      <div class="col-md-6">
-                        <label for="address" class="form-label">Address</label>
-                        <input type="text" class="form-control" id="address" name="address" placeholder=""
-                          data-validation>
-                      </div>
-                      <div class="col-md-6">
-                        <label for="address" class="form-label">Other Details</label>
-                        <input type="text" class="form-control" id="otdetails" name="otdetails" placeholder=""
-                          data-validation>
-                      </div>
-                      <div class="col-md-6">
-                        <div class="form-check">
-                          <input class="form-check-input" type="checkbox" value="" id="defaultCheck3">
-                          <label class="form-check-label" for="defaultCheck3"> Book Appointment </label>
-                        </div>
-                      </div>
-                      <div id="markvisit" class="row g-4 displaynone">
-                        <div class="col-md-2">
-                          <label for="state" class="form-label">Weight (KG)</label>
-                          <input class="form-control" type="number" id="weight" name="weight" step="any" placeholder="">
-                        </div>
-                        <div class="col-md-2">
-                          <label for="state" class="form-label">Height (Feet)</label>
-                          <input class="form-control" type="number" id="height" name="height" step="any" placeholder="">
-                        </div>
-                        <div class="col-md-2">
-                          <label for="state" class="form-label">BMI</label>
-                          <input class="form-control" type="number" id="bmi" name="bmi" step="any" readonly>
-                        </div>
-
-                        <div class="col-md-2">
-                          <label for="state" class="form-label">Fever °F</label>
-                          <input class="form-control" type="number" id="fever" name="fever" step="any" placeholder="">
-                        </div>
-                        <div class="col-md-2">
-                          <label for="state" class="form-label">BP (mm Hg)</label>
-                          <input class="form-control" type="text" id="bp" name="bp" placeholder="">
-                        </div>
-                        <div class="col-md-2">
-                          <label for="state" class="form-label">Sugar (mg/dL)</label>
-                          <input class="form-control" type="number" id="sugar" step="any" name="sugar">
-                        </div>
-
-                        <div class="col-md-2">
-                          <label for="clinic" class="form-label">Clinic*</label>
-                          <select id="Clinic" name="Clinic" class="select2 form-select">
-                            <option value="">Select</option>
-                          </select>
-                        </div>
-
-                        <div class="col-md-2">
-                          <label for="doctor" class="form-label">Doctor*</label>
-                          <select id="Doctor" name="doctor" class="select2 form-select">
-                            <option value="">Select</option>
-                          </select>
-                        </div>
-
-                        <div class="col-md-2">
-                          <label for="Date" class="form-label">Date*</label>
-                          <input type="date" id="date" name="date" class="form-control">
-
-
-                        </div>
-                        <div class="col-md-2">
-                          <label for="Time" class="form-label">Time*</label>
-                          <select id="time" name="time" class="select2 form-select">
-                            <option value="">Select</option>
-                          </select>
-                        </div>
-
-
-                      </div>
-                      <!--Mark visit div close-->
-                    </div>
-                    <div id="loadingIndicator"></div>
-                    <div class="mt-6">
-                      <button type="button" id="mod-btn" style="display: none !important;" onclick="updateQuery()"
-                        class="btn btn-primary me-3">Modify</button>
-                      <button type="submit" id="subBtn" class="btn btn-primary me-3">Save</button>
-                      <button type="reset" onclick="window.location.href='/Patient-list'"
-                        class="btn btn-outline-secondary">Cancel</button>
-                    </div>
-
+                  <div class="col-2 text-center d-none d-sm-block">
+                    <i class='bx bx-qr-scan'></i>
+                    <div>Scan to Register</div>
                   </div>
-                  <!-- /Account -->
-
                 </div>
+                <!-- /Patient Photo -->
+
+                <!-- ── Patient Fields ─────────────────────── -->
+                <div class="card-body pt-4">
+                  <div class="row g-6">
+
+                    <!-- Prefix -->
+                    <div class="col-md-3">
+                      <label class="form-label" for="prefix">Prefix</label>
+                      <select id="prefix" name="prefix" class="form-select">
+                        <option value="">Select</option>
+                        <option>Mr.</option>
+                        <option>Mrs.</option>
+                        <option>Ms.</option>
+                        <option>Dr.</option>
+                      </select>
+                    </div>
+
+                    <!-- First Name -->
+                    <div class="col-md-3">
+                      <label class="form-label" for="firstName">First Name <span class="text-danger">*</span></label>
+                      <input type="text" id="firstName" name="firstName" class="form-control">
+                    </div>
+
+                    <!-- Middle Name -->
+                    <div class="col-md-3">
+                      <label class="form-label" for="middleName">Middle Name</label>
+                      <input type="text" id="middleName" name="middleName" class="form-control">
+                    </div>
+
+                    <!-- Last Name -->
+                    <div class="col-md-3">
+                      <label class="form-label" for="lastName">Last Name</label>
+                      <input type="text" id="lastName" name="lastName" class="form-control">
+                    </div>
+
+                    <!-- Family Name -->
+                    <div class="col-md-6">
+                      <label class="form-label" for="familyName">Family Name</label>
+                      <input type="text" id="familyName" name="familyName" class="form-control">
+                    </div>
+
+                    <!-- Father's Name -->
+                    <div class="col-md-6">
+                      <label class="form-label" for="fatherName">Father's Name</label>
+                      <input type="text" id="fatherName" name="fatherName" class="form-control">
+                    </div>
+
+                    <!-- Gender -->
+                    <div class="col-md-4">
+                      <label class="form-label" for="gender">Gender <span class="text-danger">*</span></label>
+                      <select id="gender" name="gender" class="form-select">
+                        <option value="">Select</option>
+                        <option>Male</option>
+                        <option>Female</option>
+                        <option>Other</option>
+                      </select>
+                    </div>
+
+                    <!-- Blood Group -->
+                    <div class="col-md-4">
+                      <label class="form-label" for="bloodGroup">Blood Group <span class="text-danger">*</span></label>
+                      <select id="bloodGroup" name="bloodGroup" class="form-select">
+                        <option value="">Select</option>
+                        <option>A+</option><option>A-</option>
+                        <option>B+</option><option>B-</option>
+                        <option>O+</option><option>O-</option>
+                        <option>AB+</option><option>AB-</option>
+                      </select>
+                    </div>
+
+                    <!-- DOB -->
+                    <div class="col-md-4">
+                      <label class="form-label" for="dob">Date of Birth</label>
+                      <input type="date" id="dob" name="dob" class="form-control">
+                    </div>
+
+                    <!-- Age -->
+                    <div class="col-md-3">
+                      <label class="form-label" for="age">Age <span class="text-danger">*</span></label>
+                      <input type="number" id="age" name="age" class="form-control" min="0" max="150">
+                    </div>
+
+                    <!-- Education -->
+                    <div class="col-md-3">
+                      <label class="form-label" for="education">Education</label>
+                      <select id="education" name="education" class="form-select">
+                        <option value="">Select</option>
+                        <option>High School</option>
+                        <option>Bachelor's</option>
+                        <option>Master's</option>
+                        <option>PhD</option>
+                      </select>
+                    </div>
+
+                    <!-- Marital Status -->
+                    <div class="col-md-3">
+                      <label class="form-label" for="maritalStatus">Marital Status</label>
+                      <select id="maritalStatus" name="maritalStatus" class="form-select">
+                        <option value="">Select</option>
+                        <option>Single</option>
+                        <option>Married</option>
+                        <option>Divorced</option>
+                        <option>Widowed</option>
+                      </select>
+                    </div>
+
+                    <!-- Marriage Anniversary -->
+                    <div class="col-md-3">
+                      <label class="form-label" for="anniversary">Marriage Anniversary</label>
+                      <input type="date" id="anniversary" name="anniversary" class="form-control">
+                    </div>
+
+                    <!-- Occupation -->
+                    <div class="col-md-6">
+                      <label class="form-label" for="occupation">Occupation</label>
+                      <input type="text" id="occupation" name="occupation" class="form-control">
+                    </div>
+
+                    <!-- Company Name -->
+                    <div class="col-md-6">
+                      <label class="form-label" for="companyName">Company Name</label>
+                      <input type="text" id="companyName" name="companyName" class="form-control">
+                    </div>
+
+                    <!-- ID Proof -->
+                    <div class="col-md-4">
+                      <label class="form-label" for="idProof">ID Proof</label>
+                      <select id="idProof" name="idProof" class="form-select">
+                        <option value="">Select</option>
+                        <option>Aadhar</option>
+                        <option>PAN</option>
+                        <option>Passport</option>
+                        <option>Driving License</option>
+                      </select>
+                    </div>
+
+                    <!-- Special Registration -->
+                    <div class="col-md-4">
+                      <label class="form-label" for="specialReg">Special Registration</label>
+                      <select id="specialReg" name="specialReg" class="form-select">
+                        <option value="">Select</option>
+                        <option>Yes</option>
+                        <option>No</option>
+                      </select>
+                    </div>
+
+                    <!-- Religion -->
+                    <div class="col-md-4">
+                      <label class="form-label" for="religion">Religion</label>
+                      <select id="religion" name="religion" class="form-select">
+                        <option value="">Select</option>
+                        <option>Hindu</option>
+                        <option>Muslim</option>
+                        <option>Christian</option>
+                        <option>Sikh</option>
+                        <option>Other</option>
+                      </select>
+                    </div>
+
+                    <!-- Address -->
+                    <div class="col-md-12">
+                      <label class="form-label" for="address">Address</label>
+                      <textarea id="address" name="address" class="form-control"></textarea>
+                    </div>
+
+                    <!-- State -->
+                    <div class="col-md-4">
+                      <label class="form-label" for="state">State</label>
+                      <select id="state" name="state" class="form-select">
+                        <option value="">Select</option>
+                      </select>
+                    </div>
+
+                    <!-- City -->
+                    <div class="col-md-4">
+                      <label class="form-label" for="city">City</label>
+                      <select id="city" name="city" class="form-select">
+                        <option value="">Select</option>
+                      </select>
+                    </div>
+
+                    <!-- Country -->
+                    <div class="col-md-4">
+                      <label class="form-label" for="country">Country</label>
+                      <input type="text" id="country" name="country" class="form-control"
+                             value="India" readonly>
+                    </div>
+
+                    <!-- Phone 1 -->
+                    <div class="col-md-6">
+                      <label class="form-label" for="phone1">Phone 1 <span class="text-danger">*</span></label>
+                      <input type="text" id="phone1" name="mobile" class="form-control">
+                    </div>
+
+                    <!-- Phone 2 -->
+                    <div class="col-md-6">
+                      <label class="form-label" for="phone2">Phone 2</label>
+                      <input type="text" id="phone2" name="phone2" class="form-control">
+                    </div>
+
+                    <!-- Email -->
+                    <div class="col-md-6">
+                      <label class="form-label" for="email">Email</label>
+                      <input type="email" id="email" name="email" class="form-control">
+                    </div>
+
+                    <!-- Status checkboxes -->
+                    <div class="col-md-6 mt-10">
+                      <label class="form-label d-block">Status</label>
+                      <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="isInternational"
+                               name="status[]" value="international">
+                        <label class="form-check-label" for="isInternational">Is International</label>
+                      </div>
+                      <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="isVIP"
+                               name="status[]" value="vip">
+                        <label class="form-check-label" for="isVIP">Is VIP</label>
+                      </div>
+                      <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="isEmployee"
+                               name="status[]" value="employee">
+                        <label class="form-check-label" for="isEmployee">Is Employee</label>
+                      </div>
+                      <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="isInsured"
+                               name="status[]" value="insured">
+                        <label class="form-check-label" for="isInsured">Is Insured</label>
+                      </div>
+                    </div>
+
+                  </div><!-- /row g-6 -->
+                </div><!-- /card-body pt-4 -->
+
+                <!-- ════════════════════════════════════════
+                     SPOUSE SECTION
+                ═════════════════════════════════════════ -->
+                <div class="row mt-6">
+                  <div class="col-md-12">
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" id="defaultCheck4">
+                      <label class="form-check-label" for="defaultCheck4">Spouse Details</label>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Hidden flag read by controller -->
+                <input type="hidden" id="hasSpouseFlag" name="hasSpouse" value="0">
+
+                <div class="row">
+                  <div class="col-md-12 displaynone" id="spousedtl">
+                    <div class="card-body">
+                      <h3>Spouse Details</h3>
+
+                      <!-- Spouse Photo -->
+                      <div class="row border-bottom">
+                        <div class="col-10 col-xs-12">
+                          <div class="d-flex align-items-start align-items-sm-center gap-6 pb-4">
+                            <img src="../images/1.png" alt="spouse-avatar"
+                                 class="d-block w-px-100 h-px-100 rounded" id="uploadedSpouseAvatar">
+                            <div class="button-wrapper">
+                              <label data-bs-toggle="tooltip" data-bs-offset="0,4"
+                                     data-bs-placement="top" data-bs-html="true"
+                                     title="<span>Upload from local Storage</span>"
+                                     for="spouseImageInput" class="btn btn-primary me-3 mb-4" tabindex="0">
+                                <span class="bx bx-upload"></span>
+                                <input type="file" id="spouseImageInput" name="spouseImage"
+                                       class="account-file-input" hidden accept="image/png, image/jpeg">
+                              </label>
+                              <label data-bs-toggle="tooltip" data-bs-offset="0,4"
+                                     data-bs-placement="top" data-bs-html="true"
+                                     title="<span>Upload from Webcam</span>"
+                                     class="btn btn-primary me-3 mb-4" tabindex="0">
+                                <span class="bx bxs-webcam"></span>
+                              </label>
+                              <button data-bs-toggle="tooltip" data-bs-offset="0,4"
+                                      data-bs-placement="top" data-bs-html="true"
+                                      title="<span>Reset</span>" type="button"
+                                      class="btn btn-outline-secondary account-image-reset mb-4"
+                                      id="resetSpouseImage">
+                                <span class="bx bx-reset"></span>
+                              </button>
+                              <div>Allowed JPG, JPEG or PNG. Max size of 800K</div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-2 text-center d-none d-sm-block">
+                          <i class="bx bx-qr-scan"></i>
+                          <div>Scan to Register</div>
+                        </div>
+                      </div>
+                      <!-- /Spouse Photo -->
+
+                      <div class="row">
+                        <!-- Spouse Prefix -->
+                        <div class="col-md-3">
+                          <label class="form-label" for="spousePrefix">Spouse Prefix</label>
+                          <select id="spousePrefix" name="spousePrefix" class="form-select">
+                            <option value="">Select</option>
+                            <option>Mr.</option><option>Mrs.</option>
+                            <option>Ms.</option><option>Dr.</option>
+                          </select>
+                        </div>
+
+                        <!-- Spouse First Name -->
+                        <div class="col-md-3">
+                          <label class="form-label" for="spouseFirstName">Spouse First Name</label>
+                          <input type="text" id="spouseFirstName" name="spouseFirstName" class="form-control">
+                        </div>
+
+                        <!-- Spouse Middle Name -->
+                        <div class="col-md-3">
+                          <label class="form-label" for="spouseMiddleName">Spouse Middle Name</label>
+                          <input type="text" id="spouseMiddleName" name="spouseMiddleName" class="form-control">
+                        </div>
+
+                        <!-- Spouse Last Name -->
+                        <div class="col-md-3">
+                          <label class="form-label" for="spouseLastName">Spouse Last Name</label>
+                          <input type="text" id="spouseLastName" name="spouseLastName" class="form-control">
+                        </div>
+
+                        <!-- Spouse Family Name -->
+                        <div class="col-md-6 mt-4">
+                          <label class="form-label" for="spouseFamilyName">Spouse Family Name</label>
+                          <input type="text" id="spouseFamilyName" name="spouseFamilyName" class="form-control">
+                        </div>
+
+                        <!-- Spouse Mother's Name -->
+                        <div class="col-md-6 mt-4">
+                          <label class="form-label" for="spouseMotherName">Spouse Mother's Name</label>
+                          <input type="text" id="spouseMotherName" name="spouseMotherName" class="form-control">
+                        </div>
+
+                        <!-- Spouse DOB -->
+                        <div class="col-md-4 mt-4">
+                          <label class="form-label" for="spouseDob">Spouse Date of Birth</label>
+                          <input type="date" id="spouseDob" name="spouseDob" class="form-control">
+                        </div>
+
+                        <!-- Spouse Age -->
+                        <div class="col-md-2 mt-4">
+                          <label class="form-label" for="spouseAge">Age</label>
+                          <input type="number" id="spouseAge" name="spouseAge" class="form-control">
+                        </div>
+
+                        <!-- Spouse Education -->
+                        <div class="col-md-3 mt-4">
+                          <label class="form-label" for="spouseEducation">Education</label>
+                          <select id="spouseEducation" name="spouseEducation" class="form-select">
+                            <option value="">Select</option>
+                            <option>High School</option>
+                            <option>Bachelor's</option>
+                            <option>Master's</option>
+                            <option>PhD</option>
+                          </select>
+                        </div>
+
+                        <!-- Spouse Occupation -->
+                        <div class="col-md-3 mt-4">
+                          <label class="form-label" for="spouseOccupation">Occupation</label>
+                          <select id="spouseOccupation" name="spouseOccupation" class="form-select">
+                            <option value="">Select</option>
+                            <option>Business</option>
+                            <option>Service</option>
+                            <option>Self-employed</option>
+                            <option>Other</option>
+                          </select>
+                        </div>
+
+                        <!-- Spouse Company Name -->
+                        <div class="col-md-6 mt-4">
+                          <label class="form-label" for="spouseCompanyName">Company Name</label>
+                          <input type="text" id="spouseCompanyName" name="spouseCompanyName" class="form-control">
+                        </div>
+
+                        <!-- Spouse Monthly Income -->
+                        <div class="col-md-6 mt-4">
+                          <label class="form-label" for="spouseIncome">Monthly Income</label>
+                          <select id="spouseIncome" name="spouseIncome" class="form-select">
+                            <option value="">Select</option>
+                            <option>Below ₹25,000</option>
+                            <option>₹25,000 - ₹50,000</option>
+                            <option>₹50,000 - ₹1,00,000</option>
+                            <option>Above ₹1,00,000</option>
+                          </select>
+                        </div>
+
+                        <!-- Spouse Blood Group -->
+                        <div class="col-md-4 mt-4">
+                          <label class="form-label" for="spouseBloodGroup">Blood Group</label>
+                          <select id="spouseBloodGroup" name="spouseBloodGroup" class="form-select">
+                            <option value="">Select</option>
+                            <option>A+</option><option>A-</option>
+                            <option>B+</option><option>B-</option>
+                            <option>O+</option><option>O-</option>
+                            <option>AB+</option><option>AB-</option>
+                          </select>
+                        </div>
+
+                        <!-- Languages Known -->
+                        <div class="col-md-4 mt-4">
+                          <label class="form-label d-block mt-4">Language Known</label>
+                          <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" id="langHindi"
+                                   name="languages[]" value="Hindi">
+                            <label class="form-check-label" for="langHindi">Hindi</label>
+                          </div>
+                          <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" id="langEnglish"
+                                   name="languages[]" value="English">
+                            <label class="form-check-label" for="langEnglish">English</label>
+                          </div>
+                          <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" id="langOther"
+                                   name="languages[]" value="Other">
+                            <label class="form-check-label" for="langOther">Other</label>
+                          </div>
+                        </div>
+
+                        <!-- Spouse Work Experience -->
+                        <div class="col-md-4 mt-4">
+                          <label class="form-label" for="spouseExperience">Work Experience</label>
+                          <select id="spouseExperience" name="spouseExperience" class="form-select">
+                            <option value="">Select</option>
+                            <option>0-2 years</option>
+                            <option>3-5 years</option>
+                            <option>6-10 years</option>
+                            <option>10+ years</option>
+                          </select>
+                        </div>
+
+                        <!-- Spouse Skill -->
+                        <div class="col-md-6 mt-4">
+                          <label class="form-label" for="spouseSkill">Skill</label>
+                          <select id="spouseSkill" name="spouseSkill" class="form-select">
+                            <option value="">Select</option>
+                            <option>Management</option>
+                            <option>Technical</option>
+                            <option>Creative</option>
+                            <option>Other</option>
+                          </select>
+                        </div>
+
+                        <!-- Spouse Vehicle Type -->
+                        <div class="col-md-6 mt-4">
+                          <label class="form-label" for="spouseVehicle">Vehicle Type</label>
+                          <select id="spouseVehicle" name="spouseVehicle" class="form-select">
+                            <option value="">Select</option>
+                            <option>Two-wheeler</option>
+                            <option>Four-wheeler</option>
+                            <option>Other</option>
+                          </select>
+                        </div>
+                      </div><!-- /spouse row -->
+
+                    </div><!-- /card-body spouse -->
+                  </div><!-- /col spousedtl -->
+                </div><!-- /row spouse -->
+
+                <!-- ════════════════════════════════════════
+                     SPONSOR & BANK SECTION
+                ═════════════════════════════════════════ -->
+                <div class="col-md-12 mt-6">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="defaultCheck5">
+                    <label class="form-check-label" for="defaultCheck5">Sponsor &amp; Bank Details</label>
+                  </div>
+                </div>
+
+                <!-- Hidden flag read by controller -->
+                <input type="hidden" id="hasBankSponsorFlag" name="hasBankSponsor" value="0">
+
+                <div id="bankdtl" class="displaynone">
+
+                  <!-- Sponsor Information -->
+                  <div class="row">
+                    <h5 class="mb-3">Sponsor Information</h5>
+
+                    <div class="col-md-4">
+                      <label class="form-label" for="referenceNo">Reference No.</label>
+                      <input type="text" id="referenceNo" name="referenceNo" class="form-control">
+                    </div>
+
+                    <div class="col-md-4">
+                      <label class="form-label" for="patientCategory">Patient Category</label>
+                      <select id="patientCategory" name="patientCategory" class="form-select">
+                        <option value="">Select</option>
+                        <option>General</option>
+                        <option>Corporate</option>
+                        <option>Insurance</option>
+                      </select>
+                    </div>
+
+                    <div class="col-md-4">
+                      <label class="form-label" for="associatedCompany">Associated Company</label>
+                      <select id="associatedCompany" name="associatedCompany" class="form-select">
+                        <option value="">Select</option>
+                        <option>Company A</option>
+                        <option>Company B</option>
+                        <option>Company C</option>
+                      </select>
+                    </div>
+
+                    <div class="col-md-4">
+                      <label class="form-label" for="memberRelation">Member Relation</label>
+                      <select id="memberRelation" name="memberRelation" class="form-select">
+                        <option value="">Select</option>
+                        <option>Self</option>
+                        <option>Spouse</option>
+                        <option>Child</option>
+                        <option>Parent</option>
+                      </select>
+                    </div>
+
+                    <div class="col-md-4">
+                      <label class="form-label" for="patientSource">Patient Source</label>
+                      <select id="patientSource" name="patientSource" class="form-select">
+                        <option value="">Select</option>
+                        <option>Referral</option>
+                        <option>Walk-in</option>
+                        <option>Online</option>
+                      </select>
+                    </div>
+
+                    <div class="col-md-4">
+                      <label class="form-label" for="sponsorCompany">Company</label>
+                      <select id="sponsorCompany" name="sponsorCompany" class="form-select">
+                        <option value="">Select</option>
+                        <option>Company A</option>
+                        <option>Company B</option>
+                        <option>Company C</option>
+                      </select>
+                    </div>
+
+                    <div class="col-md-4">
+                      <label class="form-label" for="tariff">Tariff</label>
+                      <select id="tariff" name="tariff" class="form-select">
+                        <option value="">Select</option>
+                        <option>Standard</option>
+                        <option>Premium</option>
+                        <option>Corporate</option>
+                      </select>
+                    </div>
+
+                    <div class="col-md-8">
+                      <label class="form-label" for="remark">Remark</label>
+                      <textarea id="remark" name="remark" class="form-control"></textarea>
+                    </div>
+                  </div><!-- /sponsor row -->
+
+                  <hr class="my-4">
+
+                  <!-- Bank Details -->
+                  <div class="row">
+                    <h5 class="mb-3">Bank Details</h5>
+
+                    <div class="col-md-4">
+                      <label class="form-label" for="bankName">Name Of The Bank</label>
+                      <select id="bankName" name="bankName" class="form-select">
+                        <option value="">Select</option>
+                        <option>HDFC Bank</option>
+                        <option>ICICI Bank</option>
+                        <option>SBI</option>
+                        <option>Axis Bank</option>
+                      </select>
+                    </div>
+
+                    <div class="col-md-4">
+                      <label class="form-label" for="branch">Branch</label>
+                      <select id="branch" name="branch" class="form-select">
+                        <option value="">Select</option>
+                        <option>Delhi</option>
+                        <option>Mumbai</option>
+                        <option>Bangalore</option>
+                      </select>
+                    </div>
+
+                    <div class="col-md-4">
+                      <label class="form-label" for="ifscCode">IFSC Code</label>
+                      <input type="text" id="ifscCode" name="ifscCode" class="form-control">
+                    </div>
+
+                    <div class="col-md-6">
+                      <label class="form-label" for="accountNo">Account No.</label>
+                      <input type="text" id="accountNo" name="accountNo" class="form-control">
+                    </div>
+
+                    <div class="col-md-6">
+                      <label class="form-label" for="accountHolder">Account Holder's Name</label>
+                      <input type="text" id="accountHolder" name="accountHolder" class="form-control">
+                    </div>
+
+                    <div class="col-md-12">
+                      <label class="form-label d-block">Account Type</label>
+                      <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" id="savingAccount"
+                               name="accountType" value="saving">
+                        <label class="form-check-label" for="savingAccount">Saving</label>
+                      </div>
+                      <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" id="currentAccount"
+                               name="accountType" value="current">
+                        <label class="form-check-label" for="currentAccount">Current</label>
+                      </div>
+                    </div>
+                  </div><!-- /bank row -->
+
+                </div><!-- /bankdtl -->
+
+                <!-- ════════════════════════════════════════
+                     BOOK APPOINTMENT SECTION
+                ═════════════════════════════════════════ -->
+                <div class="col-md-12 mt-6">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="defaultCheck3">
+                    <label class="form-check-label" for="defaultCheck3">Book Appointment</label>
+                  </div>
+                </div>
+
+                <!-- Hidden flag read by controller -->
+                <input type="hidden" id="hasAppointmentFlag" name="hasAppointment" value="0">
+
+                <div id="markvisit" class="row g-4 displaynone">
+                  <div class="col-md-2">
+                    <label class="form-label">Weight in KG</label>
+                    <input class="form-control" type="number" id="weight" name="weight">
+                  </div>
+                  <div class="col-md-2">
+                    <label class="form-label">Height in Feet</label>
+                    <input class="form-control" type="number" id="height" name="height">
+                  </div>
+                  <div class="col-md-2">
+                    <label class="form-label">BMI</label>
+                    <input class="form-control" type="number" id="bmi" name="bmi" disabled>
+                  </div>
+                  <div class="col-md-2">
+                    <label class="form-label">Fever</label>
+                    <input class="form-control" type="number" id="fever" name="fever">
+                  </div>
+                  <div class="col-md-2">
+                    <label class="form-label">BP</label>
+                    <input class="form-control" type="number" id="bp" name="bp">
+                  </div>
+                  <div class="col-md-2">
+                    <label class="form-label">Sugar</label>
+                    <input class="form-control" type="number" id="sugar" name="sugar">
+                  </div>
+                  <div class="col-md-2">
+                    <label class="form-label">Place <span class="text-danger">*</span></label>
+                    <select id="place" name="place" class="select2 form-select">
+                      <option value="">Select</option>
+                    </select>
+                  </div>
+                  <div class="col-md-2">
+                    <label class="form-label">Doctor <span class="text-danger">*</span></label>
+                    <select id="doctor" name="doctor" class="select2 form-select">
+                      <option value="">Select</option>
+                    </select>
+                  </div>
+                  <div class="col-md-2">
+                    <label class="form-label">Date <span class="text-danger">*</span></label>
+                    <input class="form-control" type="date" id="appointmentDate" name="date">
+                  </div>
+                  <div class="col-md-2">
+                    <label class="form-label">Time <span class="text-danger">*</span></label>
+                    <select id="drtime" name="drtime" class="select2 form-select">
+                      <option value="">Select</option>
+                    </select>
+                  </div>
+                </div>
+                <!-- /markvisit -->
+
+                <!-- ── Submit Buttons ──────────────────────── -->
+                <div class="mt-6">
+                  <button type="submit" class="btn btn-primary me-3" id="saveBtn">Save</button>
+                  <button type="reset" class="btn btn-outline-secondary" id="cancelBtn">Cancel</button>
+                </div>
+
               </form>
             </div>
           </div>
-
-
-          <!--/ Vertical & Horizontal Scrollbars -->
         </div>
       </div>
-      <!-- / Content -->
-      <div class="modal fade" id="WebcamModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-sm" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="exampleModalLabel2">Webcam</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
+    </div>
+  </div>
+  <!-- / Content -->
 
-              <!-- Webcam Section -->
-              <div id="webcamContainer" class="mt-3" style="display: none;">
-                <video id="video" width="320" height="240" autoplay></video>
-                <canvas id="canvas" width="320" height="240" style="display:none;"></canvas>
-                <button id="captureBtn" type="button" class="btn btn-success mt-3">Capture</button>
-              </div>
-            </div>
+  <div class="content-backdrop fade"></div>
+</div>
 
-          </div>
-        </div>
-      </div>
- 
-      <%- include('../footer') -%>
+<%- include('../footer') -%>
 
-        <!-- Extra Js for this Page-->
-        <script>
-          $(document).ready(function () {
-            $("#defaultCheck3").on("change", function () {
-              if ($(this).is(":checked")) {
-                $("#markvisit").removeClass("displaynone"); // Show the element
-                $("#Doctor, #Clinic, #time ,#date").attr("data-validation", "required"); // Add required validation
-              } else {
-                $("#markvisit").addClass("displaynone"); // Hide the element
-                $("#Doctor, #Clinic, #time ,#date").removeAttr("data-validation"); // Remove required validation
-              }
-            });
-          });
-          restrictInput("mobile", 10); // Limits mobile number to 10 digits
-          restrictInput("age", 2);
+<script>
+$(document).ready(function () {
 
-          document.getElementById('patientImage').addEventListener('change', function (event) {
-            // Just validate the file input without calling previewImage
-            validateFileInput("patientImage", ["image/jpeg", "image/jpg", "image/png"], 800);
-          });
+  // ═══════════════════════════════════════════════
+  //  1. SECTION TOGGLE CHECKBOXES
+  // ═══════════════════════════════════════════════
+  $("#defaultCheck3").on("change", function () {
+    const show = $(this).is(":checked");
+    $("#markvisit").toggleClass("displaynone", !show);
+    $("#hasAppointmentFlag").val(show ? "1" : "0");
+  });
 
-          document.getElementById("height").addEventListener("input", function () {
-            BMI("height", "weight", "bmi");
-          });
-          document.getElementById("weight").addEventListener("input", function () {
-            BMI("height", "weight", "bmi");
-          });
-          loadDropdown('Doctor', 'Doctor', 'name', '');
-          loadDropdown('Clinic', 'Clinic', 'name', '');
-          document.addEventListener("DOMContentLoaded", function () {
-            const dateField = document.getElementById("date");
-            const today = new Date().toISOString().split("T")[0];
-            dateField.setAttribute("min", today);
-          });
+  $("#defaultCheck4").on("change", function () {
+    const show = $(this).is(":checked");
+    $("#spousedtl").toggleClass("displaynone", !show);
+    $("#hasSpouseFlag").val(show ? "1" : "0");
+  });
 
-          $(document).ready(function () {
-            console.log("Document is ready");
+  $("#defaultCheck5").on("change", function () {
+    const show = $(this).is(":checked");
+    $("#bankdtl").toggleClass("displaynone", !show);
+    $("#hasBankSponsorFlag").val(show ? "1" : "0");
+  });
 
-            const formId = '#PatientRegForm';
-            const errorDivId = '#errordiv';
+  // ═══════════════════════════════════════════════
+  //  2. LIVE BMI CALCULATION
+  // ═══════════════════════════════════════════════
+  $("#weight, #height").on("input", function () {
+    const kg  = parseFloat($("#weight").val());
+    const ft  = parseFloat($("#height").val());
+    if (kg > 0 && ft > 0) {
+      const meters = ft * 0.3048;
+      $("#bmi").val((kg / (meters * meters)).toFixed(1));
+    } else {
+      $("#bmi").val("");
+    }
+  });
 
-            $(formId).on('submit', async function (event) {
-              event.preventDefault(); // Prevent the form from submitting
+  // ═══════════════════════════════════════════════
+  //  3. AUTO-FILL AGE FROM DOB
+  // ═══════════════════════════════════════════════
+  $("#dob").on("change", function () {
+    const dob = new Date($(this).val());
+    if (!isNaN(dob)) {
+      const today = new Date();
+      let age = today.getFullYear() - dob.getFullYear();
+      const m = today.getMonth() - dob.getMonth();
+      if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) age--;
+      $("#age").val(age >= 0 ? age : "");
+    }
+  });
 
-              const { isValid, errorMessage } = validateForm(formId);
+  // Spouse DOB → Age
+  $("#spouseDob").on("change", function () {
+    const dob = new Date($(this).val());
+    if (!isNaN(dob)) {
+      const today = new Date();
+      let age = today.getFullYear() - dob.getFullYear();
+      const m = today.getMonth() - dob.getMonth();
+      if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) age--;
+      $("#spouseAge").val(age >= 0 ? age : "");
+    }
+  });
 
-              if (isValid) {
-                const url = '/patient-reg';
-                const loadingDiv = '#loadingIndicator';
+  // ═══════════════════════════════════════════════
+  //  4. IMAGE PREVIEW
+  // ═══════════════════════════════════════════════
+  $("#patientImageInput").on("change", function () {
+    const file = this.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = e => $("#uploadedAvatar").attr("src", e.target.result);
+      reader.readAsDataURL(file);
+    }
+  });
 
-                try {
-                  $(loadingDiv).show(); // Show loading indicator
+  $("#resetPatientImage").on("click", function () {
+    $("#patientImageInput").val("");
+    $("#uploadedAvatar").attr("src", "../images/1.png");
+  });
 
-                  const response = await saveForm(formId, url); // Perform the form submission
+  $("#spouseImageInput").on("change", function () {
+    const file = this.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = e => $("#uploadedSpouseAvatar").attr("src", e.target.result);
+      reader.readAsDataURL(file);
+    }
+  });
 
-                  console.log('Success:', response);
-                  $(errorDivId).removeClass('alert-danger').addClass('alert-success').text(response.message).show();
-                } catch (error) {
-                  console.error('Error:', error);
-                  $(errorDivId).removeClass('alert-success').addClass('alert-danger').text(` ${error.message || 'Unknown error'}`).show();
-                } finally {
-                  $(loadingDiv).hide(); // Hide loading indicator after submission
-                  window.location.href = '/Patient-list'
-                }
-              } else {
-                $(errorDivId).removeClass('alert-success').addClass('alert-danger').text(errorMessage).show();
-              }
-            });
-          });
+  $("#resetSpouseImage").on("click", function () {
+    $("#spouseImageInput").val("");
+    $("#uploadedSpouseAvatar").attr("src", "../images/1.png");
+  });
 
+  // ═══════════════════════════════════════════════
+  //  5. FORM SUBMIT  (AJAX)
+  // ═══════════════════════════════════════════════
+  $("#formAccountSettings").on("submit", function (e) {
+    e.preventDefault();
 
-          document.addEventListener("DOMContentLoaded", function () {
-            const doctorSelect = document.getElementById("Doctor");
-            const dateInput = document.getElementById("date");
-            const timeSelect = document.getElementById("time");
+    // Basic client-side validation
+    if (!$("#firstName").val().trim()) {
+      alert("First Name is required."); return;
+    }
+    if (!$("#phone1").val().trim()) {
+      alert("Phone 1 (mobile) is required."); return;
+    }
+    if (!$("#gender").val()) {
+      alert("Please select Gender."); return;
+    }
+    if (!$("#age").val()) {
+      alert("Age is required."); return;
+    }
+    if (!$("#bloodGroup").val()) {
+      alert("Please select Blood Group."); return;
+    }
 
-            // Function to fetch available time slots
-            const fetchAvailableSlots = () => {
-              const selectedOption = doctorSelect.selectedOptions[0]; // Get selected option
-              const doctor_id = doctorSelect.value;
-              const date = dateInput.value;
+    const formData = new FormData(this);
 
+    $.ajax({
+      url: "/patient/save",   // adjust route as needed
+      type: "POST",
+      data: formData,
+      processData: false,
+      contentType: false,
+      success: function (res) {
+        alert(res.message || "Saved successfully");
+        // Optionally store encrypted patientId for subsequent updates:
+        // $("#patientId").val(res.patient.encryptedId);
+      },
+      error: function (xhr) {
+        const msg = xhr.responseJSON?.message || "Error saving patient data.";
+        alert(msg);
+      }
+    });
+  });
 
-              console.log("Doctor ID:", doctor_id); // Debugging
-              if (!doctor_id || !date) {
-                timeSelect.innerHTML = '<option value="">Select</option>';
-                return;
-              }
+  // ═══════════════════════════════════════════════
+  //  6. CANCEL / RESET
+  // ═══════════════════════════════════════════════
+  $("#cancelBtn").on("click", function () {
+    $("#formAccountSettings")[0].reset();
+    $("#uploadedAvatar").attr("src", "../images/1.png");
+    $("#uploadedSpouseAvatar").attr("src", "../images/1.png");
+    // Hide optional sections
+    ["#spousedtl", "#bankdtl", "#markvisit"].forEach(s => $(s).addClass("displaynone"));
+    $("#defaultCheck3, #defaultCheck4, #defaultCheck5").prop("checked", false);
+    $("#hasSpouseFlag, #hasBankSponsorFlag, #hasAppointmentFlag").val("0");
+    $("#patientId").val("");
+  });
 
-              axios.post("/getAvailableSlots", { doctor_id, date })
-                .then(response => {
-                  console.log(response);
-                  const availableSlots = response.data.availableSlots;
+  // ═══════════════════════════════════════════════
+  //  7. PRE-FILL FORM FROM API  (call fillPatientForm)
+  //     Usage: fillPatientForm(patientData)
+  //     where patientData = full API response object
+  // ═══════════════════════════════════════════════
+  window.fillPatientForm = function (p) {
+    if (!p) return;
 
-                  timeSelect.innerHTML = '<option value="">Select</option>'; // Reset dropdown
+    // Helper: set select value (graceful fallback)
+    function setSelect(id, val) {
+      const $el = $("#" + id);
+      if (val && $el.find("option[value='" + val + "'], option:contains('" + val + "')").length) {
+        $el.val(val);
+      }
+    }
 
-                  if (availableSlots.length === 0) {
-                    timeSelect.innerHTML += '<option value="">No slots available</option>';
-                  } else {
-                    availableSlots.forEach(slot => {
-                      const option = document.createElement("option");
-                      option.value = slot;
-                      option.textContent = slot;
-                      timeSelect.appendChild(option);
-                    });
-                  }
-                })
-                .catch(error => {
-                  console.error("Error fetching available slots:", error);
-                  alert("Failed to load available slots.");
-                });
-            };
+    // ── Patient ID (for update mode) ──────────────
+    if (p.encryptedId) $("#patientId").val(p.encryptedId);
 
-            // Event Listeners
-            doctorSelect.addEventListener("change", fetchAvailableSlots);
-            dateInput.addEventListener("change", fetchAvailableSlots);
-          });
+    // ── Patient photo ─────────────────────────────
+    if (p.patientImage) {
+      $("#uploadedAvatar").attr("src", "../uploads/" + p.patientImage);
+    }
 
-        </script>
+    // ── Name block ────────────────────────────────
+    setSelect("prefix", p.prefix);
+    $("#firstName").val(p.firstName  || "");
+    $("#middleName").val(p.middleName || "");
+    $("#lastName").val(p.lastName   || "");
+    $("#familyName").val(p.familyName || "");
+    $("#fatherName").val(p.fatherName || "");
 
-        <script>
-          function loadPatientData(patientId) {
-            $.ajax({
-              url: `/patient/${patientId}`,
-              type: "GET",
-              success: function (data) {
-                console.log(data)
-                $("#patientId").val(data.patient.id);
-                $("#name").val(data.patient.name);
-                $("#mobile").val(data.patient.mobile);
-                $("#email").val(data.patient.email);
-                $("#gender").val(data.patient.gender).trigger("change");
-                $("#bloodGroup").val(data.patient.bloodGroup).trigger("change");
-                $("#age").val(data.patient.age);
-                $("#address").val(data.patient.address);
-                $("#otdetails").val(data.patient.otdetails);
+    // ── Demographics ──────────────────────────────
+    setSelect("gender",        p.gender);
+    setSelect("bloodGroup",    p.bloodGroup);
+    $("#dob").val(p.dob         || "");
+    $("#age").val(p.age         || "");
+    setSelect("education",     p.education);
+    setSelect("maritalStatus", p.maritalStatus);
+    $("#anniversary").val(p.anniversary || "");
+    setSelect("religion",      p.religion);
 
+    // ── Contact ───────────────────────────────────
+    $("#phone1").val(p.mobile  || "");
+    $("#phone2").val(p.phone2  || "");
+    $("#email").val(p.email    || "");
 
-                // Show patient image if exists
-                if (data.patient.patientImage) {
-                  $("#uploadedAvatar").attr("src", `/Myuploads/${data.patient.patientImage}`);
-                } else {
-                  $("#uploadedAvatar").attr("src", "../images/1.png"); // Default image
-                }
-                // Show modify button, hide save button
-                $("#mod-btn").show();
-                $('#subBtn').prop('disabled', true);
-                $('#defaultCheck3').prop('disabled', true);
-              },
-              error: function (err) {
-                console.error("Error fetching patient data", err);
-              }
-            });
-          }
+    // ── Professional ──────────────────────────────
+    $("#occupation").val(p.occupation  || "");
+    $("#companyName").val(p.companyName || "");
 
-          if ('<%= patient.id %>' !== '') {
-            loadPatientData('<%= patient.id %>')
-            $('input[data-validation], select').prop('readonly', true);
-          }
-          function updateQuery() {
-            $('#mod-btn').prop('disabled', true);
-            $('input, select').prop('readonly', false);
-            $('#subBtn').prop('disabled', false);
-          }
+    // ── Misc ──────────────────────────────────────
+    setSelect("idProof",    p.idProof);
+    setSelect("specialReg", p.specialReg ? "Yes" : "No");
+    setSelect("religion",   p.religion);
 
-        </script>
+    // ── Address ───────────────────────────────────
+    $("#address").val(p.address  || "");
+    setSelect("state", p.state);
+    setSelect("city",  p.city);
+    $("#country").val(p.country  || "India");
 
-        <script>
-          document.addEventListener('DOMContentLoaded', function () {
-            const patientImageInput = document.getElementById('patientImage');
-            const webcamBtn = document.getElementById('webcamBtn');
-            const uploadedAvatar = document.getElementById('uploadedAvatar');
-            const resetBtn = document.getElementById('resetBtn');
-            const video = document.getElementById('video');
-            const canvas = document.getElementById('canvas');
-            const captureBtn = document.getElementById('captureBtn');
-            const webcamContainer = document.getElementById('webcamContainer');
-            let stream;
+    // ── Status checkboxes ─────────────────────────
+    $("#isInternational").prop("checked", !!p.isInternational);
+    $("#isVIP").prop("checked",           !!p.isVIP);
+    $("#isEmployee").prop("checked",      !!p.isEmployee);
+    $("#isInsured").prop("checked",       !!p.isInsured);
 
-            // Handle local file upload
-            patientImageInput.addEventListener('change', function (event) {
-              const file = event.target.files[0];
-              if (file) {
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                  uploadedAvatar.src = e.target.result; // Set the image source to the uploaded file
-                };
-                reader.readAsDataURL(file); // Convert file to DataURL
-              }
-            });
+    // ── Spouse ────────────────────────────────────
+    const sp = p.SpouseDetail || p.spouse;
+    if (sp) {
+      $("#defaultCheck4").prop("checked", true).trigger("change");
 
-            // Start video stream for webcam
-            function startWebcam() {
-              navigator.mediaDevices.getUserMedia({ video: true })
-                .then(function (mediaStream) {
-                  stream = mediaStream;
-                  video.srcObject = mediaStream;
-                  webcamContainer.style.display = 'block'; // Show the webcam container
-                })
-                .catch(function (error) {
-                  console.error('Error accessing webcam:', error);
-                  alert('Unable to access the webcam. Please check your browser settings.');
-                });
-            }
+      if (sp.spouseImage) {
+        $("#uploadedSpouseAvatar").attr("src", "../uploads/" + sp.spouseImage);
+      }
+      setSelect("spousePrefix",     sp.prefix);
+      $("#spouseFirstName").val(sp.firstName   || "");
+      $("#spouseMiddleName").val(sp.middleName  || "");
+      $("#spouseLastName").val(sp.lastName    || "");
+      $("#spouseFamilyName").val(sp.familyName  || "");
+      $("#spouseMotherName").val(sp.motherName  || "");
+      $("#spouseDob").val(sp.dob              || "");
+      $("#spouseAge").val(sp.age              || "");
+      setSelect("spouseEducation",  sp.education);
+      setSelect("spouseBloodGroup", sp.bloodGroup);
+      setSelect("spouseOccupation", sp.occupation);
+      $("#spouseCompanyName").val(sp.companyName || "");
+      setSelect("spouseIncome",     sp.monthlyIncome);
+      setSelect("spouseExperience", sp.workExperience);
+      setSelect("spouseSkill",      sp.skill);
+      setSelect("spouseVehicle",    sp.vehicleType);
 
-            // Capture image from webcam
-            captureBtn.addEventListener('click', function () {
-              canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height); // Capture image from video
-              const imageUrl = canvas.toDataURL('image/png'); // Convert canvas to image URL
-              uploadedAvatar.src = imageUrl; // Set the image source to the captured image
+      // Languages checkboxes
+      const langs = Array.isArray(sp.languages) ? sp.languages : [];
+      $("#langHindi").prop("checked",   langs.includes("Hindi"));
+      $("#langEnglish").prop("checked", langs.includes("English"));
+      $("#langOther").prop("checked",   langs.includes("Other"));
+    }
 
-              // Convert the captured image DataURL to a File and set it to the patientImage input
-              const file = dataURLtoFile(imageUrl, 'webcam_capture.png');
+    // ── Sponsor ───────────────────────────────────
+    const spon = p.SponsorInfo || p.sponsor;
+    if (spon) {
+      $("#defaultCheck5").prop("checked", true).trigger("change");
 
-              // Create a new DataTransfer object to update the file input
-              const dataTransfer = new DataTransfer();
-              dataTransfer.items.add(file); // Add the captured file
-              patientImageInput.files = dataTransfer.files; // Update the file input with the captured file
+      $("#referenceNo").val(spon.referenceNo || "");
+      setSelect("patientCategory",   spon.patientCategory);
+      setSelect("associatedCompany", spon.associatedCompany);
+      setSelect("memberRelation",    spon.memberRelation);
+      setSelect("patientSource",     spon.patientSource);
+      setSelect("sponsorCompany",    spon.sponsorCompany);
+      setSelect("tariff",            spon.tariff);
+      $("#remark").val(spon.remark   || "");
+    }
 
-              stopWebcam(); // Stop the webcam after capturing the image
-              $('#WebcamModal').modal('hide');
-            });
+    // ── Bank ──────────────────────────────────────
+    const bk = p.BankDetail || p.bank;
+    if (bk) {
+      if (!$("#defaultCheck5").is(":checked")) {
+        $("#defaultCheck5").prop("checked", true).trigger("change");
+      }
+      setSelect("bankName", bk.bankName);
+      setSelect("branch",   bk.branch);
+      $("#ifscCode").val(bk.ifscCode       || "");
+      $("#accountNo").val(bk.accountNo     || "");
+      $("#accountHolder").val(bk.accountHolder || "");
+      if (bk.accountType) {
+        $("input[name='accountType'][value='" + bk.accountType + "']").prop("checked", true);
+      }
+    }
+  };
 
-            // Stop the webcam
-            function stopWebcam() {
-              if (stream) {
-                stream.getTracks().forEach(track => track.stop()); // Stop all webcam tracks
-                video.srcObject = null; // Reset video source
-                webcamContainer.style.display = 'none'; // Hide webcam container
-              }
-            }
+  // ═══════════════════════════════════════════════
+  //  8. FETCH PATIENT FROM API BY ID
+  //     Usage: loadPatient("encryptedId")
+  //     or call automatically if ?id= is in URL
+  // ═══════════════════════════════════════════════
+  window.loadPatient = function (encryptedId) {
+    $.ajax({
+      url: "/patient/get?id=" + encodeURIComponent(encryptedId),
+      type: "GET",
+      success: function (res) {
+        if (res && res.patient) {
+          window.fillPatientForm(res.patient);
+        }
+      },
+      error: function (xhr) {
+        console.error("Failed to load patient:", xhr.responseJSON?.message);
+      }
+    });
+  };
 
-            // Open webcam when clicking the "Upload from Webcam" button
-            webcamBtn.addEventListener('click', function () {
-              $('#WebcamModal').modal('show');
-              startWebcam();
-            });
+  // Auto-load if patientId query param present in URL
+  const urlParams = new URLSearchParams(window.location.search);
+  const editId    = urlParams.get("patientId");
+  if (editId) {
+    window.loadPatient(editId);
+  }
 
-            // Reset the avatar image to the default
-            resetBtn.addEventListener('click', function () {
-              uploadedAvatar.src = "../images/1.png"; // Reset to default image
-              patientImageInput.value = ''; // Clear local file input
-              stopWebcam(); // Stop webcam if active
-            });
+}); // end document.ready
+</script>
 
-            // Stop webcam when the modal is closed
-            $('#WebcamModal').on('hidden.bs.modal', function () {
-              stopWebcam(); // Stop the webcam when the modal is closed
-            });
-
-            // Convert DataURL to a File object
-            function dataURLtoFile(dataURL, filename) {
-              // Split the DataURL into the MIME type and base64 string
-              const arr = dataURL.split(',');
-
-              // Ensure that the string starts with 'data:' and contains a MIME type
-              if (arr.length < 2 || !arr[0].startsWith('data:')) {
-                throw new Error("Invalid DataURL format.");
-              }
-
-              // Extract the MIME type from the DataURL
-              const mime = arr[0].match(/:(.*?);/)[1];
-
-              // Decode the base64 string to binary
-              const bstr = atob(arr[1]);
-              const n = bstr.length;
-              const u8arr = new Uint8Array(n);
-
-              // Populate the Uint8Array with the binary data
-              for (let i = 0; i < n; i++) {
-                u8arr[i] = bstr.charCodeAt(i);
-              }
-
-              // Create and return a File object from the binary data
-              return new File([u8arr], filename, { type: mime });
-            }
-
-          });
-
-        generateQRCodeInDiv("qrcode", "PatientQrReg", '<%=encClinicId%>');
-        </script>
-        <!-- Extra Js for this Page End-->

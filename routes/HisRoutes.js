@@ -30,8 +30,29 @@ const {
   getDoctorById,
   searchMedicine,
   saveEmr,
+  saveClinic,
+  getClinics,
+  getClinicById,
+  updateClinic,
+  saveSource,
+  getSources,
+  getSourceById,
+  updateSource,
+  getMasterAdmin,
+  getDoctors,
+  updateDoctor,
+  saveDoctor,
+  saveTreatment,
+  getTreatments,
+  getTreatmentById,
+  updateTreatment,
+  saveCounselor,
+  getCounselors,
+  getCounselorById,
 } = require("../controllers/HisControllers");
 const { UserTokens, Patient } = require("../models/HisSchema");
+const { updateAgent } = require("../controllers/CrmCtrl");
+
 
 
 const secretKey='his'
@@ -162,16 +183,55 @@ router.get("/add-prefix", function (req, res, next) {
 router.get("/emr", function (req, res, next) {
   res.render("HIS/emr");
 });
-router.get("/doctors", function (req, res, next) {
-  res.render("HIS/doctor-list");
+
+router.get("/clinic", function (req, res, next) {
+  res.render("HIS/ClinicMaster");
 });
+router.post('/clinics/create',  saveClinic);
+router.get('/clinics/list', getClinics);
+router.get('/getClinicById/:id', getClinicById);
+router.post('/clinics/update/:id', updateClinic);
+
+router.get("/source", function (req, res, next) {
+  res.render("HIS/SourceMaster");
+});
+router.post('/sources/create',  saveSource);
+router.get('/sources/list', getSources);
+router.get('/getSourcesById/:id', getSourceById);
+router.post('/sources/update/:id', updateSource);
+
+router.get("/doctors", function (req, res, next) {
+  res.render("HIS/DoctorMaster");
+});
+router.post('/doctors/create',  saveDoctor);
+router.get('/doctors/list', getDoctors);
+router.get('/getDoctorById/:id', getDoctorById);
+router.post('/doctors/update/:id', updateDoctor);
+
+router.get("/counselors", function (req, res, next) {
+  res.render("HIS/CounselorMaster");
+});
+router.post('/counselors/create',  saveCounselor);
+router.get('/counselors/list', getCounselors);
+router.get('/getCounselorsById/:id', getCounselorById);
+router.post('/counselors/update/:id', updateAgent);
+
+router.get("/treatments", function (req, res, next) {
+  res.render("HIS/TreatmentMaster");
+});
+router.post('/treatments/create',  saveTreatment);
+router.get('/treatments/list', getTreatments);
+router.get('/getTreatmentsById/:id', getTreatmentById);
+router.post('/treatments/update/:id', updateTreatment);
+
 
 // Put all render routes above this
+router.get('/getMasterAdmin',getMasterAdmin);
 router.post("/login", login);
 router.post("/logout", logout);
 router.post("/logoutFromEverywhere", logoutFromEverywhere);
-router.post("/patient-reg", upload.single("patientImage"), savePatientData);
-router.post("/doctor-reg", upload.single("doctorImage"), saveDoctorData);
+router.post("/patient/save ", upload.single("patientImage"), savePatientData);
+// router.post("/doctor-reg", upload.single("doctorImage"), saveDoctorData);
 router.post("/emp-reg", upload.single("empImage"), saveEmployeeData);
 router.post(
   "/hospital-reg",

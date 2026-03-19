@@ -11,6 +11,7 @@ var { router: his, upload } = require("./routes/HisRoutes");
 const { router: inventory } = require("./routes/InventoryRoutes");
 const { router: billing } = require("./routes/BillingRoutes");
 const { router: embryology } = require("./routes/embryology.routes");
+const { router: CRM } = require("./routes/CrmRoutes");
 const {
   verifyToken,
   savePatientData,
@@ -50,6 +51,7 @@ app.use("/", his);
 app.use("/inventory", inventory);
 app.use("/billing", billing);
 app.use("/embryology", embryology);
+app.use("/crm", CRM);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

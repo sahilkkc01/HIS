@@ -50,7 +50,11 @@ const {
   Molecule,
   ItemBrandName,
   Store,
-  EMR
+  EMR,
+  Source,
+  Counselor,
+  Treatment,
+   SpouseDetails, SponsorInfo, BankDetails,
 } = require("../models/HisSchema");
 
 exports.verifyToken = async (req, res, next) => {
@@ -207,177 +211,270 @@ exports.logoutFromEverywhere = async (req, res) => {
   } catch (error) {}
 };
 
-exports.savePatientData = async (req, res) => {
-  console.log(req.body);
-  console.log(req.file);
-  let { id } = req.query;
-  if (id) {
-    id = decryptData(id);
+exports.getMasterAdmin = async (req, res) => {
+  const userId   = req.user?.id;
+  const clinicId = req.user?.clinic_id;
+
+  if (!userId || !clinicId) {
+    return res.status(401).json({ message: 'Unauthorized' });
   }
-
-  const clinicId = req.user?.clinic_id || id;
-
-  if (!clinicId) {
-    return res.status(401).json({ message: "Unauthorized: Please log in" });
-  }
-
-  const transaction = await sequelize.transaction(); // Start a DB transaction
 
   try {
-    const {
-      patientId, // For updating an existing patient
-      name,
-      mobile,
-      email,
-      gender,
-      bloodGroup,
-      age,
-      address,
-      otdetails,
-      weight,
-      height,
-      bmi,
-      fever,
-      bp,
-      sugar,
-      Clinic,
-      doctor, // doctor_id for appointment
-      date, // appointment date
-      time, // appointment time slot
-    } = req.body;
+    const admin = await User.findOne({
+      where: {
+        clinic_id: clinicId,
+        master: 1
+      }
+    });
 
-    if (!name || !mobile || !gender || !age || !bloodGroup) {
-      return res
-        .status(400)
-        .json({ message: "Name, mobile, gender, and age are required." });
+    if (!admin) {
+      return res.status(404).json({ message: 'Master admin not found' });
     }
 
-    const patientImage = req.file?.path ? path.basename(req.file.path) : null;
+    res.json({ name: admin.name });
+  } catch (error) {
+    console.error('Error fetching master admin:', error);
+    res.status(500).json({ message: 'Failed to fetch master admin' });
+  }
+};
+
+
+
+
+exports.savePatientData = async (req, res) => {
+  console.log("BODY :", req.body);
+  console.log("FILES:", req.files);   // multer fields (patientImage, spouseImage)
+
+  // ── Resolve clinic_id ───────────────────────────────────────
+  let { id } = req.query;
+  if (id) id = decryptData(id);
+  const clinicId = req.user?.clinic_id || id;
+  if (!clinicId) return res.status(401).json({ message: "Unauthorized: Please log in" });
+
+  const transaction = await sequelize.transaction();
+
+  try {
+    // ════════════════════════════════════════════════════════
+    //  Destructure body
+    // ════════════════════════════════════════════════════════
+    const {
+      // ── update flag ─────────────────────────────────────
+      patientId,
+
+      // ── Patient – name ──────────────────────────────────
+      prefix, firstName, middleName, lastName, familyName, fatherName,
+
+      // ── Patient – demographics ──────────────────────────
+      gender, bloodGroup, dob, age,
+      education, maritalStatus, anniversary, religion,
+
+      // ── Patient – contact ───────────────────────────────
+      mobile: phone1, phone2, email,
+
+      // ── Patient – professional ──────────────────────────
+      occupation, companyName,
+
+      // ── Patient – misc ──────────────────────────────────
+      idProof, specialReg, address, state, city, country,
+
+      // status[] checkboxes arrive as array or CSV string
+      "status[]": statusRaw,
+
+      // ── Spouse ──────────────────────────────────────────
+      spousePrefix, spouseFirstName, spouseMiddleName, spouseLastName,
+      spouseFamilyName, spouseMotherName,
+      spouseDob, spouseAge, spouseEducation, spouseBloodGroup,
+      spouseOccupation, spouseCompanyName, spouseIncome,
+      spouseExperience, spouseSkill, spouseVehicle,
+      "languages[]": languagesRaw,
+
+      // ── Sponsor ─────────────────────────────────────────
+      referenceNo, patientCategory, associatedCompany,
+      memberRelation, patientSource, sponsorCompany, tariff, remark,
+
+      // ── Bank ────────────────────────────────────────────
+      bankName, branch, ifscCode, accountNo, accountHolder, accountType,
+
+      // ── Appointment / vitals ────────────────────────────
+      weight, height, bmi, fever, bp, sugar,
+      place, doctor, drtime: time, date,
+      Clinic,
+    } = req.body;
+
+    // ── Validation ──────────────────────────────────────────
+    if (!firstName || !phone1 || !gender || !age || !bloodGroup) {
+      await transaction.rollback();
+      return res.status(400).json({
+        message: "firstName, mobile (phone1), gender, age and bloodGroup are required.",
+      });
+    }
+
+    // ── Helper: normalise status flags ──────────────────────
+    const statusArr = Array.isArray(statusRaw)
+      ? statusRaw
+      : typeof statusRaw === "string"
+      ? statusRaw.split(",")
+      : [];
+
+    const isInternational = statusArr.includes("international");
+    const isVIP           = statusArr.includes("vip");
+    const isEmployee      = statusArr.includes("employee");
+    const isInsured       = statusArr.includes("insured");
+
+    // ── Helper: languages ───────────────────────────────────
+    const languages = Array.isArray(languagesRaw)
+      ? languagesRaw
+      : typeof languagesRaw === "string"
+      ? languagesRaw.split(",")
+      : [];
+
+    // ── Image paths ─────────────────────────────────────────
+    const patientImage = req.files?.patientImage?.[0]?.path
+      ? path.basename(req.files.patientImage[0].path)
+      : null;
+
+    const spouseImage = req.files?.spouseImage?.[0]?.path
+      ? path.basename(req.files.spouseImage[0].path)
+      : null;
+
+    // ── Check whether spouse / sponsor / bank sections ──────
+    //    were submitted (frontend sends a hidden flag field)
+    const hasSpouse  = req.body.hasSpouse  === "1";
+    const hasBankSponsor = req.body.hasBankSponsor === "1";
+    const hasAppointment = req.body.hasAppointment === "1";
+
+    // ════════════════════════════════════════════════════════
+    //  CREATE or UPDATE patient
+    // ════════════════════════════════════════════════════════
     let patient;
     let isNewPatient = false;
 
     if (patientId) {
-      // Update existing patient
+      // ── UPDATE ────────────────────────────────────────────
       const decryptedId = decryptData(patientId);
-      patient = await Patient.findOne({
-        where: { id: decryptedId, clinic_id: clinicId },
-      });
-
+      patient = await Patient.findOne({ where: { id: decryptedId, clinic_id: clinicId } });
       if (!patient) {
+        await transaction.rollback();
         return res.status(404).json({ message: "Patient not found" });
       }
 
       await patient.update(
         {
-          name,
-          patientImage: patientImage || patient.patientImage, // Keep existing image if not provided
-          mobile,
-          email,
-          gender,
-          bloodGroup,
-          age,
+          prefix, firstName, middleName, lastName, familyName, fatherName,
+          gender, bloodGroup, dob: dob || null, age,
+          education, maritalStatus, anniversary: anniversary || null, religion,
+          mobile: phone1, phone2, email,
+          occupation, companyName,
+          idProof, specialReg: specialReg === "Yes",
+          address, state, city, country: country || "India",
+          isInternational, isVIP, isEmployee, isInsured,
+          ...(patientImage ? { patientImage } : {}),
         },
         { transaction }
       );
 
-      // Update or create patient details
-      let patientDetails = await PatientDetails.findOne({
-        where: { patient_id: decryptedId },
-      });
-
-      if (patientDetails) {
-        await patientDetails.update(
-          { address: address || null, otdetails: otdetails || null },
-          { transaction }
-        );
-      } else {
-        await PatientDetails.create(
-          {
-            patient_id: patientId,
-            address: address || null,
-            otdetails: otdetails || null,
-          },
-          { transaction }
-        );
-      }
     } else {
-      // Create new patient record
-      const existingPatient = await Patient.findOne({
-        where: { mobile, clinic_id: clinicId },
-      });
-
-      if (existingPatient) {
-        return res.status(409).json({
-          message: "A patient with this mobile number already exists.",
-        });
+      // ── CREATE ────────────────────────────────────────────
+      const existing = await Patient.findOne({ where: { mobile: phone1, clinic_id: clinicId } });
+      if (existing) {
+        await transaction.rollback();
+        return res.status(409).json({ message: "A patient with this mobile number already exists." });
       }
 
       isNewPatient = true;
       patient = await Patient.create(
         {
           clinic_id: clinicId,
-          name,
+          prefix, firstName, middleName, lastName, familyName, fatherName,
+          gender, bloodGroup, dob: dob || null, age,
+          education, maritalStatus, anniversary: anniversary || null, religion,
+          mobile: phone1, phone2, email,
+          occupation, companyName,
+          idProof, specialReg: specialReg === "Yes",
+          address, state, city, country: country || "India",
+          isInternational, isVIP, isEmployee, isInsured,
           patientImage,
-          mobile,
-          email,
-          gender,
-          bloodGroup,
-          age,
         },
         { transaction }
       );
 
-      // Generate UHID: UHID{clinicId}{YYYYMMDD}{patient_id}
-      const todayDate = moment().format("YYYYMMDD");
-      const uhid = `UHID${clinicId}${todayDate}${patient.id}`;
-
+      // Generate UHID
+      const uhid = `UHID${clinicId}${moment().format("YYYYMMDD")}${patient.id}`;
       await patient.update({ uhid }, { transaction });
+    }
 
-      // Create patient details if provided
-      if (address || otdetails) {
-        await PatientDetails.create(
-          {
-            patient_id: patient.id,
-            address: address || null,
-            otdetails: otdetails || null,
-          },
-          { transaction }
-        );
+    // ════════════════════════════════════════════════════════
+    //  SPOUSE
+    // ════════════════════════════════════════════════════════
+    if (hasSpouse && spouseFirstName) {
+      const spouseData = {
+        prefix: spousePrefix, firstName: spouseFirstName,
+        middleName: spouseMiddleName, lastName: spouseLastName,
+        familyName: spouseFamilyName, motherName: spouseMotherName,
+        dob: spouseDob || null, age: spouseAge || null,
+        education: spouseEducation, bloodGroup: spouseBloodGroup,
+        occupation: spouseOccupation, companyName: spouseCompanyName,
+        monthlyIncome: spouseIncome, workExperience: spouseExperience,
+        skill: spouseSkill, vehicleType: spouseVehicle,
+        languages,
+        ...(spouseImage ? { spouseImage } : {}),
+      };
+
+      const existingSpouse = await SpouseDetails.findOne({ where: { patient_id: patient.id } });
+      if (existingSpouse) {
+        await existingSpouse.update(spouseData, { transaction });
+      } else {
+        await SpouseDetails.create({ patient_id: patient.id, ...spouseData }, { transaction });
       }
     }
 
+    // ════════════════════════════════════════════════════════
+    //  SPONSOR
+    // ════════════════════════════════════════════════════════
+    if (hasBankSponsor && (referenceNo || patientCategory)) {
+      const sponsorData = {
+        referenceNo, patientCategory, associatedCompany,
+        memberRelation, patientSource, sponsorCompany, tariff, remark,
+      };
+
+      const existingSponsor = await SponsorInfo.findOne({ where: { patient_id: patient.id } });
+      if (existingSponsor) {
+        await existingSponsor.update(sponsorData, { transaction });
+      } else {
+        await SponsorInfo.create({ patient_id: patient.id, ...sponsorData }, { transaction });
+      }
+    }
+
+    // ════════════════════════════════════════════════════════
+    //  BANK DETAILS
+    // ════════════════════════════════════════════════════════
+    if (hasBankSponsor && (bankName || accountNo)) {
+      const bankData = { bankName, branch, ifscCode, accountNo, accountHolder, accountType };
+
+      const existingBank = await BankDetails.findOne({ where: { patient_id: patient.id } });
+      if (existingBank) {
+        await existingBank.update(bankData, { transaction });
+      } else {
+        await BankDetails.create({ patient_id: patient.id, ...bankData }, { transaction });
+      }
+    }
+
+    // ════════════════════════════════════════════════════════
+    //  APPOINTMENT  (new patients only, when section checked)
+    // ════════════════════════════════════════════════════════
     let appointment = null;
 
-    // Only create an appointment for new patients
-    if (isNewPatient && doctor && date && time) {
-      // Validate if doctor exists
-      const doctorExists = await Doctor.findOne({
-        where: { id: doctor, clinic_id: clinicId },
-      });
-      if (!doctorExists) {
-        throw new Error("Invalid doctor ID");
-      }
+    if (isNewPatient && hasAppointment && doctor && time) {
+      const doctorExists = await Doctor.findOne({ where: { id: doctor, clinic_id: clinicId } });
+      if (!doctorExists) throw new Error("Invalid doctor ID");
 
       const appointmentDate = moment(date, "YYYY-MM-DD", true);
-      if (!appointmentDate.isValid()) {
-        throw new Error("Invalid date format. Use YYYY-MM-DD");
-      }
+      if (!appointmentDate.isValid()) throw new Error("Invalid date format. Use YYYY-MM-DD");
 
-      // Check if the same patient already has an appointment with the same doctor at the same time
-      const existingAppointment = await Appointment.findOne({
-        where: {
-          patient_id: patient.id,
-          doctor_id: doctor,
-          date: appointmentDate,
-          time,
-        },
+      const dup = await Appointment.findOne({
+        where: { patient_id: patient.id, doctor_id: doctor, date: appointmentDate.toDate(), time },
       });
-
-      if (existingAppointment) {
-        throw new Error(
-          "An appointment already exists for this patient with the same doctor at this time."
-        );
-      }
+      if (dup) throw new Error("Appointment already exists for this patient, doctor, and time slot.");
 
       appointment = await Appointment.create(
         {
@@ -388,36 +485,35 @@ exports.savePatientData = async (req, res) => {
           clinic: Clinic,
           date: appointmentDate.toDate(),
           time,
-          weight: weight ? parseFloat(weight) : null,
-          height: height ? parseFloat(height) : null,
-          bmi: bmi ? parseFloat(bmi) : null,
-          fever: fever || null,
-          BP: bp || null,
-          Suger: sugar || null,
+          place,
+          weight:  weight  ? parseFloat(weight)  : null,
+          height:  height  ? parseFloat(height)  : null,
+          bmi:     bmi     ? parseFloat(bmi)     : null,
+          fever:   fever   || null,
+          BP:      bp      || null,
+          Suger:   sugar   || null,
         },
         { transaction }
       );
     }
 
-    // Commit transaction
+    // ── Commit ───────────────────────────────────────────────
     await transaction.commit();
 
     return res.status(201).json({
       message: isNewPatient
         ? appointment
-          ? "Patient and appointment data saved successfully"
-          : "Patient data saved successfully"
-        : "Patient data updated successfully",
+          ? "Patient registered and appointment booked successfully"
+          : "Patient registered successfully"
+        : "Patient updated successfully",
       patient,
-      ...(appointment ? { appointment } : {}), // Include appointment only if created
+      ...(appointment ? { appointment } : {}),
     });
-  } catch (error) {
-    console.error("Error saving patient data:", error);
 
-    await transaction.rollback(); // Rollback transaction on failure
-    return res
-      .status(500)
-      .json({ message: error.message || "Failed to save patient data" });
+  } catch (error) {
+    console.error("savePatientData error:", error);
+    await transaction.rollback();
+    return res.status(500).json({ message: error.message || "Failed to save patient data" });
   }
 };
 
@@ -601,6 +697,7 @@ exports.saveClinicData = async (req, res) => {
 };
 
 exports.addSpecialization = async (req, res) => {
+  console.log(req.user);
   const { spec } = req.body;
   const clinicId = req.user.clinic_id; // Get clinic_id from session
 
@@ -1463,79 +1560,6 @@ exports.getAllDoctors = async (req, res) => {
   }
 };
 
-exports.getDoctorById = async (req, res) => {
-  try {
-    const { id: encryptedId } = req.query;
-    if (!encryptedId) {
-      return res.status(400).json({ success: false, message: "Missing id" });
-    }
-
-    // 1. decrypt the incoming ID
-    let decrypted;
-    try {
-      decrypted = decryptData(encryptedId);
-    } catch (err) {
-      return res.status(400).json({ success: false, message: "Invalid id" });
-    }
-
-    // 2. fetch the doctor
-    const doctor = await Doctor.findOne({
-      where: {
-        id: decrypted,
-        clinic_id: req.user.clinic_id
-      },
-      attributes: [
-        "id",
-        "name",
-        "doctorImage",
-        "phoneNumber",
-        "email",
-        "gender",
-        "practicingSince",
-        "qualification",
-        "specialization",
-        "regNo",
-        "consultationFees",
-        "ipd",
-        "opd",
-        "otherDetails",
-        "appointmentCalendar",
-        "timeslot"
-      ]
-    });
-
-    if (!doctor) {
-      return res.status(404).json({ success: false, message: "Doctor not found" });
-    }
-
-    // 3. send back JSON
-    return res.json({
-      success: true,
-      doctor: {
-        id:           doctor.id,         // keep encrypted for round‑trip
-        name:         doctor.name,
-        doctorImage:  doctor.doctorImage,
-        phoneNumber:  doctor.phoneNumber,
-        email:        doctor.email,
-        gender:       doctor.gender,
-        practicingSince: doctor.practicingSince,
-        qualification:   doctor.qualification,
-        specialization:  doctor.specialization,
-        regNo:           doctor.regNo,
-        consultationFees:doctor.consultationFees,
-        ipd:             doctor.ipd,
-        opd:             doctor.opd,
-        otherDetails:    doctor.otherDetails,
-        appointmentCalendar: doctor.appointmentCalendar,
-        timeslot:        doctor.timeslot
-      }
-    });
-  } catch (error) {
-    console.error("Error in getDoctorById:", error);
-    return res.status(500).json({ success: false, message: "Internal server error" });
-  }
-};
-
 
 exports.searchMedicine = async (req, res) => {
   const clinicId = req.user?.clinic_id;
@@ -1638,5 +1662,758 @@ exports.saveEmr = async (req, res) => {
   } catch (error) {
     console.error("Error saving EMR:", error);
     return res.status(500).json({ message: "Failed to save EMR" });
+  }
+};
+
+
+
+exports.saveClinic = async (req, res) => {
+  console.log('saveClinic body:', req.body);
+
+  const userId   = req.user?.id;
+  const username = req.user?.username;
+  const clinicId = req.user?.clinic_id;
+
+  if (!userId || !clinicId) {
+    return res.status(401).json({ message: 'Unauthorized: Please log in' });
+  }
+
+  try {
+    let { name, contact, address } = req.body;
+
+    // Validate required fields
+    const missingFields = [];
+    if (!name || !name.trim()) missingFields.push('name');
+    if (!contact || !/^\d{10}$/.test(contact)) missingFields.push('contact');
+    if (!address || !address.trim()) missingFields.push('address');
+
+    if (missingFields.length) {
+      return res.status(400).json({
+        message: 'Missing or invalid fields: ' + missingFields.join(', ')
+      });
+    }
+
+    let clinic;
+    if (req.body.id) {
+      // Update existing clinic
+      clinic = await Clinic.update(
+        {
+          name: name.trim(),
+          contact: contact.trim(),
+          address: address.trim()
+        },
+        {
+          where: { id: req.body.id, clinic_id: clinicId }, // include clinic_id for security
+          returning: true
+        }
+      );
+      clinic = clinic[1][0]; // Sequelize returns [affectedCount, [rows]]
+    } else {
+      // Create new clinic
+      clinic = await Clinic.create({
+        clinic_id: clinicId,
+        name: name.trim(),
+        contact: contact.trim(),
+        address: address.trim(),
+        created_by: username || String(userId)
+      });
+    }
+
+    return res.status(201).json({
+      message: 'Clinic saved successfully',
+      clinic
+    });
+
+  } catch (error) {
+    console.error('Error saving clinic:', error);
+    return res.status(500).json({ message: 'Failed to save clinic' });
+  }
+};
+
+
+// Get all clinics
+exports.getClinics = async (req, res) => {
+  const userId = req.user?.id;
+
+  if (!userId) {
+    return res.status(401).json({ message: 'Unauthorized: Please log in' });
+  }
+
+  try {
+    const clinics = await Clinic.findAll({
+      order: [['name', 'ASC']]
+    });
+
+    return res.json({ clinics });
+  } catch (error) {
+    console.error('Error fetching clinics:', error);
+    return res.status(500).json({ message: 'Failed to fetch clinics' });
+  }
+};
+
+// Get clinic by ID
+exports.getClinicById = async (req, res) => {
+  const userId = req.user?.id;
+  const { id } = req.params;
+
+  if (!userId) {
+    return res.status(401).json({ message: 'Unauthorized: Please log in' });
+  }
+
+  try {
+    const clinic = await Clinic.findOne({ where: { id } });
+
+    if (!clinic) {
+      return res.status(404).json({ message: 'Clinic not found' });
+    }
+
+    return res.json({
+      id: clinic.id,
+      name: clinic.name,
+      contact: clinic.contact,
+      address: clinic.address
+    });
+  } catch (error) {
+    console.error('Error fetching clinic by ID:', error);
+    return res.status(500).json({ message: 'Failed to fetch clinic details' });
+  }
+};
+
+// Update clinic
+exports.updateClinic = async (req, res) => {
+  const userId = req.user?.id;
+  const { id } = req.params;
+  const { name, contact, address } = req.body;
+
+  if (!userId) {
+    return res.status(401).json({ message: 'Unauthorized: Please log in' });
+  }
+
+  try {
+    const clinic = await Clinic.findOne({ where: { id } });
+
+    if (!clinic) {
+      return res.status(404).json({ message: 'Clinic not found' });
+    }
+
+    const updatedData = {
+      name: name ?? clinic.name,
+      contact: contact ?? clinic.contact,
+      address: address ?? clinic.address
+    };
+
+    await clinic.update(updatedData);
+
+    return res.json({
+      message: 'Clinic updated successfully',
+      clinic: {
+        id: clinic.id,
+        name: clinic.name,
+        contact: clinic.contact,
+        address: clinic.address
+      },
+    });
+  } catch (error) {
+    console.error('Error updating clinic:', error);
+    return res.status(500).json({ message: 'Failed to update clinic' });
+  }
+};
+
+
+exports.saveSource = async (req, res) => {
+  console.log('saveSource body:', req.body);
+
+  const userId   = req.user?.id;
+  const username = req.user?.username;
+  const clinicId = req.user?.clinic_id;
+
+  if (!userId || !clinicId) {
+    return res.status(401).json({ message: 'Unauthorized: Please log in' });
+  }
+
+  try {
+    let { id, name } = req.body;
+
+    const missingFields = [];
+    if (!name || !name.trim()) missingFields.push('name');
+
+    if (missingFields.length) {
+      return res.status(400).json({
+        message: 'Missing or invalid fields: ' + missingFields.join(', ')
+      });
+    }
+
+    let source;
+    if (id) {
+      // Update existing source (secure by clinic_id)
+      source = await Source.update(
+        { name: name.trim() },
+        {
+          where: { id, clinic_id: clinicId },
+          returning: true
+        }
+      );
+      source = source[1][0];
+    } else {
+      // Create new source
+      source = await Source.create({
+        clinic_id: clinicId,
+        name: name.trim(),
+        created_by: username || String(userId)
+      });
+    }
+
+    return res.status(201).json({
+      message: 'Source saved successfully',
+      source
+    });
+
+  } catch (error) {
+    console.error('Error saving source:', error);
+    return res.status(500).json({ message: 'Failed to save source' });
+  }
+};
+
+// Get all sources for the clinic
+exports.getSources = async (req, res) => {
+  const userId = req.user?.id;
+  const clinicId = req.user?.clinic_id;
+
+  if (!userId || !clinicId) {
+    return res.status(401).json({ message: 'Unauthorized: Please log in' });
+  }
+
+  try {
+    const sources = await Source.findAll({
+      where: { clinic_id: clinicId },
+      order: [['name', 'ASC']]
+    });
+
+    return res.json({ sources });
+  } catch (error) {
+    console.error('Error fetching sources:', error);
+    return res.status(500).json({ message: 'Failed to fetch sources' });
+  }
+};
+
+// Get source by ID (within clinic)
+exports.getSourceById = async (req, res) => {
+  const userId = req.user?.id;
+  const clinicId = req.user?.clinic_id;
+  const { id } = req.params;
+
+  if (!userId || !clinicId) {
+    return res.status(401).json({ message: 'Unauthorized: Please log in' });
+  }
+
+  try {
+    const source = await Source.findOne({ where: { id, clinic_id: clinicId } });
+
+    if (!source) {
+      return res.status(404).json({ message: 'Source not found' });
+    }
+
+    return res.json({
+      id: source.id,
+      name: source.name
+    });
+  } catch (error) {
+    console.error('Error fetching source by ID:', error);
+    return res.status(500).json({ message: 'Failed to fetch source details' });
+  }
+};
+
+// Update source (within clinic)
+exports.updateSource = async (req, res) => {
+  const userId = req.user?.id;
+  const clinicId = req.user?.clinic_id;
+  const { id } = req.params;
+  const { name } = req.body;
+
+  if (!userId || !clinicId) {
+    return res.status(401).json({ message: 'Unauthorized: Please log in' });
+  }
+
+  try {
+    const source = await Source.findOne({ where: { id, clinic_id: clinicId } });
+
+    if (!source) {
+      return res.status(404).json({ message: 'Source not found' });
+    }
+
+    const updatedData = {
+      name: name ?? source.name
+    };
+
+    await source.update(updatedData);
+
+    return res.json({
+      message: 'Source updated successfully',
+      source: {
+        id: source.id,
+        name: source.name
+      },
+    });
+  } catch (error) {
+    console.error('Error updating source:', error);
+    return res.status(500).json({ message: 'Failed to update source' });
+  }
+};
+
+exports.saveDoctor = async (req, res) => {
+  console.log('saveDoctor body:', req.body);
+
+  const userId   = req.user?.id;
+  const username = req.user?.username;
+  const clinicId = req.user?.clinic_id;
+
+  if (!userId || !clinicId) {
+    return res.status(401).json({ message: 'Unauthorized: Please log in' });
+  }
+
+  try {
+    let { name, contact, availability } = req.body;
+
+    const missingFields = [];
+    if (!name || !name.trim()) missingFields.push('name');
+    if (!contact || !/^\d{10}$/.test(contact)) missingFields.push('contact');
+
+    // Validate availability: must have start/end for each day
+    const days = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+    if (!availability || typeof availability !== 'object') {
+      missingFields.push('availability');
+    } else {
+      days.forEach(day => {
+        if (!availability[day] || !availability[day].start || !availability[day].end) {
+          // only warn if both are missing? For optional days, you can skip
+          if(day !== 'Saturday' && day !== 'Sunday'){ // optional weekend
+            missingFields.push(`availability.${day}`);
+          }
+        }
+      });
+    }
+
+    if (missingFields.length) {
+      return res.status(400).json({
+        message: 'Missing or invalid fields: ' + missingFields.join(', ')
+      });
+    }
+
+    // Save or update
+    let doctor;
+    if (req.body.id) {
+      doctor = await Doctor.update({
+        name: name.trim(),
+        contact: contact.trim(),
+        availability
+      }, {
+        where: { id: req.body.id, clinic_id: clinicId },
+        returning: true
+      });
+      doctor = doctor[1][0]; // sequelize update returns [affectedCount, [rows]]
+    } else {
+      doctor = await Doctor.create({
+        clinic_id: clinicId,
+        name: name.trim(),
+        contact: contact.trim(),
+        availability,
+        created_by: username || String(userId)
+      });
+    }
+
+    return res.status(201).json({
+      message: 'Doctor saved successfully',
+      doctor
+    });
+
+  } catch (error) {
+    console.error('Error saving doctor:', error);
+    return res.status(500).json({ message: 'Failed to save doctor' });
+  }
+};
+
+exports.getDoctors = async (req, res) => {
+  const userId = req.user?.id;
+  const clinicId = req.user?.clinic_id;
+
+  if (!userId || !clinicId) {
+    return res.status(401).json({ message: 'Unauthorized: Please log in' });
+  }
+
+  try {
+    // Fetch all doctors for this clinic
+    const doctors = await Doctor.findAll({
+      where: { clinic_id: clinicId },
+      order: [['name', 'ASC']],
+    });
+
+    // Map doctors and parse availability if stored as JSON string
+    const doctorsWithAvailability = doctors.map(d => {
+      let availability = d.availability || {};
+      try {
+        if (typeof availability === 'string') {
+          availability = JSON.parse(availability);
+        }
+      } catch (e) {
+        availability = {};
+      }
+
+      return {
+        id: d.id,
+        name: d.name,
+        contact: d.contact,
+        availability
+      };
+    });
+
+    return res.json({ doctors: doctorsWithAvailability });
+  } catch (error) {
+    console.error('Error fetching doctors:', error);
+    return res.status(500).json({ message: 'Failed to fetch doctors' });
+  }
+};
+
+exports.getDoctorById = async (req, res) => {
+  const userId = req.user?.id;
+  const clinicId = req.user?.clinic_id;
+  const { id } = req.params;
+
+  if (!userId || !clinicId) {
+    return res.status(401).json({ message: 'Unauthorized: Please log in' });
+  }
+
+  try {
+    // Find doctor by ID and clinic_id
+    const doctor = await Doctor.findOne({
+      where: { id, clinic_id: clinicId }
+    });
+
+    if (!doctor) {
+      return res.status(404).json({ message: 'Doctor not found' });
+    }
+
+    // Parse availability if stored as JSON string
+    let availability = doctor.availability || {};
+    try {
+      if (typeof availability === 'string') {
+        availability = JSON.parse(availability);
+      }
+    } catch (e) {
+      availability = {};
+    }
+
+    return res.json({
+      id: doctor.id,
+      name: doctor.name,
+      contact: doctor.contact,
+      specialization: doctor.specialization,
+      availability
+    });
+  } catch (error) {
+    console.error('Error fetching doctor by ID:', error);
+    return res.status(500).json({ message: 'Failed to fetch doctor details' });
+  }
+};
+exports.updateDoctor = async (req, res) => {
+  const userId = req.user?.id;
+  const clinicId = req.user?.clinic_id;
+  console.log(req.params, req.body)
+  const { id } = req.params;
+  const { name, contact, specialization, availability } = req.body;
+
+  if (!userId || !clinicId) {
+    return res.status(401).json({ message: 'Unauthorized: Please log in' });
+  }
+
+  try {
+    // Find doctor by ID and clinic_id
+    const doctor = await Doctor.findOne({
+      where: { id, clinic_id: clinicId }
+    });
+
+    if (!doctor) {
+      return res.status(404).json({ message: 'Doctor not found' });
+    }
+
+    // Prepare updated fields
+    const updatedData = {
+      name: name ?? doctor.name,
+      contact: contact ?? doctor.contact,
+      specialization: specialization ?? doctor.specialization,
+      availability: availability
+        ? typeof availability === 'object'
+          ? JSON.stringify(availability)
+          : availability
+        : doctor.availability,
+    };
+
+    // Update doctor
+    await doctor.update(updatedData);
+
+    // Parse availability before sending response
+    let parsedAvailability = updatedData.availability;
+    try {
+      if (typeof parsedAvailability === 'string') {
+        parsedAvailability = JSON.parse(parsedAvailability);
+      }
+    } catch (e) {
+      parsedAvailability = {};
+    }
+
+    return res.json({
+      message: 'Doctor updated successfully',
+      doctor: {
+        id: doctor.id,
+        name: doctor.name,
+        contact: doctor.contact,
+        specialization: doctor.specialization,
+        availability: parsedAvailability,
+      },
+    });
+  } catch (error) {
+    console.error('Error updating doctor:', error);
+    return res.status(500).json({ message: 'Failed to update doctor' });
+  }
+};
+
+exports.saveTreatment = async (req, res) => {
+  console.log('saveTreatment body:', req.body);
+
+  const userId   = req.user?.id;
+  const username = req.user?.username;
+  const clinicId = req.user?.clinic_id;
+
+  if (!userId || !clinicId) {
+    return res.status(401).json({ message: 'Unauthorized: Please log in' });
+  }
+
+  try {
+    let { name } = req.body;
+
+    // Validate required fields
+    const missingFields = [];
+    if (!name || !name.trim()) missingFields.push('name');
+
+    if (missingFields.length) {
+      return res.status(400).json({
+        message: 'Missing or invalid fields: ' + missingFields.join(', ')
+      });
+    }
+
+    let treatment;
+    if (req.body.id) {
+      // Update existing treatment (secure by clinic_id)
+      treatment = await Treatment.update(
+        { name: name.trim() },
+        {
+          where: { id: req.body.id, clinic_id: clinicId },
+          returning: true
+        }
+      );
+      treatment = treatment[1][0];
+    } else {
+      // Create new treatment
+      treatment = await Treatment.create({
+        clinic_id: clinicId,
+        name: name.trim(),
+        created_by: username || String(userId)
+      });
+    }
+
+    return res.status(201).json({
+      message: 'Treatment saved successfully',
+      treatment
+    });
+
+  } catch (error) {
+    console.error('Error saving treatment:', error);
+    return res.status(500).json({ message: 'Failed to save treatment' });
+  }
+};
+
+// Get all treatments for the clinic
+exports.getTreatments = async (req, res) => {
+  const userId = req.user?.id;
+  const clinicId = req.user?.clinic_id;
+
+  if (!userId || !clinicId) {
+    return res.status(401).json({ message: 'Unauthorized: Please log in' });
+  }
+
+  try {
+    const treatments = await Treatment.findAll({
+      where: { clinic_id: clinicId },
+      order: [['name', 'ASC']]
+    });
+
+    return res.json({ treatments });
+  } catch (error) {
+    console.error('Error fetching treatments:', error);
+    return res.status(500).json({ message: 'Failed to fetch treatments' });
+  }
+};
+
+// Get treatment by ID (within clinic)
+exports.getTreatmentById = async (req, res) => {
+  const userId = req.user?.id;
+  const clinicId = req.user?.clinic_id;
+  const { id } = req.params;
+
+  if (!userId || !clinicId) {
+    return res.status(401).json({ message: 'Unauthorized: Please log in' });
+  }
+
+  try {
+    const treatment = await Treatment.findOne({ where: { id, clinic_id: clinicId } });
+
+    if (!treatment) {
+      return res.status(404).json({ message: 'Treatment not found' });
+    }
+
+    return res.json({
+      id: treatment.id,
+      name: treatment.name
+    });
+  } catch (error) {
+    console.error('Error fetching treatment by ID:', error);
+    return res.status(500).json({ message: 'Failed to fetch treatment details' });
+  }
+};
+
+// Update treatment (within clinic)
+exports.updateTreatment = async (req, res) => {
+  const userId = req.user?.id;
+  const clinicId = req.user?.clinic_id;
+  const { id } = req.params;
+  const { name } = req.body;
+
+  if (!userId || !clinicId) {
+    return res.status(401).json({ message: 'Unauthorized: Please log in' });
+  }
+
+  try {
+    const treatment = await Treatment.findOne({ where: { id, clinic_id: clinicId } });
+
+    if (!treatment) {
+      return res.status(404).json({ message: 'Treatment not found' });
+    }
+
+    const updatedData = {
+      name: name ?? treatment.name
+    };
+
+    await treatment.update(updatedData);
+
+    return res.json({
+      message: 'Treatment updated successfully',
+      treatment: {
+        id: treatment.id,
+        name: treatment.name
+      },
+    });
+  } catch (error) {
+    console.error('Error updating treatment:', error);
+    return res.status(500).json({ message: 'Failed to update treatment' });
+  }
+};
+
+
+exports.saveCounselor = async (req, res) => {
+  const userId = req.user?.id;
+  const username = req.user?.username;
+  const clinicId = req.user?.clinic_id;
+
+  if (!userId || !clinicId) {
+    return res.status(401).json({ message: 'Unauthorized: Please log in' });
+  }
+
+  try {
+    const { id, name, contact } = req.body;
+
+    const missingFields = [];
+    if (!name || !name.trim()) missingFields.push('name');
+    if (!contact || !/^\d{10}$/.test(contact)) missingFields.push('contact');
+
+    if (missingFields.length) {
+      return res.status(400).json({ message: 'Missing or invalid fields: ' + missingFields.join(', ') });
+    }
+
+    let counselor;
+    if (id) {
+      // Update
+      counselor = await Counselor.update(
+        { name: name.trim(), contact: contact.trim() },
+        { where: { id, clinic_id: clinicId }, returning: true }
+      );
+      counselor = counselor[1][0];
+    } else {
+      // Create
+      counselor = await Counselor.create({
+        clinic_id: clinicId,
+        name: name.trim(),
+        contact: contact.trim(),
+        created_by: username || String(userId)
+      });
+    }
+
+    return res.status(201).json({ message: 'Counselor saved successfully', counselor });
+  } catch (err) {
+    console.error('Error saving counselor:', err);
+    return res.status(500).json({ message: 'Failed to save counselor' });
+  }
+};
+
+// Get all counselors
+exports.getCounselors = async (req, res) => {
+  const clinicId = req.user?.clinic_id;
+
+  if (!clinicId) return res.status(401).json({ message: 'Unauthorized: Please log in' });
+
+  try {
+    const counselors = await Counselor.findAll({ where: { clinic_id: clinicId }, order: [['name','ASC']] });
+    return res.json({ counselors });
+  } catch (err) {
+    console.error('Error fetching counselors:', err);
+    return res.status(500).json({ message: 'Failed to fetch counselors' });
+  }
+};
+
+// Get counselor by ID
+exports.getCounselorById = async (req, res) => {
+  const clinicId = req.user?.clinic_id;
+  const { id } = req.params;
+
+  if (!clinicId) return res.status(401).json({ message: 'Unauthorized: Please log in' });
+
+  try {
+    const counselor = await Counselor.findOne({ where: { id, clinic_id: clinicId } });
+    if (!counselor) return res.status(404).json({ message: 'Counselor not found' });
+
+    return res.json({ id: counselor.id, name: counselor.name, contact: counselor.contact });
+  } catch (err) {
+    console.error('Error fetching counselor by ID:', err);
+    return res.status(500).json({ message: 'Failed to fetch counselor details' });
+  }
+};
+
+// Update counselor
+exports.updateCounselor = async (req, res) => {
+  const clinicId = req.user?.clinic_id;
+  const { id } = req.params;
+  const { name, contact } = req.body;
+
+  if (!clinicId) return res.status(401).json({ message: 'Unauthorized: Please log in' });
+
+  try {
+    const counselor = await Counselor.findOne({ where: { id, clinic_id: clinicId } });
+    if (!counselor) return res.status(404).json({ message: 'Counselor not found' });
+
+    const updatedData = { name: name ?? counselor.name, contact: contact ?? counselor.contact };
+    await counselor.update(updatedData);
+
+    return res.json({ message: 'Counselor updated successfully', counselor: updatedData });
+  } catch (err) {
+    console.error('Error updating counselor:', err);
+    return res.status(500).json({ message: 'Failed to update counselor' });
   }
 };

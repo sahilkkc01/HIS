@@ -1,0 +1,556 @@
+<!doctype html>
+<html lang="en" class="light-style" dir="ltr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Leads Dashboard</title>
+  <%- include('../header') -%>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <style>
+    :root { --primary: #1a73e8; --primary-dark: #0d47a1; --gray:#6b7280; --border:#e5e7eb; --transition: all .15s ease; }
+    .toggle-buttons { display:flex; gap:0; margin-bottom:28px; background:#f1f5f9; padding:4px; border-radius:12px; border:1px solid var(--border); flex-wrap:wrap; }
+    .toggle-btn { flex:1; padding:12px 16px; border:none; border-radius:10px; font-weight:500; cursor:pointer; transition:var(--transition); font-size:14px; background:transparent; color:var(--gray); display:flex; align-items:center; justify-content:center; gap:8px; min-width:120px; }
+    .toggle-btn:hover { background: rgba(26,115,232,0.08); color:var(--primary); }
+    .toggle-btn.active { background:var(--primary); color:white; box-shadow:0 2px 6px rgba(26,115,232,0.25); }
+    .tab-section{ display:none; margin-top:20px }
+    .tab-section.active{ display:block }
+    .date-filters{ display:flex; gap:10px; margin-bottom:20px; flex-wrap:wrap; align-items:center; }
+    .date-filters button, .date-filters input{ padding:6px 12px; border-radius:6px; border:1px solid #ccc; cursor:pointer; }
+    .date-filters button.active{ background:var(--primary); color:#fff; border:none; }
+    .form-control{ padding:8px 10px; border:1px solid #d1d5db; border-radius:6px; width:100%; }
+    .card{ background:white; border-radius:8px; box-shadow:0 1px 3px rgba(0,0,0,0.06); }
+    @media(min-width:768px){ .mb-2{ margin-bottom:0.5rem; } }
+  </style>
+</head>
+<body>
+<div class="container-fluid py-4">
+  <div class="card p-3">
+
+    <div class="date-filters">
+      <button id="todayFilter" class="active" onclick="setDateFilter('today')">Today</button>
+      <button id="weekFilter" onclick="setDateFilter('week')">This Week</button>
+      <button id="monthFilter" onclick="setDateFilter('month')">This Month</button>
+      <input type="date" id="customStart" placeholder="Start Date">
+      <input type="date" id="customEnd" placeholder="End Date">
+      <button id="applyDateBtn" onclick="applyCustomDate()">Apply</button>
+        <div style="min-width:140px; margin-left:auto;">
+        <button class="btn btn-primary" onclick="window.location.href='/crm/crm'">+ Add Lead</button>
+      </div>
+    </div>
+
+    <div class="row mb-3" style="display:flex; gap:8px; flex-wrap:wrap;">
+      <div style="flex:1; min-width:140px;">
+        <input type="search" id="leadIdFilter" class="form-control" placeholder="Patient ID">
+      </div>
+      <div style="flex:1; min-width:160px;">
+        <input type="search" id="femaleNameFilter" class="form-control" placeholder="Female Name">
+      </div>
+      <div style="flex:1; min-width:160px;">
+        <input type="search" id="mobileFilter" class="form-control" placeholder="Primary Mobile">
+      </div>
+      <div style="flex:1; min-width:180px;">
+        <input type="search" id="emailFilter" class="form-control" placeholder="Email">
+      </div>
+      <div style="flex:1; min-width:160px;">
+        <input type="date" id="leadDateFilter" class="form-control" placeholder="Lead Date">
+      </div>
+    
+    </div>
+
+    <div class="toggle-buttons">
+      <button class="toggle-btn active" id="followupTabBtn" onclick="showSection('followUp')">
+        <i class="fas fa-phone-volume"></i> Follow Up
+      </button>
+      <button class="toggle-btn" id="apptTabBtn" onclick="showSection('appointment')">
+        <i class="fas fa-calendar-check"></i> Appointments
+      </button>
+      <button class="toggle-btn" id="visitedTabBtn" onclick="showSection('visited')">
+        <i class="fas fa-hospital-user"></i> Visits
+      </button>
+      <button class="toggle-btn" id="convTabBtn" onclick="showSection('converted')">
+        <i class="fas fa-hand-holding-usd"></i> Conversions
+      </button>
+      <button class="toggle-btn" id="allLeadsTabBtn" onclick="showSection('allLeads')">
+  <i class="fas fa-users"></i> All Leads
+</button>
+    </div>
+
+
+    <!-- Followups -->
+    <div id="followUpSection" class="tab-section active">
+            <div class="table-responsive">
+      <table class="table table-striped" id="followupTable" style="width:100%; border-collapse:collapse;">
+        <thead>
+          <tr>
+          <th>Patient ID</th>
+<th>Female Name</th>
+<th>Male Name</th>
+<th>Call Date</th>
+<th>Followup Date</th>
+<th>Remark</th>
+<th>Priority</th>
+<th>Call</th>
+<th>WhatsApp</th>
+<th>Action</th>
+
+        </thead>
+        <tbody></tbody>
+      </table>
+      </div>
+    </div>
+
+    <!-- Appointments -->
+    <div id="appointmentSection" class="tab-section">
+           <div class="table-responsive">
+      <table class="table table-striped" id="appointmentTable" style="width:100%; border-collapse:collapse;">
+        <thead>
+          <tr>
+            <th>Patient ID</th><th>Female Name</th><th>Male Name</th><th>Clinic</th><th>Appointment Date</th><th>Time Slot</th><th>Doctor</th><th>Status</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      </div>
+    </div>
+
+    <!-- Visits -->
+    <div id="visitedSection" class="tab-section">
+           <div class="table-responsive">
+      <table class="table table-striped" id="visitedTable" style="width:100%; border-collapse:collapse;">
+        <thead>
+          <tr>
+            <th>Patient ID</th><th>Female Name</th><th>Male Name</th><th>Visit Date</th><th>UHID</th><th>Doctor</th><th>Doctor Notes</th><th>Consultant</th><th>Consultant Notes</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      </div>
+    </div>
+
+    <!-- Conversions -->
+    <div id="convertedSection" class="tab-section">
+            <div class="table-responsive">
+      <table class="table table-striped" id="convertedTable" style="width:100%; border-collapse:collapse;">
+        <thead>
+          <tr>
+            <th>Patient ID</th><th>Female Name</th><th>Male Name</th><th>Procedures</th><th>Package Offered</th><th>Package Price</th><th>Discount</th><th>Booking Date</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      </div>
+    </div>
+
+    <!-- All Leads -->
+<div id="allLeadsSection" class="tab-section">
+  <div class="table-responsive">
+    <table class="table table-striped" id="allLeadsTable" style="width:100%; border-collapse:collapse;">
+      <thead>
+        <tr>
+          <th>Patient ID</th>
+<th>Female Name</th>
+<th>Male Name</th>
+<th>Primary Mobile</th>
+<th>Email</th>
+<th>Lead Date</th>
+<th>Status</th>
+<th>Call</th>
+<th>WhatsApp</th>
+<th>Action</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+  <div id="allLeadsPagination" style="margin-top:15px; display:flex; gap:8px; flex-wrap:wrap;"></div>
+</div>
+  </div>
+</div>
+
+<%- include('../footer') -%>
+
+<script>
+  function callPatient(mobile) {
+  if (!mobile) return alert("Mobile not available");
+  window.location.href = `tel:${mobile}`;
+}
+
+function whatsappPatient(mobile) {
+  if (!mobile) return alert("Mobile not available");
+  const message = encodeURIComponent("Hello, regarding your enquiry.");
+  window.open(`https://wa.me/${mobile}?text=${message}`, "_blank");
+}
+
+/* ----------------- Helpers ----------------- */
+function buildFilters() {
+  const qs = {};
+  const patientId = document.getElementById('leadIdFilter').value.trim();
+  const femaleName = document.getElementById('femaleNameFilter').value.trim();
+  const mobile = document.getElementById('mobileFilter').value.trim();
+  const email = document.getElementById('emailFilter').value.trim();
+  const leadDate = document.getElementById('leadDateFilter').value;
+  const start = document.getElementById('customStart').value;
+  const end = document.getElementById('customEnd').value;
+
+  if (patientId) qs.patientId = patientId;
+  if (femaleName) qs.femaleName = femaleName;
+  if (mobile) qs.mobile = mobile;
+  if (email) qs.email = email;
+
+  // Date logic
+  if (leadDate) {
+    qs.startDate = leadDate;
+    qs.endDate = leadDate;
+  } else {
+    if (start) qs.startDate = start;
+    if (end) qs.endDate = end;
+  }
+
+  return qs;
+}
+
+function queryStringFromObj(obj) {
+  const params = new URLSearchParams();
+  Object.keys(obj).forEach(k => params.append(k, obj[k]));
+  return params.toString();
+}
+
+/* ----------------- UI / Tabs ----------------- */
+function showSection(section) {
+  document.querySelectorAll('.tab-section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+
+  switch(section) {
+    case 'followUp':
+      document.getElementById('followUpSection').classList.add('active');
+      document.getElementById('followupTabBtn').classList.add('active');
+      loadFollowUps();
+      break;
+    case 'appointment':
+      document.getElementById('appointmentSection').classList.add('active');
+      document.getElementById('apptTabBtn').classList.add('active');
+      loadAppointments();
+      break;
+    case 'visited':
+      document.getElementById('visitedSection').classList.add('active');
+      document.getElementById('visitedTabBtn').classList.add('active');
+      loadVisits();
+      break;
+    case 'converted':
+      document.getElementById('convertedSection').classList.add('active');
+      document.getElementById('convTabBtn').classList.add('active');
+      loadConversions();
+      break;
+    case 'allLeads':
+      document.getElementById('allLeadsSection').classList.add('active');
+      document.getElementById('allLeadsTabBtn').classList.add('active');
+      loadAllLeads();
+      break;
+  }
+}
+
+/* ----------------- Loaders ----------------- */
+async function loadFollowUps() {
+  try {
+    const qs = buildFilters();
+    const url = '/crm/getAllfollowups' + (Object.keys(qs).length ? '?' + queryStringFromObj(qs) : '');
+    const res = await axios.get(url);
+    const tbody = document.querySelector('#followupTable tbody');
+    tbody.innerHTML = '';
+    res.data.forEach(f => {
+     tbody.innerHTML += `<tr>
+  <td>${f.patient_id}</td>
+  <td>${f.female_name || 'N/A'}</td>
+  <td>${f.male_name || 'N/A'}</td>
+  <td>${f.call_date ? new Date(f.call_date).toLocaleDateString() : '-'}</td>
+  <td>${f.followup_date ? new Date(f.followup_date).toLocaleDateString() : '-'}</td>
+  <td>${f.remark || '-'}</td>
+  <td>${f.priority || '-'}</td>
+
+  <td style="text-align:center;">
+    ${f.primary_mobile ? `
+      <button class="btn btn-sm btn-outline-primary"
+        onclick="callPatient('${f.primary_mobile}')">
+        <i class="fas fa-phone"></i>
+      </button>` : '-'}
+  </td>
+
+  <td style="text-align:center;">
+    ${f.primary_mobile ? `
+      <button class="btn btn-sm"
+        style="background:#25D366;color:white;border:none;"
+        onclick="whatsappPatient('${f.primary_mobile}')">
+        <i class="fab fa-whatsapp"></i>
+      </button>` : '-'}
+  </td>
+
+  <td>
+    <button class="btn btn-sm btn-primary"
+      onclick="window.location.href='/crm/crm?id=${encodeURIComponent(f.patient_id)}'">
+      View
+    </button>
+  </td>
+</tr>`;
+
+    });
+  } catch (err) { console.error('Failed loading followups', err); }
+}
+
+async function loadAppointments() {
+  try {
+    const qs = buildFilters();
+    const url = '/crm/getAllAppointments' + (Object.keys(qs).length ? '?' + queryStringFromObj(qs) : '');
+    const res = await axios.get(url);
+    const tbody = document.querySelector('#appointmentTable tbody');
+    tbody.innerHTML = '';
+    res.data.forEach(a => {
+      tbody.innerHTML += `<tr>
+        <td>${a.patient_id}</td>
+        <td>${a.female_name || 'N/A'}</td>
+        <td>${a.male_name || 'N/A'}</td>
+        <td>${a.appointment_clinic || '-'}</td>
+        <td>${a.appointment_date ? new Date(a.appointment_date).toLocaleDateString() : '-'}</td>
+        <td>${a.apptTimeSlot || '-'}</td>
+        <td>${a.appointment_doctor || '-'}</td>
+        <td>${a.status || '-'}</td>
+        <td>
+          <button class="btn-primary" onclick="window.location.href='/crm/crm?id=${encodeURIComponent(a.patient_id)}'">
+            View
+          </button>
+        </td>
+      </tr>`;
+    });
+  } catch (err) { console.error('Failed loading appointments', err); }
+}
+
+async function loadVisits() {
+  try {
+    const qs = buildFilters();
+    const url = '/crm/visits' + (Object.keys(qs).length ? '?' + queryStringFromObj(qs) : '');
+    const res = await axios.get(url);
+    const tbody = document.querySelector('#visitedTable tbody');
+    tbody.innerHTML = '';
+    res.data.forEach(v => {
+      tbody.innerHTML += `<tr>
+        <td>${v.patient_id}</td>
+        <td>${v.female_name || 'N/A'}</td>
+        <td>${v.male_name || 'N/A'}</td>
+        <td>${v.visit_date ? new Date(v.visit_date).toLocaleDateString() : '-'}</td>
+        <td>${v.uhid || '-'}</td>
+        <td>${v.doctor_name || '-'}</td>
+        <td>${v.doctor_notes || '-'}</td>
+        <td>${v.consultant_name || '-'}</td>
+        <td>${v.consultant_notes || '-'}</td>
+        <td>
+          <button class="btn-primary" onclick="window.location.href='/crm/crm?id=${encodeURIComponent(v.patient_id)}'">
+            View
+          </button>
+        </td>
+      </tr>`;
+    });
+  } catch (err) { console.error('Failed loading visits', err); }
+}
+
+async function loadConversions() {
+  try {
+    const qs = buildFilters();
+    const url = '/crm/conversions' + (Object.keys(qs).length ? '?' + queryStringFromObj(qs) : '');
+    const res = await axios.get(url);
+    const tbody = document.querySelector('#convertedTable tbody');
+    tbody.innerHTML = '';
+    res.data.forEach(c => {
+      tbody.innerHTML += `<tr>
+        <td>${c.patient_id}</td>
+        <td>${c.female_name || 'N/A'}</td>
+        <td>${c.male_name || 'N/A'}</td>
+        <td>${c.procedures || '-'}</td>
+        <td>${c.package_offered || '-'}</td>
+        <td>${c.package_price || '-'}</td>
+        <td>${c.discount || '-'}</td>
+        <td>${c.booking_date ? new Date(c.booking_date).toLocaleDateString() : '-'}</td>
+        <td>
+          <button class="btn-primary" onclick="window.location.href='/crm/crm?id=${encodeURIComponent(c.patient_id)}'">
+            View
+          </button>
+        </td>
+      </tr>`;
+    });
+  } catch (err) { console.error('Failed loading conversions', err); }
+}
+
+let allLeadsCurrentPage = 1;
+let allLeadsTotalPages = 1;
+const allLeadsLimit = 50;
+
+async function loadAllLeads(page = 1) {
+  try {
+    allLeadsCurrentPage = page;
+
+    const qs = buildFilters();
+    qs.page = page;
+    qs.limit = allLeadsLimit;
+
+    const url = '/crm/getAllLeads?' + queryStringFromObj(qs);
+    const res = await axios.get(url);
+
+    const leads = res.data.leads;
+    allLeadsTotalPages = res.data.totalPages;
+
+    const tbody = document.querySelector('#allLeadsTable tbody');
+    tbody.innerHTML = '';
+
+   leads.forEach(l => {
+  tbody.innerHTML += `
+    <tr>
+      <td>${l.patientId}</td>
+      <td>${l.female_name || 'N/A'}</td>
+      <td>${l.male_name || 'N/A'}</td>
+      <td>${l.primary_mobile || '-'}</td>
+      <td>${l.email || '-'}</td>
+      <td>${l.lead_date ? new Date(l.lead_date).toLocaleDateString() : '-'}</td>
+      <td>${l.status || '-'}</td>
+
+      <td style="text-align:center;">
+        ${l.primary_mobile ? `
+          <button class="btn btn-sm btn-outline-primary"
+            onclick="callPatient('${l.primary_mobile}')">
+            <i class="fas fa-phone"></i>
+          </button>` : '-'}
+      </td>
+
+      <td style="text-align:center;">
+        ${l.primary_mobile ? `
+          <button class="btn btn-sm"
+            style="background:#25D366;color:white;border:none;"
+            onclick="whatsappPatient('${l.primary_mobile}')">
+            <i class="fab fa-whatsapp"></i>
+          </button>` : '-'}
+      </td>
+
+      <td>
+        <button class="btn btn-sm btn-primary"
+          onclick="window.location.href='/crm/crm?id=${encodeURIComponent(l.patientId)}'">
+          View
+        </button>
+      </td>
+    </tr>
+  `;
+});
+
+    renderAllLeadsPagination();
+
+  } catch (err) {
+    console.error('Failed loading all leads', err);
+  }
+}
+
+function renderAllLeadsPagination() {
+  const container = document.getElementById('allLeadsPagination');
+  container.innerHTML = '';
+
+  if (allLeadsTotalPages <= 1) return;
+
+  // Previous button
+  if (allLeadsCurrentPage > 1) {
+    container.innerHTML += `
+      <button class="btn btn-sm btn-outline-primary"
+        onclick="loadAllLeads(${allLeadsCurrentPage - 1})">
+        Prev
+      </button>
+    `;
+  }
+
+  // Page numbers (show max 5 around current)
+  const start = Math.max(1, allLeadsCurrentPage - 2);
+  const end = Math.min(allLeadsTotalPages, allLeadsCurrentPage + 2);
+
+  for (let i = start; i <= end; i++) {
+    container.innerHTML += `
+      <button class="btn btn-sm ${i === allLeadsCurrentPage ? 'btn-primary' : 'btn-outline-primary'}"
+        onclick="loadAllLeads(${i})">
+        ${i}
+      </button>
+    `;
+  }
+
+  // Next button
+  if (allLeadsCurrentPage < allLeadsTotalPages) {
+    container.innerHTML += `
+      <button class="btn btn-sm btn-outline-primary"
+        onclick="loadAllLeads(${allLeadsCurrentPage + 1})">
+        Next
+      </button>
+    `;
+  }
+}
+
+/* ----------------- Date filters ----------------- */
+function setDateFilter(range) {
+  document.querySelectorAll('.date-filters button').forEach(b => b.classList.remove('active'));
+  document.getElementById('customStart').value = '';
+  document.getElementById('customEnd').value = '';
+
+  const today = new Date();
+  let start, end;
+
+  switch(range) {
+    case 'today':
+      document.getElementById('todayFilter').classList.add('active');
+      start = end = today.toISOString().slice(0,10);
+      break;
+    case 'week':
+      document.getElementById('weekFilter').classList.add('active');
+      const firstDay = new Date(today);
+      firstDay.setDate(today.getDate() - today.getDay());
+      start = firstDay.toISOString().slice(0,10);
+      end = today.toISOString().slice(0,10);
+      break;
+    case 'month':
+      document.getElementById('monthFilter').classList.add('active');
+      const firstOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+      start = firstOfMonth.toISOString().slice(0,10);
+      end = today.toISOString().slice(0,10);
+      break;
+  }
+
+  if(start && end) {
+    document.getElementById('customStart').value = start;
+    document.getElementById('customEnd').value = end;
+  }
+
+  reloadActiveTab();
+}
+
+function applyCustomDate() {
+  reloadActiveTab();
+}
+
+function reloadActiveTab() {
+  const activeTab = document.querySelector('.toggle-btn.active')?.id || 'followupTabBtn';
+  switch(activeTab) {
+    case 'followupTabBtn': loadFollowUps(); break;
+    case 'apptTabBtn': loadAppointments(); break;
+    case 'visitedTabBtn': loadVisits(); break;
+    case 'convTabBtn': loadConversions(); break;
+    case 'allLeadsTabBtn': loadAllLeads(1); break;
+  }
+}
+
+/* ----------------- Event listeners ----------------- */
+// Filter inputs
+document.querySelectorAll('#leadIdFilter, #femaleNameFilter, #mobileFilter, #emailFilter').forEach(el => 
+  el.addEventListener('input', reloadActiveTab)
+);
+
+// Date filters
+document.querySelectorAll('#leadDateFilter, #customStart, #customEnd').forEach(el => 
+  el.addEventListener('change', applyCustomDate)
+);
+
+// Initial load
+setDateFilter('today');
+showSection('followUp');
+</script>
+
+</body>
+</html>

@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Counselor Master</title>
+  <%- include('../header') -%>
+  <style>
+    .counselor-list { max-height:70vh; overflow-y:auto; }
+    .counselor-item { cursor:pointer; padding:.5rem .75rem; border-bottom:1px solid #f1f1f1; }
+    .counselor-item:hover { background:#f8f9fa; }
+    .counselor-item.active { background:#e9f2ff; font-weight:600; }
+    .no-counselors { padding:1rem; color:#6c757d; text-align:center; }
+    .small-muted { font-size:.85rem; color:#6c757d; }
+  </style>
+</head>
+<body>
+  <div class="container-fluid vh-100 d-flex flex-column">
+    <div class="container-fluid py-4">
+      <div class="card">
+        <h5 class="card-header">Counselor Master</h5>
+        <div class="card-body">
+          <div class="row gx-4">
+            <!-- Left: list -->
+            <div class="col-md-4 mb-3">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <input id="counselorSearch" class="form-control form-control-sm" placeholder="Search counselors...">
+                <button id="newCounselorBtn" class="btn btn-sm btn-outline-primary ms-2">New</button>
+              </div>
+              <div class="card shadow-sm">
+                <div class="card-body p-2 counselor-list" id="counselorListContainer">
+                  <div class="no-counselors">Loading counselors...</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right: form -->
+            <div class="col-md-8">
+              <form id="CounselorForm">
+                <input type="hidden" id="counselorId" name="id">
+                <div id="errordiv" style="display:none;"></div>
+
+                <div class="row mb-3">
+                  <div class="col-6 mb-2">
+                    <label class="form-label" for="counselorName">Name*</label>
+                    <input type="text" id="counselorName" name="counselorName" class="form-control form-control-sm" required>
+                  </div>
+                  <div class="col-6 mb-2">
+                    <label class="form-label" for="counselorContact">Contact*</label>
+                    <input type="tel" id="counselorContact" name="counselorContact" class="form-control form-control-sm" pattern="[0-9]{10}" placeholder="10-digit number" required>
+                  </div>
+                </div>
+
+                <div class="mt-3">
+                  <button type="submit" class="btn btn-primary btn-sm me-2">Save Counselor</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <%- include('../footer') -%>
+
+  <script>
+    $(function(){
+      const formId = '#CounselorForm';
+      const errorDiv = '#errordiv';
+      const listContainer = $('#counselorListContainer');
+      let cache = [];
+      let activeId = null;
+
+      function renderList(list, filter=''){
+        listContainer.empty();
+        const filtered = list.filter(c => (c.name||'').toLowerCase().includes(filter.toLowerCase()));
+        if(!filtered.length){ listContainer.html('<div class="no-counselors">No counselors found.</div>'); return; }
+        filtered.forEach(c => {
+          const el = $(`<div class="counselor-item" data-id="${c.id}">
+            <div class="d-flex justify-content-between">
+              <div>
+                <div>${c.name}</div>
+                <div class="small-muted">${c.contact||''}</div>
+              </div>
+            </div>
+          </div>`);
+          if(c.id==activeId) el.addClass('active');
+          el.on('click', ()=>{ $('.counselor-item').removeClass('active'); el.addClass('active'); activeId=c.id; fetchCounselor(c.id); });
+          listContainer.append(el);
+        });
+      }
+
+      async function loadList(){
+        listContainer.html('<div class="no-counselors">Loading counselors...</div>');
+        try{
+          const res = await axios.get('/counselors/list');
+          cache = Array.isArray(res.data) ? res.data : res.data.counselors || [];
+          renderList(cache);
+        } catch(e){ listContainer.html('<div class="no-counselors">Failed to load counselors.</div>'); }
+      }
+
+      async function fetchCounselor(id){
+        try{
+          const res = await axios.get(`/getCounselorsById/${id}`);
+          const c = res.data.counselor||res.data;
+          if(c){
+            $('#counselorId').val(c.id);
+            $('#counselorName').val(c.name||'');
+            $('#counselorContact').val(c.contact||'');
+            $(errorDiv).hide();
+          }
+        }catch(e){
+          $(errorDiv).removeClass('alert-success').addClass('alert alert-danger').text('Failed to load counselor').show();
+        }
+      }
+   restrictInput("counselorContact", 10)
+      $('#newCounselorBtn').on('click', ()=>{
+        activeId=null;
+        $('.counselor-item').removeClass('active');
+        $('#counselorId').val('');
+        $(formId)[0].reset();
+        $(errorDiv).hide();
+      });
+
+      $('#counselorSearch').on('input', ()=>{ renderList(cache, $('#counselorSearch').val()); });
+
+      $(formId).on('submit', async (e)=>{
+        e.preventDefault();
+        let valid=true;
+        $(formId+' [required]').each(function(){ if(!this.value.trim()){ valid=false; return false; } });
+        if(!valid){ $(errorDiv).removeClass('alert-success').addClass('alert alert-danger').text('Please fill all required fields.').show(); return; }
+
+        const idVal = $('#counselorId').val();
+        const data = { name: $('#counselorName').val(), contact: $('#counselorContact').val() };
+        try{
+          let res;
+          if(idVal) res = await axios.post(`/counselors/update/${idVal}`, data);
+          else res = await axios.post('/counselors/create', data);
+
+          $(errorDiv).removeClass('alert-danger').addClass('alert alert-success').text(res.data.message||'Counselor saved successfully').show();
+
+          const savedId = res.data.id || res.data.counselor?.id || idVal;
+          await loadList();
+          if(savedId){ activeId=savedId; $(`[data-id="${savedId}"]`).addClass('active'); $('#counselorId').val(savedId); }
+          setTimeout(()=>$(errorDiv).fadeOut(),1600);
+        }catch(err){
+          const em = err.response?.data?.message||'Error saving counselor.';
+          $(errorDiv).removeClass('alert-success').addClass('alert alert-danger').text(em).show();
+        }
+      });
+
+      loadList();
+    });
+  </script>
+</body>
+</html>

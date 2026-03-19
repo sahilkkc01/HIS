@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="en" class="light-style" dir="ltr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Doctor Master</title>
+  <%- include('../header') -%>
+  <style>
+    /* simple styles for list */
+    .doctor-list { max-height: 70vh; overflow-y: auto; }
+    .doctor-item { cursor: pointer; padding: .5rem .75rem; border-bottom: 1px solid #f1f1f1; }
+    .doctor-item:hover { background: #f8f9fa; }
+    .doctor-item.active { background: #e9f2ff; font-weight: 600; }
+    .no-doctors { padding: 1rem; color: #6c757d; text-align:center; }
+    .small-muted { font-size:.85rem; color:#6c757d }
+  </style>
+</head>
+
+<body>
+  <div class="container-fluid vh-100 d-flex flex-column">
+    <div class="container-fluid py-4">
+      <div class="card">
+        <h5 class="card-header">Doctor Master</h5>
+        <div class="card-body">
+          <div class="row gx-4">
+            <!-- Left: Doctor list -->
+            <div class="col-md-4 mb-3">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <div>
+                  <input id="doctorSearch" class="form-control form-control-sm" placeholder="Search doctors...">
+                </div>
+                <div class="ms-2">
+                  <button id="newDoctorBtn" class="btn btn-sm btn-outline-primary">New</button>
+                </div>
+              </div>
+
+              <div class="card shadow-sm">
+                <div class="card-body p-2 doctor-list" id="doctorListContainer" aria-live="polite">
+                  <div class="no-doctors">Loading doctors...</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right: Form -->
+            <div class="col-md-8">
+              <form id="DoctorForm">
+                <input type="hidden" id="doctorId" name="id">
+                <div id="errordiv" style="display:none;"></div>
+
+                <!-- Doctor Info -->
+                <div class="row mb-3">
+                  <div class="col-md-6 mb-2">
+                    <label class="form-label" for="doctorName">Doctor Name*</label>
+                    <input type="text" id="doctorName" name="doctorName" class="form-control form-control-sm" required>
+                  </div>
+                  <div class="col-md-6 mb-2">
+                    <label class="form-label" for="doctorContact">Contact Number*</label>
+                    <input type="tel" id="doctorContact" name="doctorContact" class="form-control form-control-sm" pattern="[0-9]{10}" placeholder="10-digit number" required>
+                  </div>
+                </div>
+
+                <div class="d-flex justify-content-end mb-2">
+                  <button type="button" id="copyTimeBtn" class="btn btn-sm btn-secondary">Copy Monday Time to All Days</button>
+                </div>
+
+                <!-- Availability -->
+                <h6>Availability</h6>
+                <div class="row g-2 mb-3" id="availabilityContainer">
+                  <!-- For each day use a day-row with data-day for easy JS access -->
+                  <div class="row align-items-center mb-1 day-row" data-day="Monday">
+                    <div class="col-2 col-sm-2"><label class="form-label mb-0">Monday</label></div>
+                    <div class="col-5 col-sm-4"><input type="time" name="availability[Monday][start]" class="form-control form-control-sm" required></div>
+                    <div class="col-5 col-sm-4"><input type="time" name="availability[Monday][end]" class="form-control form-control-sm" required></div>
+                  </div>
+
+                  <div class="row align-items-center mb-1 day-row" data-day="Tuesday">
+                    <div class="col-2 col-sm-2"><label class="form-label mb-0">Tuesday</label></div>
+                    <div class="col-5 col-sm-4"><input type="time" name="availability[Tuesday][start]" class="form-control form-control-sm" required></div>
+                    <div class="col-5 col-sm-4"><input type="time" name="availability[Tuesday][end]" class="form-control form-control-sm" required></div>
+                  </div>
+
+                  <div class="row align-items-center mb-1 day-row" data-day="Wednesday">
+                    <div class="col-2 col-sm-2"><label class="form-label mb-0">Wednesday</label></div>
+                    <div class="col-5 col-sm-4"><input type="time" name="availability[Wednesday][start]" class="form-control form-control-sm" required></div>
+                    <div class="col-5 col-sm-4"><input type="time" name="availability[Wednesday][end]" class="form-control form-control-sm" required></div>
+                  </div>
+
+                  <div class="row align-items-center mb-1 day-row" data-day="Thursday">
+                    <div class="col-2 col-sm-2"><label class="form-label mb-0">Thursday</label></div>
+                    <div class="col-5 col-sm-4"><input type="time" name="availability[Thursday][start]" class="form-control form-control-sm" required></div>
+                    <div class="col-5 col-sm-4"><input type="time" name="availability[Thursday][end]" class="form-control form-control-sm" required></div>
+                  </div>
+
+                  <div class="row align-items-center mb-1 day-row" data-day="Friday">
+                    <div class="col-2 col-sm-2"><label class="form-label mb-0">Friday</label></div>
+                    <div class="col-5 col-sm-4"><input type="time" name="availability[Friday][start]" class="form-control form-control-sm" required></div>
+                    <div class="col-5 col-sm-4"><input type="time" name="availability[Friday][end]" class="form-control form-control-sm" required></div>
+                  </div>
+
+                  <div class="row align-items-center mb-1 day-row" data-day="Saturday">
+                    <div class="col-2 col-sm-2"><label class="form-label mb-0">Saturday</label></div>
+                    <div class="col-5 col-sm-4"><input type="time" name="availability[Saturday][start]" class="form-control form-control-sm"></div>
+                    <div class="col-5 col-sm-4"><input type="time" name="availability[Saturday][end]" class="form-control form-control-sm"></div>
+                  </div>
+
+                  <div class="row align-items-center mb-1 day-row" data-day="Sunday">
+                    <div class="col-2 col-sm-2"><label class="form-label mb-0">Sunday</label></div>
+                    <div class="col-5 col-sm-4"><input type="time" name="availability[Sunday][start]" class="form-control form-control-sm"></div>
+                    <div class="col-5 col-sm-4"><input type="time" name="availability[Sunday][end]" class="form-control form-control-sm"></div>
+                  </div>
+                </div>
+
+                <div class="mt-3">
+                  <button type="submit" class="btn btn-primary btn-sm me-2">Save Doctor</button>
+                </div>
+              </form>
+            </div> <!-- end right col -->
+          </div> <!-- end row -->
+        </div> <!-- card-body -->
+      </div> <!-- card -->
+    </div> <!-- container-fluid -->
+  </div> <!-- container-fluid vh-100 -->
+
+  <%- include('../footer') -%>
+
+  <script>
+    $(function () {
+      const formId = '#DoctorForm';
+      const errorDiv = '#errordiv';
+      const doctorListContainer = $('#doctorListContainer');
+      let doctorsCache = [];
+      let activeDoctorId = null;
+
+      // Render doctor list
+      function renderDoctorList(list, filter = '') {
+        doctorListContainer.empty();
+        const filtered = list.filter(d => d.name.toLowerCase().includes(filter.toLowerCase()));
+        if (!filtered.length) {
+          doctorListContainer.html('<div class="no-doctors">No doctors found.</div>');
+          return;
+        }
+        filtered.forEach(d => {
+          const el = $(`
+            <div class="doctor-item" data-id="${d.id}">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <div>${escapeHtml(d.name)}</div>
+                  <div class="small-muted">${d.contact || ''}</div>
+                </div>
+                <div class="small-muted">${d.clinic || ''}</div>
+              </div>
+            </div>
+          `);
+          if (d.id == activeDoctorId) el.addClass('active');
+          el.on('click', () => {
+            $('.doctor-item').removeClass('active');
+            el.addClass('active');
+            activeDoctorId = d.id;
+            // load doctor into form
+            fetchDoctor(d.id);
+          });
+          doctorListContainer.append(el);
+        });
+      }
+
+      // Escape helper to avoid HTML injection from names
+      function escapeHtml(text) {
+        if (!text) return '';
+        return String(text)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
+      }
+
+      // Fetch doctor list from server
+      async function loadDoctorList() {
+        doctorListContainer.html('<div class="no-doctors">Loading doctors...</div>');
+        try {
+          const res = await axios.get('/doctors/list');
+          // expect res.data to be an array of doctors
+          doctorsCache = Array.isArray(res.data) ? res.data : (res.data.doctors || []);
+          renderDoctorList(doctorsCache);
+        } catch (err) {
+          doctorListContainer.html('<div class="no-doctors">Failed to load doctors.</div>');
+          console.error('loadDoctorList error', err);
+        }
+      }
+
+      // Fetch single doctor by id and populate form (existing function updated slightly)
+      async function fetchDoctor(id) {
+        try {
+          const res = await axios.get(`/getDoctorById/${id}`);
+          const d = res.data.doctor || res.data;
+          if (d) {
+            $('#doctorId').val(d.id);
+            $('#doctorName').val(d.name || '');
+            $('#doctorContact').val(d.contact || '');
+            // fill availability (use data-day rows)
+            if (d.availability) {
+              $('.day-row').each(function () {
+                const day = $(this).data('day');
+                const start = d.availability[day]?.start || '';
+                const end = d.availability[day]?.end || '';
+                $(this).find(`input[name="availability[${day}][start]"]`).val(start);
+                $(this).find(`input[name="availability[${day}][end]"]`).val(end);
+              });
+            } else {
+              // clear availability if none
+              $('.day-row').each(function () {
+                const day = $(this).data('day');
+                $(this).find(`input[name="availability[${day}][start]"]`).val('');
+                $(this).find(`input[name="availability[${day}][end]"]`).val('');
+              });
+            }
+            $(errorDiv).hide();
+          }
+        } catch (e) {
+          $(errorDiv).removeClass('alert-success').addClass('alert alert-danger')
+            .text('Failed to load doctor.').show();
+        }
+      }
+       restrictInput("doctorContact", 10)
+      // New doctor button - reset form and active state
+      $('#newDoctorBtn').on('click', function () {
+        activeDoctorId = null;
+        $('.doctor-item').removeClass('active');
+        $('#doctorId').val('');
+        $('#DoctorForm')[0].reset();
+        $(errorDiv).hide();
+      });
+
+      // Search/filter
+      $('#doctorSearch').on('input', function () {
+        const q = $(this).val();
+        renderDoctorList(doctorsCache, q);
+      });
+
+      // Copy Monday time to all days
+      $('#copyTimeBtn').on('click', function () {
+        const mondayStart = $('input[name="availability[Monday][start]"]').val();
+        const mondayEnd = $('input[name="availability[Monday][end]"]').val();
+
+        if (!mondayStart || !mondayEnd) {
+          alert('Please enter Monday start and end time first.');
+          return;
+        }
+
+        const days = ['Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+        days.forEach(day => {
+          $(`input[name="availability[${day}][start]"]`).val(mondayStart);
+          $(`input[name="availability[${day}][end]"]`).val(mondayEnd);
+        });
+
+        // small non-blocking feedback
+        const original = $(this).text();
+        $(this).text('Copied ✓');
+        setTimeout(()=>$(this).text(original), 900);
+      });
+
+      // Submit form
+     // Submit form
+$(formId).on('submit', async function (e) {
+  e.preventDefault();
+
+  // Validate required fields
+  let valid = true;
+  $(formId + ' [required]').each(function () {
+    if (!this.value.trim()) { valid = false; return false; }
+  });
+  if (!valid) {
+    $(errorDiv).removeClass('alert-success').addClass('alert alert-danger')
+      .text('Please fill all required fields.').show();
+    return;
+  }
+
+  // Collect availability from each day-row
+  const availability = {};
+  $('.day-row').each(function () {
+    const day = $(this).data('day');
+    const start = $(this).find(`input[name="availability[${day}][start]"]`).val() || '';
+    const end = $(this).find(`input[name="availability[${day}][end]"]`).val() || '';
+    availability[day] = { start, end };
+  });
+
+  // Prepare data
+  const idVal = $('#doctorId').val();
+  const data = {
+    name: $('#doctorName').val(),
+    contact: $('#doctorContact').val(),
+    availability
+  };
+
+  try {
+    let res;
+    if (idVal) {
+      // Update existing doctor
+      res = await axios.post(`/doctors/update/${idVal}`, data);
+    } else {
+      // Create new doctor
+      res = await axios.post('/doctors/create', data);
+    }
+
+    // Show success message
+    $(errorDiv).removeClass('alert-danger').addClass('alert alert-success')
+      .text(res.data.message || 'Doctor saved successfully').show();
+
+    // Refresh doctor list and highlight saved doctor
+    const savedId = res.data.id || res.data.doctor?.id || $('#doctorId').val();
+    await loadDoctorList();
+
+    if (savedId) {
+      activeDoctorId = savedId;
+      $(`[data-id="${savedId}"]`).addClass('active');
+      $('#doctorId').val(savedId);
+    }
+
+    // Fade out success message
+    setTimeout(() => $(errorDiv).fadeOut(), 1600);
+
+  } catch (err) {
+    const em = err.response?.data?.message || 'Error saving doctor.';
+    $(errorDiv).removeClass('alert-success').addClass('alert alert-danger')
+      .text(em).show();
+  }
+});
+
+      // initial load
+      loadDoctorList();
+
+      // If there is id in URL (e.g., /page?id=5) load that doctor and mark active
+      const params = new URLSearchParams(window.location.search);
+      const urlDoctorId = params.get('id');
+      if (urlDoctorId) {
+        activeDoctorId = urlDoctorId;
+        fetchDoctor(urlDoctorId);
+      }
+    });
+  </script>
+</body>
+</html>

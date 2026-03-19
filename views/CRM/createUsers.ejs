@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en" class="light-style layout-menu-fixed layout-compact" dir="ltr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+  <title>User Entry</title>
+  <%- include('../header') -%>
+</head>
+
+<body>
+  <div class="content-wrapper">
+    <div class="container-xxl flex-grow-1 container-p-y">
+      <div class="row">
+        <div class="col-12">
+          <div class="card overflow-hidden">
+            <h5 class="card-header">User Entry Form</h5>
+            <div class="card-body pt-4">
+              <form id="UserForm" method="POST">
+                <input type="hidden" id="userId" name="id">
+                <div id="errordiv"></div>
+                <div class="row g-4">
+                  <!-- Username -->
+                  <div class="col-md-4">
+                    <label class="form-label" for="username">Username*</label>
+                    <input type="text"
+                      id="username"
+                      name="username"
+                      class="form-control"
+                      data-validation="required"
+                      data-error-message="Please enter Username"
+                      required
+                    >
+                  </div>
+
+                  <!-- Password -->
+         <div class="col-md-4 mb-6 form-password-toggle">
+  <label class="form-label" for="password">Password*</label>
+  <div class="input-group input-group-merge">
+    <input
+      type="password"
+      id="password"
+      name="password"
+      class="form-control"
+      placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;"
+      aria-describedby="toggle-password"
+      data-validation="required"
+      data-error-message="Please enter Password"
+      required
+    />
+    <span class="input-group-text cursor-pointer" id="toggle-password">
+      <i class="bx bx-hide"></i>
+    </span>
+  </div>
+</div>
+
+                  <!-- Name -->
+                  <div class="col-md-6">
+                    <label class="form-label" for="name">Full Name*</label>
+                    <input type="text"
+                      id="name"
+                      name="name"
+                      class="form-control"
+                      data-validation="required"
+                      data-error-message="Please enter Name"
+                      required
+                    >
+                  </div>
+
+               
+                  <!-- Status -->
+                  <div class="col-md-4">
+                    <label class="form-label d-block">Status*</label>
+                    <div class="form-check form-switch">
+                      <input
+                        class="form-check-input"
+                        type="checkbox"
+                        id="status"
+                        name="status"
+                        checked
+                      >
+                      <label class="form-check-label" for="status">
+                        Active
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Loading Indicator -->
+                <div id="loadingIndicator" class="mt-3" style="display: none;">
+                  <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                  </div>
+                </div>
+
+                <!-- Form Buttons -->
+                <div class="mt-4">
+                  <button type="submit" class="btn btn-primary me-3">Save User</button>
+                  <button type="reset"
+                    onclick="window.location.href='/users'"
+                    class="btn btn-outline-secondary">Cancel</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <%- include('../footer') -%>
+
+  <script>
+    $(function () {
+      const formId = '#UserForm';
+      const errorDiv = '#errordiv';
+      const loadingDiv = '#loadingIndicator';
+
+      $(errorDiv).hide();
+      $(loadingDiv).hide();
+
+      function disableImmutableFields() {
+        // for update, maybe disallow changing username or clinic_id
+        $('#clinicId, #username').prop('disabled', true);
+      }
+
+      async function fetchUser(id) {
+        try {
+          const res = await axios.get(`/getUserByid/${id}`);
+          const u = res.data.user;
+          if (u) {
+            $('#userId').val(u.id);
+            $('#clinicId').val(u.clinic_id);
+            $('#username').val(u.username);
+   
+            $('#name').val(u.name);
+            $('#createdBy').val(u.created_by);
+          
+            $('#status').prop('checked', u.status === true);
+            disableImmutableFields();
+          }
+        } catch (e) {
+          $(errorDiv)
+            .removeClass('alert-success')
+            .addClass('alert-danger')
+            .text('Failed to load user.')
+            .show();
+        }
+      }
+
+      // detect update mode
+      const params = new URLSearchParams(window.location.search);
+      const userId = params.get('id');
+      if (userId) fetchUser(userId);
+
+      $(formId).on('submit', async function (e) {
+        e.preventDefault();
+        // basic validation
+        let valid = true, msg = '';
+        $(formId + ' [required]').each(function () {
+          if (!this.value.trim()) {
+            valid = false;
+            msg = $(this).data('error-message');
+            return false;
+          }
+        });
+        if (!valid) {
+          $(errorDiv).html(`<div class="alert alert-danger">${msg}</div>`).show();
+          return;
+        }
+
+        const data = {
+          username: $('#username').val(),
+          password: $('#password').val(),
+          name: $('#name').val(),
+          status: $('#status').is(':checked') ? 1 : 0
+        };
+
+        try {
+          $(loadingDiv).show();
+          const url = data.id ? '/users/update' : '/createUser';
+          const res = await axios.post(url, data);
+          $(errorDiv)
+            .removeClass('alert-danger')
+            .addClass('alert-success')
+            .html(res.data.message)
+            .show();
+          setTimeout(() => window.location.href = '/users', 1500);
+        } catch (err) {
+          const em = err.response?.data?.message || 'Error saving user.';
+          $(errorDiv)
+            .removeClass('alert-success')
+            .addClass('alert-danger')
+            .html(em)
+            .show();
+        } finally {
+          $(loadingDiv).hide();
+        }
+      });
+    });
+  </script>
+</body>
+</html>

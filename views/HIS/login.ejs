@@ -170,7 +170,7 @@
     
           try {
             const response = await axios.post('/login', formData);
-    
+    localStorage.setItem('user', JSON.stringify(response.data.user));
             // On successful login, redirect to patient registration
             window.location.href = '/patient-registration';
           } catch (error) {

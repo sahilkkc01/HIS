@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="en" class="light-style" dir="ltr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Agent Master</title>
+  <%- include('../header') -%>
+  <style>
+    .agent-list { max-height: 70vh; overflow-y: auto; }
+    .agent-item { cursor: pointer; padding: .5rem .75rem; border-bottom: 1px solid #f1f1f1; }
+    .agent-item:hover { background: #f8f9fa; }
+    .agent-item.active { background: #e9f2ff; font-weight: 600; }
+    .no-agents { padding: 1rem; color: #6c757d; text-align:center; }
+    .small-muted { font-size:.85rem; color:#6c757d }
+  </style>
+</head>
+
+<body>
+  <div class="container-fluid vh-100 d-flex flex-column">
+    <div class="container-fluid py-4">
+      <div class="card">
+        <h5 class="card-header">Agent Master</h5>
+        <div class="card-body">
+          <div class="row gx-4">
+            <!-- Left: Agent list -->
+            <div class="col-md-4 mb-3">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <div style="flex:1">
+                  <input id="agentSearch" class="form-control form-control-sm" placeholder="Search agents...">
+                </div>
+                <div class="ms-2">
+                  <button id="newAgentBtn" class="btn btn-sm btn-outline-primary">New</button>
+                </div>
+              </div>
+
+              <div class="card shadow-sm">
+                <div class="card-body p-2 agent-list" id="agentListContainer" aria-live="polite">
+                  <div class="no-agents">Loading agents...</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right: Form -->
+            <div class="col-md-8">
+              <form id="AgentForm">
+                <input type="hidden" id="agentId" name="id">
+                <div id="errordiv" style="display:none;"></div>
+
+                <!-- Agent Info -->
+                <div class="row mb-3">
+                  <div class="col-md-6 mb-2">
+                    <label class="form-label" for="agentName">Agent Name*</label>
+                    <input type="text" id="agentName" name="agentName" class="form-control form-control-sm" required>
+                  </div>
+                  <div class="col-md-6 mb-2">
+                    <label class="form-label" for="agentContact">Contact Number*</label>
+                    <input type="tel" id="agentContact" name="agentContact" class="form-control form-control-sm" pattern="[0-9]{10}" placeholder="10-digit number" required>
+                  </div>
+                </div>
+
+                <div class="mt-3">
+                  <button type="submit" class="btn btn-primary btn-sm me-2">Save Agent</button>
+                </div>
+              </form>
+            </div> <!-- end right col -->
+          </div> <!-- end row -->
+        </div> <!-- card-body -->
+      </div> <!-- card -->
+    </div> <!-- container-fluid -->
+  </div> <!-- container-fluid vh-100 -->
+
+  <%- include('../footer') -%>
+
+  <script>
+    $(function () {
+      const formId = '#AgentForm';
+      const errorDiv = '#errordiv';
+      const agentListContainer = $('#agentListContainer');
+      let agentsCache = [];
+      let activeAgentId = null;
+
+      // Render agent list
+      function renderAgentList(list, filter = '') {
+        agentListContainer.empty();
+        const filtered = list.filter(a => (a.name || '').toLowerCase().includes(filter.toLowerCase()));
+        if (!filtered.length) {
+          agentListContainer.html('<div class="no-agents">No agents found.</div>');
+          return;
+        }
+        filtered.forEach(a => {
+          const el = $(`
+            <div class="agent-item" data-id="${a.id}">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <div>${escapeHtml(a.name)}</div>
+                  <div class="small-muted">${a.contact || ''}</div>
+                </div>
+              </div>
+            </div>
+          `);
+          if (a.id == activeAgentId) el.addClass('active');
+          el.on('click', () => {
+            $('.agent-item').removeClass('active');
+            el.addClass('active');
+            activeAgentId = a.id;
+            fetchAgent(a.id);
+          });
+          agentListContainer.append(el);
+        });
+      }
+
+      function escapeHtml(text) {
+        if (!text) return '';
+        return String(text)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
+      }
+
+      // Fetch agent list
+      async function loadAgentList() {
+        agentListContainer.html('<div class="no-agents">Loading agents...</div>');
+        try {
+          const res = await axios.get('/agents/list');
+          agentsCache = Array.isArray(res.data) ? res.data : (res.data.agents || []);
+          renderAgentList(agentsCache);
+        } catch (err) {
+          agentListContainer.html('<div class="no-agents">Failed to load agents.</div>');
+          console.error('loadAgentList error', err);
+        }
+      }
+
+      // Fetch single agent by id
+      async function fetchAgent(id) {
+        try {
+          const res = await axios.get(`/getAgentById/${id}`);
+          const a = res.data.agent || res.data;
+          if (a) {
+            $('#agentId').val(a.id);
+            $('#agentName').val(a.name || '');
+            $('#agentContact').val(a.contact || '');
+            $(errorDiv).hide();
+          }
+        } catch (e) {
+          $(errorDiv).removeClass('alert-success').addClass('alert alert-danger')
+            .text('Failed to load agent.').show();
+        }
+      }
+
+      // limit contact input digits
+      try { restrictInput("agentContact", 10); } catch(e){}
+
+      // New agent button
+      $('#newAgentBtn').on('click', function () {
+        activeAgentId = null;
+        $('.agent-item').removeClass('active');
+        $('#agentId').val('');
+        $('#AgentForm')[0].reset();
+        $(errorDiv).hide();
+      });
+
+      // Search/filter
+      $('#agentSearch').on('input', function () {
+        const q = $(this).val();
+        renderAgentList(agentsCache, q);
+      });
+
+      // Submit form
+      $(formId).on('submit', async function (e) {
+        e.preventDefault();
+
+        let valid = true;
+        $(formId + ' [required]').each(function () {
+          if (!this.value.trim()) { valid = false; return false; }
+        });
+        if (!valid) {
+          $(errorDiv).removeClass('alert-success').addClass('alert alert-danger')
+            .text('Please fill all required fields.').show();
+          return;
+        }
+
+        const idVal = $('#agentId').val();
+        const data = {
+          name: $('#agentName').val(),
+          contact: $('#agentContact').val()
+        };
+
+        try {
+          let res;
+          if (idVal) {
+            res = await axios.post(`/agents/update/${idVal}`, data);
+          } else {
+            res = await axios.post('/agents/create', data);
+          }
+
+          $(errorDiv).removeClass('alert-danger').addClass('alert alert-success')
+            .text(res.data.message || 'Agent saved successfully').show();
+
+          const savedId = res.data.id || res.data.agent?.id || idVal;
+          await loadAgentList();
+
+          if (savedId) {
+            activeAgentId = savedId;
+            $(`[data-id="${savedId}"]`).addClass('active');
+            $('#agentId').val(savedId);
+          }
+
+          setTimeout(() => $(errorDiv).fadeOut(), 1600);
+
+        } catch (err) {
+          const em = err.response?.data?.message || 'Error saving agent.';
+          $(errorDiv).removeClass('alert-success').addClass('alert alert-danger')
+            .text(em).show();
+        }
+      });
+
+      // Initial load
+      loadAgentList();
+    });
+  </script>
+</body>
+</html>

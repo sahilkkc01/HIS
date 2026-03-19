@@ -1,0 +1,371 @@
+<!doctype html>
+<html lang="en" class="light-style layout-menu-fixed layout-compact" dir="ltr">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+  <title>Patient Entry</title>
+  <%- include('../header') -%>
+</head>
+
+<body>
+  <div class="content-wrapper">
+    <div class="container-xxl flex-grow-1 container-p-y">
+      <div class="row">
+        <div class="col-12">
+          <div class="card overflow-hidden">
+            <h5 class="card-header">Patient Entry Form</h5>
+            <div class="card-body pt-4">
+              <form id="PatientForm" method="POST">
+                <input type="hidden" id="patientId" name="id">
+                <div id="errordiv"></div>
+                <div class="row g-4">
+                  <!-- Registration Number -->
+                  <div class="col-md-3">
+                    <label class="form-label" for="regNo">Reg No*</label>
+                    <input type="text"
+                      id="regNo"
+                      name="reg_no"
+                      class="form-control"
+                      data-validation="required"
+                      data-error-message="Please enter Registration Number"
+                      required
+                    >
+                  </div>
+
+                  <!-- Name -->
+                  <div class="col-md-6">
+                    <label class="form-label" for="patientName">Name*</label>
+                    <input type="text"
+                      id="patientName"
+                      name="patient_name"
+                      class="form-control"
+                      data-validation="required"
+                      data-error-message="Please enter Patient Name"
+                      required
+                    >
+                  </div>
+
+                  <!-- Spouse Name -->
+                  <div class="col-md-3">
+                    <label class="form-label" for="spouseName">Spouse Name</label>
+                    <input type="text"
+                      id="spouseName"
+                      name="spouse_name"
+                      class="form-control"
+                    >
+                  </div>
+
+                  <!-- Number 1 -->
+                  <div class="col-md-4">
+                    <label class="form-label" for="number1">Primary Number*</label>
+                    <input type="number"
+                      id="number1"
+                      name="number_1"
+                      class="form-control"
+                      data-validation="required"
+                      data-error-message="Please enter Primary Contact Number"
+                      required
+                    >
+                  </div>
+
+                  <!-- Number 2 -->
+                  <div class="col-md-4">
+                    <label class="form-label" for="number2">Secondry Number</label>
+                    <input type="number"
+                      id="number2"
+                      name="number_2"
+                      class="form-control"
+                    >
+                  </div>
+<script>
+ function restrictInput(fieldId, maxLength) {
+    const field = document.getElementById(fieldId);
+    if (field) {
+        field.addEventListener("input", function() {
+            if (field.value.length > maxLength) {
+                field.value = field.value.slice(0, maxLength); // Trim the value to the max length
+            }
+        });
+    }
+}
+restrictInput("number1", 10)
+restrictInput("number2", 10)
+
+</script>
+                  <!-- Email -->
+                  <div class="col-md-4">
+                    <label class="form-label" for="email">Email</label>
+                    <input type="email"
+                      id="email"
+                      name="email"
+                      class="form-control"
+                    >
+                  </div>
+
+                  <!-- OPU Date -->
+                  <div class="col-md-3">
+                    <label class="form-label" for="opuDate">OPU Date*</label>
+                    <input type="date"
+                      id="opuDate"
+                      name="opu_date"
+                      class="form-control"
+                      data-validation="required"
+                      data-error-message="Please select OPU Date"
+                      required
+                    >
+                  </div>
+
+                  <!-- No of Embryo Frozen -->
+                  <div class="col-md-3">
+                    <label class="form-label" for="embryoFrozen">No of Embryo Frozen*</label>
+                    <input type="number"
+                      id="embryoFrozen"
+                      name="no_of_embryo_frozen"
+                      class="form-control"
+                      data-validation="required"
+                      data-error-message="Please enter number of embryos frozen"
+                      min="0"
+                      required
+                    >
+                  </div>
+
+                  <!-- No of Egg Frozen -->
+                  <div class="col-md-3">
+                    <label class="form-label" for="eggFrozen">No of Egg Frozen*</label>
+                    <input type="number"
+                      id="eggFrozen"
+                      name="no_of_egg_frozen"
+                      class="form-control"
+                      data-validation="required"
+                      data-error-message="Please enter number of eggs frozen"
+                      min="0"
+                      required
+                    >
+                  </div>
+
+                  <!-- Remaining Embryo -->
+                  <div class="col-md-3">
+                    <label class="form-label" for="remainingEmbryo">Remaining Embryo*</label>
+                    <input type="number"
+                      id="remainingEmbryo"
+                      name="remaining_embryo"
+                      class="form-control"
+                      data-validation="required"
+                      data-error-message="Please enter remaining embryos"
+                      min="0"
+                      required
+                    >
+                  </div>
+
+                  <!-- Remaining Egg -->
+                  <div class="col-md-3">
+                    <label class="form-label" for="remainingEgg">Remaining Egg*</label>
+                    <input type="number"
+                      id="remainingEgg"
+                      name="remaining_egg"
+                      class="form-control"
+                      data-validation="required"
+                      data-error-message="Please enter remaining eggs"
+                      min="0"
+                      required
+                    >
+                  </div>
+
+                  <!-- Next Freezing Due Date -->
+                  <div class="col-md-3">
+                    <label class="form-label" for="nextFreezingDate">Next Freezing Due Date*</label>
+                    <input type="date"
+                      id="nextFreezingDate"
+                      name="next_freezing_due_date"
+                      class="form-control"
+                      data-validation="required"
+                      data-error-message="Please select next freezing due date"
+                      required
+                    >
+                  </div>
+
+                  <!-- Amount Due -->
+                  <div class="col-md-3">
+                    <label class="form-label" for="amountDue">Amount Due*</label>
+                    <input type="number"
+                      id="amountDue"
+                      name="amount_due"
+                      readonly
+                      class="form-control"
+                      data-validation="required"
+                      data-error-message="Please enter the amount due"
+                      min="0"
+                      required
+                    >
+                  </div>
+                  <script>
+  document.getElementById("remainingEmbryo").addEventListener("input", function () {
+    const value = parseInt(this.value) || 0;
+    const amount = value > 4 ? 45000 : 25000;
+    document.getElementById("amountDue").value = amount;
+  });
+</script>
+                   <div class="col-md-3">
+                    <label class="form-label" for="amountDue">Amount Payable*</label>
+                    <input type="number"
+                      id="amountPayable"
+                      name="amount_payable"
+                      class="form-control"
+                      data-validation="required"
+                      data-error-message="Please enter the amount payable"
+                      min="0"
+                      
+                      required
+                    >
+                  </div>
+                </div>
+
+                <!-- Loading Indicator -->
+                <div id="loadingIndicator" class="mt-3" style="display: none;">
+                  <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                  </div>
+                </div>
+
+                <!-- Form Buttons -->
+                <div class="mt-4">
+                  <button type="submit" class="btn btn-primary me-3">Save Patient</button>
+                  <button type="reset"
+                    onclick="window.location.href='/patients'"
+                    class="btn btn-outline-secondary">Cancel</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <%- include('../footer') -%>
+
+  <script>
+    $(document).ready(function () {
+      const formId = '#PatientForm';
+      const errorDivId = '#errordiv';
+      const loadingDiv = '#loadingIndicator';
+
+      // Hide error and loading initially
+      $(errorDivId).hide();
+      $(loadingDiv).hide();
+
+      // Helper to disable fields that should not change on update
+      function disableImmutableFields() {
+        $('#regNo').prop('disabled', true);
+        $('#patientName').prop('disabled', true);
+        $('#number1').prop('disabled', true);
+        $('#opuDate').prop('disabled', true);
+        $('#embryoFrozen').prop('disabled', true);
+        $('#eggFrozen').prop('disabled', true);
+      }
+
+      // Fetch existing patient details for update
+      async function fetchPatientDetails(patientId) {
+        try {
+          const response = await axios.get(`/patients/${patientId}`);
+          const patientData = response.data.patient;
+          if (patientData) {
+            // Populate form fields
+            $('#patientId').val(patientData.id);
+            $('#regNo').val(patientData.reg_no);
+            $('#patientName').val(patientData.patient_name);
+            $('#spouseName').val(patientData.spouse_name);
+            $('#number1').val(patientData.primary_mobile);
+            $('#number2').val(patientData.secondary_mobile);
+            $('#email').val(patientData.email);
+            $('#opuDate').val(patientData.opu_date);
+            $('#embryoFrozen').val(patientData.no_of_embryo_frozen);
+            $('#eggFrozen').val(patientData.no_of_egg_frozen);
+            $('#remainingEmbryo').val(patientData.remaining_embryo);
+            $('#remainingEgg').val(patientData.remaining_egg);
+            $('#nextFreezingDate').val(patientData.next_freezing_due_date);
+            $('#amountDue').val(patientData.amount_due);
+            $('#amountPayable').val(patientData.amount_payable);
+
+            // Disable immutable fields
+            disableImmutableFields();
+          }
+        } catch (error) {
+          console.error('Error fetching patient details:', error);
+          $(errorDivId)
+            .removeClass('alert-success')
+            .addClass('alert-danger')
+            .text('Failed to fetch patient details')
+            .show();
+        }
+      }
+
+      // Check URL parameters for “id”
+      const urlParams = new URLSearchParams(window.location.search);
+      const patientId = urlParams.get('id');
+      const isUpdate = Boolean(patientId);
+
+      if (isUpdate) {
+        fetchPatientDetails(patientId);
+      }
+
+      // Form submission handler
+      $(formId).on('submit', async function (event) {
+        event.preventDefault();
+
+        const { isValid, errorMessage } = validateForm(formId);
+        if (!isValid) {
+          $(errorDivId)
+            .html(`<div class="alert alert-danger">${errorMessage}</div>`)
+            .show();
+          return;
+        }
+
+        // Build form data object
+        const formData = {
+          id: $('#patientId').val() || null,
+          reg_no: $('#regNo').val(),
+          patient_name: $('#patientName').val(),
+          spouse_name: $('#spouseName').val(),
+          number_1: $('#number1').val(),
+          number_2: $('#number2').val(),
+          email: $('#email').val(),
+          opu_date: $('#opuDate').val(),
+          no_of_embryo_frozen: $('#embryoFrozen').val(),
+          no_of_egg_frozen: $('#eggFrozen').val(),
+          remaining_embryo: $('#remainingEmbryo').val(),
+          remaining_egg: $('#remainingEgg').val(),
+          next_freezing_due_date: $('#nextFreezingDate').val(),
+          amount_due: $('#amountDue').val(),
+          amount_payable: $('#amountPayable').val()
+        };
+
+        try {
+          $(loadingDiv).show();
+          const response = await axios.post('/savePatient', formData);
+          $(errorDivId)
+            .removeClass('alert-danger')
+            .addClass('alert-success')
+            .html(response.data.message)
+            .show();
+          setTimeout(() => {
+            window.location.href = '/patients';
+          }, 1500);
+        } catch (error) {
+          const msg = error.response?.data?.message || 'Error saving patient data';
+          $(errorDivId)
+            .removeClass('alert-success')
+            .addClass('alert-danger')
+            .html(msg)
+            .show();
+        } finally {
+          $(loadingDiv).hide();
+        }
+      });
+    });
+  </script>
+</body>
+
+</html>

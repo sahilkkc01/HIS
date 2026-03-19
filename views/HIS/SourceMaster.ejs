@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en" class="light-style" dir="ltr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Source Master</title>
+  <%- include('../header') -%>
+  <style>
+    .source-list { max-height: 70vh; overflow-y: auto; }
+    .source-item { cursor: pointer; padding: .5rem .75rem; border-bottom: 1px solid #f1f1f1; }
+    .source-item:hover { background: #f8f9fa; }
+    .source-item.active { background: #e9f2ff; font-weight: 600; }
+    .no-sources { padding: 1rem; color: #6c757d; text-align:center; }
+    .small-muted { font-size:.85rem; color:#6c757d }
+  </style>
+</head>
+
+<body>
+  <div class="container-fluid vh-100 d-flex flex-column">
+    <div class="container-fluid py-4">
+      <div class="card">
+        <h5 class="card-header">Source Master</h5>
+        <div class="card-body">
+          <div class="row gx-4">
+            <!-- Left: Source list -->
+            <div class="col-md-4 mb-3">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <div style="flex:1">
+                  <input id="sourceSearch" class="form-control form-control-sm" placeholder="Search sources...">
+                </div>
+                <div class="ms-2">
+                  <button id="newSourceBtn" class="btn btn-sm btn-outline-primary">New</button>
+                </div>
+              </div>
+
+              <div class="card shadow-sm">
+                <div class="card-body p-2 source-list" id="sourceListContainer" aria-live="polite">
+                  <div class="no-sources">Loading sources...</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right: Form -->
+            <div class="col-md-8">
+              <form id="SourceForm">
+                <input type="hidden" id="sourceId" name="id">
+                <div id="errordiv" style="display:none;"></div>
+
+                <!-- Source Info -->
+                <div class="row mb-3">
+                  <div class="col-md-8 mb-2">
+                    <label class="form-label" for="sourceName">Source Name*</label>
+                    <input type="text" id="sourceName" name="sourceName" class="form-control form-control-sm" required>
+                  </div>
+                </div>
+
+                <div class="mt-3">
+                  <button type="submit" class="btn btn-primary btn-sm me-2">Save Source</button>
+                </div>
+              </form>
+            </div> <!-- end right col -->
+          </div> <!-- end row -->
+        </div> <!-- card-body -->
+      </div> <!-- card -->
+    </div> <!-- container-fluid -->
+  </div> <!-- container-fluid vh-100 -->
+
+  <%- include('../footer') -%>
+
+  <script>
+    $(function () {
+      const formId = '#SourceForm';
+      const errorDiv = '#errordiv';
+      const sourceListContainer = $('#sourceListContainer');
+      let sourcesCache = [];
+      let activeSourceId = null;
+
+      // Render source list
+      function renderSourceList(list, filter = '') {
+        sourceListContainer.empty();
+        const filtered = list.filter(s => (s.name || '').toLowerCase().includes(filter.toLowerCase()));
+        if (!filtered.length) {
+          sourceListContainer.html('<div class="no-sources">No sources found.</div>');
+          return;
+        }
+        filtered.forEach(s => {
+          const el = $(`
+            <div class="source-item" data-id="${s.id}">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <div>${escapeHtml(s.name)}</div>
+                </div>
+              </div>
+            </div>
+          `);
+          if (s.id == activeSourceId) el.addClass('active');
+          el.on('click', () => {
+            $('.source-item').removeClass('active');
+            el.addClass('active');
+            activeSourceId = s.id;
+            fetchSource(s.id);
+          });
+          sourceListContainer.append(el);
+        });
+      }
+
+      function escapeHtml(text) {
+        if (!text) return '';
+        return String(text)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
+      }
+
+      // Fetch source list from server
+      async function loadSourceList() {
+        sourceListContainer.html('<div class="no-sources">Loading sources...</div>');
+        try {
+          const res = await axios.get('/sources/list');
+          sourcesCache = Array.isArray(res.data) ? res.data : (res.data.sources || []);
+          renderSourceList(sourcesCache);
+        } catch (err) {
+          sourceListContainer.html('<div class="no-sources">Failed to load sources.</div>');
+          console.error('loadSourceList error', err);
+        }
+      }
+
+      // Fetch single source by id and populate form
+      async function fetchSource(id) {
+        try {
+          const res = await axios.get(`/getSourcesById/${id}`);
+          const s = res.data.source || res.data;
+          if (s) {
+            $('#sourceId').val(s.id);
+            $('#sourceName').val(s.name || '');
+            $(errorDiv).hide();
+          }
+        } catch (e) {
+          $(errorDiv).removeClass('alert-success').addClass('alert alert-danger')
+            .text('Failed to load source.').show();
+        }
+      }
+
+      // New source button - reset form and active state
+      $('#newSourceBtn').on('click', function () {
+        activeSourceId = null;
+        $('.source-item').removeClass('active');
+        $('#sourceId').val('');
+        $('#SourceForm')[0].reset();
+        $(errorDiv).hide();
+      });
+
+      // Search/filter
+      $('#sourceSearch').on('input', function () {
+        const q = $(this).val();
+        renderSourceList(sourcesCache, q);
+      });
+
+      // Submit form (create/update)
+      $(formId).on('submit', async function (e) {
+        e.preventDefault();
+
+        // Validate required fields
+        let valid = true;
+        $(formId + ' [required]').each(function () {
+          if (!this.value.trim()) { valid = false; return false; }
+        });
+        if (!valid) {
+          $(errorDiv).removeClass('alert-success').addClass('alert alert-danger')
+            .text('Please fill all required fields.').show();
+          return;
+        }
+
+        const idVal = $('#sourceId').val();
+        const data = {
+          name: $('#sourceName').val()
+        };
+
+        try {
+          let res;
+          if (idVal) {
+            // Update existing source
+            res = await axios.post(`/sources/update/${idVal}`, data);
+          } else {
+            // Create new source
+            res = await axios.post('/sources/create', data);
+          }
+
+          $(errorDiv).removeClass('alert-danger').addClass('alert alert-success')
+            .text(res.data.message || 'Source saved successfully').show();
+
+          // Refresh list and highlight saved source
+          const savedId = res.data.id || res.data.source?.id || idVal;
+          await loadSourceList();
+
+          if (savedId) {
+            activeSourceId = savedId;
+            $(`[data-id="${savedId}"]`).addClass('active');
+            $('#sourceId').val(savedId);
+          }
+
+          setTimeout(() => $(errorDiv).fadeOut(), 1600);
+
+        } catch (err) {
+          const em = err.response?.data?.message || 'Error saving source.';
+          $(errorDiv).removeClass('alert-success').addClass('alert alert-danger')
+            .text(em).show();
+        }
+      });
+
+      // initial load
+      loadSourceList();
+    });
+  </script>
+</body>
+</html>
