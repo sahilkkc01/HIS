@@ -49,6 +49,7 @@ const {
   saveCounselor,
   getCounselors,
   getCounselorById,
+  getPatientById,
 } = require("../controllers/HisControllers");
 const { UserTokens, Patient } = require("../models/HisSchema");
 const { updateAgent } = require("../controllers/CrmCtrl");
@@ -99,7 +100,7 @@ router.get("/login", async (req, res) => {
       const user = await UserTokens.findOne({ where: { jwtToken: token } });
       console.log(user);
       if (user) {
-        return res.redirect("/Patient-Registration");
+        return res.redirect("/leads");
       } else {
         return res.render("HIS/login");
       }
@@ -114,7 +115,7 @@ router.get("/login", async (req, res) => {
   res.render("HIS/login");
 });
 router.get("/", (req, res) => {
-  res.redirect("/Patient-List");
+  res.redirect("/leads");
 });
 router.get("/Patient-Registration", async function (req, res, next) {
   try {
@@ -251,6 +252,7 @@ router.post(
   ]),
   savePatientData
 );
+router.get("/getPatientById", getPatientById);
 
 
 

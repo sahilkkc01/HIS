@@ -242,74 +242,52 @@ exports.getMasterAdmin = async (req, res) => {
 
 
 exports.savePatientData = async (req, res) => {
-  console.log("BODY :", req.body);
-  console.log("FILES:", req.files);   // multer fields (patientImage, spouseImage)
-
-  // ── Resolve clinic_id ───────────────────────────────────────
-  let { id } = req.query;
-  if (id) id = decryptData(id);
-  const clinicId = req.user?.clinic_id || id;
-  if (!clinicId) return res.status(401).json({ message: "Unauthorized: Please log in" });
-
+  console.log(req.body);
+  console.log(req.files);
   const transaction = await sequelize.transaction();
 
   try {
-    // ════════════════════════════════════════════════════════
-    //  Destructure body
-    // ════════════════════════════════════════════════════════
+    let { id } = req.query;
+    if (id) id = decryptData(id);
+    const clinicId = req.user?.clinic_id || id;
+    if (!clinicId) return res.status(401).json({ message: "Unauthorized" });
+
     const {
-      // ── update flag ─────────────────────────────────────
       patientId,
+      uhid,
 
-      // ── Patient – name ──────────────────────────────────
       prefix, firstName, middleName, lastName, familyName, fatherName,
-
-      // ── Patient – demographics ──────────────────────────
       gender, bloodGroup, dob, age,
       education, maritalStatus, anniversary, religion,
 
-      // ── Patient – contact ───────────────────────────────
       mobile: phone1, phone2, email,
-
-      // ── Patient – professional ──────────────────────────
       occupation, companyName,
 
-      // ── Patient – misc ──────────────────────────────────
       idProof, specialReg, address, state, city, country,
+      status: statusRaw,
 
-      // status[] checkboxes arrive as array or CSV string
-      "status[]": statusRaw,
-
-      // ── Spouse ──────────────────────────────────────────
       spousePrefix, spouseFirstName, spouseMiddleName, spouseLastName,
       spouseFamilyName, spouseMotherName,
       spouseDob, spouseAge, spouseEducation, spouseBloodGroup,
       spouseOccupation, spouseCompanyName, spouseIncome,
       spouseExperience, spouseSkill, spouseVehicle,
-      "languages[]": languagesRaw,
+      languages: languagesRaw,
 
-      // ── Sponsor ─────────────────────────────────────────
       referenceNo, patientCategory, associatedCompany,
       memberRelation, patientSource, sponsorCompany, tariff, remark,
 
-      // ── Bank ────────────────────────────────────────────
       bankName, branch, ifscCode, accountNo, accountHolder, accountType,
 
-      // ── Appointment / vitals ────────────────────────────
       weight, height, bmi, fever, bp, sugar,
       place, doctor, drtime: time, date,
       Clinic,
     } = req.body;
 
-    // ── Validation ──────────────────────────────────────────
     if (!firstName || !phone1 || !gender || !age || !bloodGroup) {
       await transaction.rollback();
-      return res.status(400).json({
-        message: "firstName, mobile (phone1), gender, age and bloodGroup are required.",
-      });
+      return res.status(400).json({ message: "Required fields missing" });
     }
 
-    // ── Helper: normalise status flags ──────────────────────
     const statusArr = Array.isArray(statusRaw)
       ? statusRaw
       : typeof statusRaw === "string"
@@ -317,18 +295,16 @@ exports.savePatientData = async (req, res) => {
       : [];
 
     const isInternational = statusArr.includes("international");
-    const isVIP           = statusArr.includes("vip");
-    const isEmployee      = statusArr.includes("employee");
-    const isInsured       = statusArr.includes("insured");
+    const isVIP = statusArr.includes("vip");
+    const isEmployee = statusArr.includes("employee");
+    const isInsured = statusArr.includes("insured");
 
-    // ── Helper: languages ───────────────────────────────────
     const languages = Array.isArray(languagesRaw)
       ? languagesRaw
       : typeof languagesRaw === "string"
       ? languagesRaw.split(",")
       : [];
 
-    // ── Image paths ─────────────────────────────────────────
     const patientImage = req.files?.patientImage?.[0]?.path
       ? path.basename(req.files.patientImage[0].path)
       : null;
@@ -337,22 +313,20 @@ exports.savePatientData = async (req, res) => {
       ? path.basename(req.files.spouseImage[0].path)
       : null;
 
-    // ── Check whether spouse / sponsor / bank sections ──────
-    //    were submitted (frontend sends a hidden flag field)
-    const hasSpouse  = req.body.hasSpouse  === "1";
+    const hasSpouse = req.body.hasSpouse === "1";
     const hasBankSponsor = req.body.hasBankSponsor === "1";
     const hasAppointment = req.body.hasAppointment === "1";
 
-    // ════════════════════════════════════════════════════════
-    //  CREATE or UPDATE patient
-    // ════════════════════════════════════════════════════════
     let patient;
     let isNewPatient = false;
 
     if (patientId) {
-      // ── UPDATE ────────────────────────────────────────────
       const decryptedId = decryptData(patientId);
-      patient = await Patient.findOne({ where: { id: decryptedId, clinic_id: clinicId } });
+
+      patient = await Patient.findOne({
+        where: { id: decryptedId, clinic_id: clinicId },
+      });
+
       if (!patient) {
         await transaction.rollback();
         return res.status(404).json({ message: "Patient not found" });
@@ -360,6 +334,7 @@ exports.savePatientData = async (req, res) => {
 
       await patient.update(
         {
+          uhid: uhid || null,
           prefix, firstName, middleName, lastName, familyName, fatherName,
           gender, bloodGroup, dob: dob || null, age,
           education, maritalStatus, anniversary: anniversary || null, religion,
@@ -374,17 +349,31 @@ exports.savePatientData = async (req, res) => {
       );
 
     } else {
-      // ── CREATE ────────────────────────────────────────────
-      const existing = await Patient.findOne({ where: { mobile: phone1, clinic_id: clinicId } });
+      const existing = await Patient.findOne({
+        where: { mobile: phone1, clinic_id: clinicId },
+      });
+
       if (existing) {
         await transaction.rollback();
-        return res.status(409).json({ message: "A patient with this mobile number already exists." });
+        return res.status(409).json({ message: "Mobile already exists" });
+      }
+
+      if (uhid) {
+        const existingUHID = await Patient.findOne({
+          where: { uhid, clinic_id: clinicId },
+        });
+        if (existingUHID) {
+          await transaction.rollback();
+          return res.status(409).json({ message: "UHID already exists" });
+        }
       }
 
       isNewPatient = true;
+
       patient = await Patient.create(
         {
           clinic_id: clinicId,
+          uhid: uhid || null,
           prefix, firstName, middleName, lastName, familyName, fatherName,
           gender, bloodGroup, dob: dob || null, age,
           education, maritalStatus, anniversary: anniversary || null, religion,
@@ -397,15 +386,8 @@ exports.savePatientData = async (req, res) => {
         },
         { transaction }
       );
-
-      // Generate UHID
-      const uhid = `UHID${clinicId}${moment().format("YYYYMMDD")}${patient.id}`;
-      await patient.update({ uhid }, { transaction });
     }
 
-    // ════════════════════════════════════════════════════════
-    //  SPOUSE
-    // ════════════════════════════════════════════════════════
     if (hasSpouse && spouseFirstName) {
       const spouseData = {
         prefix: spousePrefix, firstName: spouseFirstName,
@@ -420,61 +402,77 @@ exports.savePatientData = async (req, res) => {
         ...(spouseImage ? { spouseImage } : {}),
       };
 
-      const existingSpouse = await SpouseDetails.findOne({ where: { patient_id: patient.id } });
+      const existingSpouse = await SpouseDetails.findOne({
+        where: { patient_id: patient.id },
+      });
+
       if (existingSpouse) {
         await existingSpouse.update(spouseData, { transaction });
       } else {
-        await SpouseDetails.create({ patient_id: patient.id, ...spouseData }, { transaction });
+        await SpouseDetails.create(
+          { patient_id: patient.id, ...spouseData },
+          { transaction }
+        );
       }
     }
 
-    // ════════════════════════════════════════════════════════
-    //  SPONSOR
-    // ════════════════════════════════════════════════════════
     if (hasBankSponsor && (referenceNo || patientCategory)) {
       const sponsorData = {
         referenceNo, patientCategory, associatedCompany,
         memberRelation, patientSource, sponsorCompany, tariff, remark,
       };
 
-      const existingSponsor = await SponsorInfo.findOne({ where: { patient_id: patient.id } });
+      const existingSponsor = await SponsorInfo.findOne({
+        where: { patient_id: patient.id },
+      });
+
       if (existingSponsor) {
         await existingSponsor.update(sponsorData, { transaction });
       } else {
-        await SponsorInfo.create({ patient_id: patient.id, ...sponsorData }, { transaction });
+        await SponsorInfo.create(
+          { patient_id: patient.id, ...sponsorData },
+          { transaction }
+        );
       }
     }
 
-    // ════════════════════════════════════════════════════════
-    //  BANK DETAILS
-    // ════════════════════════════════════════════════════════
     if (hasBankSponsor && (bankName || accountNo)) {
       const bankData = { bankName, branch, ifscCode, accountNo, accountHolder, accountType };
 
-      const existingBank = await BankDetails.findOne({ where: { patient_id: patient.id } });
+      const existingBank = await BankDetails.findOne({
+        where: { patient_id: patient.id },
+      });
+
       if (existingBank) {
         await existingBank.update(bankData, { transaction });
       } else {
-        await BankDetails.create({ patient_id: patient.id, ...bankData }, { transaction });
+        await BankDetails.create(
+          { patient_id: patient.id, ...bankData },
+          { transaction }
+        );
       }
     }
 
-    // ════════════════════════════════════════════════════════
-    //  APPOINTMENT  (new patients only, when section checked)
-    // ════════════════════════════════════════════════════════
     let appointment = null;
 
     if (isNewPatient && hasAppointment && doctor && time) {
-      const doctorExists = await Doctor.findOne({ where: { id: doctor, clinic_id: clinicId } });
-      if (!doctorExists) throw new Error("Invalid doctor ID");
+      const doctorExists = await Doctor.findOne({
+        where: { id: doctor, clinic_id: clinicId },
+      });
+      if (!doctorExists) throw new Error("Invalid doctor");
 
       const appointmentDate = moment(date, "YYYY-MM-DD", true);
-      if (!appointmentDate.isValid()) throw new Error("Invalid date format. Use YYYY-MM-DD");
+      if (!appointmentDate.isValid()) throw new Error("Invalid date");
 
       const dup = await Appointment.findOne({
-        where: { patient_id: patient.id, doctor_id: doctor, date: appointmentDate.toDate(), time },
+        where: {
+          patient_id: patient.id,
+          doctor_id: doctor,
+          date: appointmentDate.toDate(),
+          time,
+        },
       });
-      if (dup) throw new Error("Appointment already exists for this patient, doctor, and time slot.");
+      if (dup) throw new Error("Appointment exists");
 
       appointment = await Appointment.create(
         {
@@ -486,37 +484,76 @@ exports.savePatientData = async (req, res) => {
           date: appointmentDate.toDate(),
           time,
           place,
-          weight:  weight  ? parseFloat(weight)  : null,
-          height:  height  ? parseFloat(height)  : null,
-          bmi:     bmi     ? parseFloat(bmi)     : null,
-          fever:   fever   || null,
-          BP:      bp      || null,
-          Suger:   sugar   || null,
+          weight: weight ? parseFloat(weight) : null,
+          height: height ? parseFloat(height) : null,
+          bmi: bmi ? parseFloat(bmi) : null,
+          fever: fever || null,
+          BP: bp || null,
+          Suger: sugar || null,
         },
         { transaction }
       );
     }
 
-    // ── Commit ───────────────────────────────────────────────
     await transaction.commit();
 
     return res.status(201).json({
-      message: isNewPatient
-        ? appointment
-          ? "Patient registered and appointment booked successfully"
-          : "Patient registered successfully"
-        : "Patient updated successfully",
+      message: isNewPatient ? "Patient created" : "Patient updated",
       patient,
       ...(appointment ? { appointment } : {}),
     });
 
   } catch (error) {
-    console.error("savePatientData error:", error);
     await transaction.rollback();
-    return res.status(500).json({ message: error.message || "Failed to save patient data" });
+    return res.status(500).json({ message: error.message || "Error" });
   }
 };
+exports.getPatientById = async (req, res) => {
+  try {
 
+   let { id } = req.query;
+    if (!id) return res.status(400).json({ message: "Patient id required" });
+
+    const clinicId = req.user?.clinic_id;
+    if (!clinicId) return res.status(401).json({ message: "Unauthorized" });
+    const patient = await Patient.findOne({
+      where: { id, clinic_id: clinicId }
+    });
+    console.log('Patient:', patient);
+    if (!patient) {
+      return res.status(404).json({ message: "Patient not found" });
+    }
+
+    const spouse = await SpouseDetails.findOne({
+      where: { patient_id: id }
+    });
+
+    const sponsor = await SponsorInfo.findOne({
+      where: { patient_id: id }
+    });
+
+    const bank = await BankDetails.findOne({
+      where: { patient_id: id }
+    });
+
+    const appointments = await Appointment.findAll({
+      where: { patient_id: id },
+      order: [["createdAt", "DESC"]]
+    });
+
+    return res.status(200).json({
+      patient,
+      spouse,
+      sponsor,
+      bank,
+      appointments
+    });
+
+  } catch (error) {
+    console.error("getPatientById error:", error);
+    return res.status(500).json({ message: error.message || "Error" });
+  }
+};
 exports.saveDoctorData = async (req, res) => {
   const clinicId = req.user.clinic_id;
   if (!clinicId) {

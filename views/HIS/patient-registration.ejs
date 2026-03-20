@@ -76,7 +76,7 @@
 
                     <!-- Prefix -->
                     <div class="col-md-3">
-                      <label class="form-label" for="prefix">Prefix</label>
+                      <label class="form-label" for="prefix">Prefix<span class="text-danger">*</span></label>
                       <select id="prefix" name="prefix" class="form-select">
                         <option value="">Select</option>
                         <option>Mr.</option>
@@ -105,17 +105,26 @@
                     </div>
 
                     <!-- Family Name -->
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                       <label class="form-label" for="familyName">Family Name</label>
                       <input type="text" id="familyName" name="familyName" class="form-control">
                     </div>
 
                     <!-- Father's Name -->
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                       <label class="form-label" for="fatherName">Father's Name</label>
                       <input type="text" id="fatherName" name="fatherName" class="form-control">
                     </div>
-
+<div class="col-md-4">
+  <label class="form-label" for="uhid">UHID</label>
+  <input 
+    type="text" 
+    id="uhid" 
+    name="uhid" 
+    class="form-control"
+    placeholder="Enter UHID"
+  >
+</div>
                     <!-- Gender -->
                     <div class="col-md-4">
                       <label class="form-label" for="gender">Gender <span class="text-danger">*</span></label>
@@ -141,7 +150,7 @@
 
                     <!-- DOB -->
                     <div class="col-md-4">
-                      <label class="form-label" for="dob">Date of Birth</label>
+                      <label class="form-label" for="dob">Date of Birth<span class="text-danger">*</span></label>
                       <input type="date" id="dob" name="dob" class="form-control">
                     </div>
 
@@ -654,7 +663,7 @@
 
                     <div class="col-md-6">
                       <label class="form-label" for="accountNo">Account No.</label>
-                      <input type="text" id="accountNo" name="accountNo" class="form-control">
+                      <input type="number" id="accountNo" name="accountNo" class="form-control">
                     </div>
 
                     <div class="col-md-6">
@@ -699,7 +708,7 @@
                   </div>
                   <div class="col-md-2">
                     <label class="form-label">Height in Feet</label>
-                    <input class="form-control" type="number" id="height" name="height">
+                    <input class="form-control" type="number" id="height" name="height" step="any">
                   </div>
                   <div class="col-md-2">
                     <label class="form-label">BMI</label>
@@ -864,6 +873,9 @@ $(document).ready(function () {
     e.preventDefault();
 
     // Basic client-side validation
+    if (!$("#prefix").val().trim()) {
+      alert("Prefix is required."); return;
+    }
     if (!$("#firstName").val().trim()) {
       alert("First Name is required."); return;
     }
@@ -890,8 +902,10 @@ $(document).ready(function () {
       contentType: false,
       success: function (res) {
         alert(res.message || "Saved successfully");
-        // Optionally store encrypted patientId for subsequent updates:
-        // $("#patientId").val(res.patient.encryptedId);
+
+  if (res.patient && res.patient.id) {
+    window.location.href = "/patient-registration?id=" + res.patient.id;
+  }
       },
       error: function (xhr) {
         const msg = xhr.responseJSON?.message || "Error saving patient data.";
@@ -935,7 +949,7 @@ $(document).ready(function () {
 
     // ── Patient photo ─────────────────────────────
     if (p.patientImage) {
-      $("#uploadedAvatar").attr("src", "../uploads/" + p.patientImage);
+      $("#uploadedAvatar").attr("src", "../MyUploads/" + p.patientImage);
     }
 
     // ── Name block ────────────────────────────────
@@ -945,6 +959,7 @@ $(document).ready(function () {
     $("#lastName").val(p.lastName   || "");
     $("#familyName").val(p.familyName || "");
     $("#fatherName").val(p.fatherName || "");
+    $("#uhid").val(p.uhid || "");
 
     // ── Demographics ──────────────────────────────
     setSelect("gender",        p.gender);
@@ -988,7 +1003,7 @@ $(document).ready(function () {
       $("#defaultCheck4").prop("checked", true).trigger("change");
 
       if (sp.spouseImage) {
-        $("#uploadedSpouseAvatar").attr("src", "../uploads/" + sp.spouseImage);
+        $("#uploadedSpouseAvatar").attr("src", "../MyUploads/" + sp.spouseImage);
       }
       setSelect("spousePrefix",     sp.prefix);
       $("#spouseFirstName").val(sp.firstName   || "");
@@ -1053,12 +1068,20 @@ $(document).ready(function () {
   // ═══════════════════════════════════════════════
   window.loadPatient = function (encryptedId) {
     $.ajax({
-      url: "/patient/get?id=" + encodeURIComponent(encryptedId),
+      url: "/getPatientById?id=" + encodeURIComponent(encryptedId),
       type: "GET",
       success: function (res) {
-        if (res && res.patient) {
-          window.fillPatientForm(res.patient);
-        }
+        console.log("Patient data loaded:", res);
+       if (res) {
+  const data = {
+    ...res.patient,
+    spouse: res.spouse,
+    sponsor: res.sponsor,
+    bank: res.bank
+  };
+
+  window.fillPatientForm(data);
+}
       },
       error: function (xhr) {
         console.error("Failed to load patient:", xhr.responseJSON?.message);
@@ -1068,7 +1091,7 @@ $(document).ready(function () {
 
   // Auto-load if patientId query param present in URL
   const urlParams = new URLSearchParams(window.location.search);
-  const editId    = urlParams.get("patientId");
+  const editId    = urlParams.get("id");
   if (editId) {
     window.loadPatient(editId);
   }

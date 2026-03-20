@@ -89,6 +89,7 @@
 <th>Followup Date</th>
 <th>Remark</th>
 <th>Priority</th>
+<th>Register</th>
 <th>Call</th>
 <th>WhatsApp</th>
 <th>Action</th>
@@ -105,7 +106,7 @@
       <table class="table table-striped" id="appointmentTable" style="width:100%; border-collapse:collapse;">
         <thead>
           <tr>
-            <th>Patient ID</th><th>Female Name</th><th>Male Name</th><th>Clinic</th><th>Appointment Date</th><th>Time Slot</th><th>Doctor</th><th>Status</th>
+            <th>Patient ID</th><th>Female Name</th><th>Male Name</th><th>Clinic</th><th>Appointment Date</th><th>Time Slot</th><th>Doctor</th><th>Register</th><th>Status</th>
           </tr>
         </thead>
         <tbody></tbody>
@@ -119,7 +120,7 @@
       <table class="table table-striped" id="visitedTable" style="width:100%; border-collapse:collapse;">
         <thead>
           <tr>
-            <th>Patient ID</th><th>Female Name</th><th>Male Name</th><th>Visit Date</th><th>UHID</th><th>Doctor</th><th>Doctor Notes</th><th>Consultant</th><th>Consultant Notes</th>
+            <th>Patient ID</th><th>Female Name</th><th>Male Name</th><th>Visit Date</th><th>UHID</th><th>Doctor</th><th>Register</th><th>Doctor Notes</th><th>Consultant</th><th>Consultant Notes</th>
           </tr>
         </thead>
         <tbody></tbody>
@@ -133,7 +134,7 @@
       <table class="table table-striped" id="convertedTable" style="width:100%; border-collapse:collapse;">
         <thead>
           <tr>
-            <th>Patient ID</th><th>Female Name</th><th>Male Name</th><th>Procedures</th><th>Package Offered</th><th>Package Price</th><th>Discount</th><th>Booking Date</th>
+            <th>Patient ID</th><th>Female Name</th><th>Male Name</th><th>Procedures</th><th>Package Offered</th><th>Package Price</th><th>Discount</th><th>Booking Date</th><th>Register</th>
           </tr>
         </thead>
         <tbody></tbody>
@@ -154,6 +155,7 @@
 <th>Email</th>
 <th>Lead Date</th>
 <th>Status</th>
+<th>Register</th>
 <th>Call</th>
 <th>WhatsApp</th>
 <th>Action</th>
@@ -266,7 +268,12 @@ async function loadFollowUps() {
   <td>${f.followup_date ? new Date(f.followup_date).toLocaleDateString() : '-'}</td>
   <td>${f.remark || '-'}</td>
   <td>${f.priority || '-'}</td>
-
+<td>
+  <button class="btn btn-sm btn-success"
+    onclick="window.location.href='/patient-registration?leadId=${encodeURIComponent(f.patient_id)}'">
+    Register
+  </button>
+</td>
   <td style="text-align:center;">
     ${f.primary_mobile ? `
       <button class="btn btn-sm btn-outline-primary"
@@ -289,6 +296,7 @@ async function loadFollowUps() {
       onclick="window.location.href='/crm/crm?id=${encodeURIComponent(f.patient_id)}'">
       View
     </button>
+    
   </td>
 </tr>`;
 
@@ -312,6 +320,12 @@ async function loadAppointments() {
         <td>${a.appointment_date ? new Date(a.appointment_date).toLocaleDateString() : '-'}</td>
         <td>${a.apptTimeSlot || '-'}</td>
         <td>${a.appointment_doctor || '-'}</td>
+        <td>
+  <button class="btn btn-sm btn-success"
+    onclick="window.location.href='/patient-registration?leadId=${encodeURIComponent(a.patient_id)}'">
+    Register
+  </button>
+</td>
         <td>${a.status || '-'}</td>
         <td>
           <button class="btn-primary" onclick="window.location.href='/crm/crm?id=${encodeURIComponent(a.patient_id)}'">
@@ -339,6 +353,12 @@ async function loadVisits() {
         <td>${v.uhid || '-'}</td>
         <td>${v.doctor_name || '-'}</td>
         <td>${v.doctor_notes || '-'}</td>
+        <td>
+  <button class="btn btn-sm btn-success"
+    onclick="window.location.href='/patient-registration?leadId=${encodeURIComponent(v.patient_id)}'">
+    Register
+  </button>
+</td>
         <td>${v.consultant_name || '-'}</td>
         <td>${v.consultant_notes || '-'}</td>
         <td>
@@ -368,6 +388,12 @@ async function loadConversions() {
         <td>${c.package_price || '-'}</td>
         <td>${c.discount || '-'}</td>
         <td>${c.booking_date ? new Date(c.booking_date).toLocaleDateString() : '-'}</td>
+        <td>
+  <button class="btn btn-sm btn-success"
+    onclick="window.location.href='/patient-registration?leadId=${encodeURIComponent(c.patient_id)}'">
+    Register
+  </button>
+</td>
         <td>
           <button class="btn-primary" onclick="window.location.href='/crm/crm?id=${encodeURIComponent(c.patient_id)}'">
             View
@@ -409,7 +435,12 @@ async function loadAllLeads(page = 1) {
       <td>${l.email || '-'}</td>
       <td>${l.lead_date ? new Date(l.lead_date).toLocaleDateString() : '-'}</td>
       <td>${l.status || '-'}</td>
-
+<td>
+  <button class="btn btn-sm btn-success"
+    onclick="window.location.href='/patient-registration?leadId=${encodeURIComponent(l.patient_id)}'">
+    Register
+  </button>
+</td>
       <td style="text-align:center;">
         ${l.primary_mobile ? `
           <button class="btn btn-sm btn-outline-primary"

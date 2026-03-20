@@ -6,124 +6,80 @@ const Patient = sequelize.define(
   {
     clinic_id:       { type: DataTypes.INTEGER,      allowNull: false },
     uhid:            { type: DataTypes.STRING },
- 
-    // ── Name block ──────────────────────────
     prefix:          { type: DataTypes.ENUM("Mr.", "Mrs.", "Ms.", "Dr.") },
     firstName:       { type: DataTypes.STRING, allowNull: false, validate: { notEmpty: true } },
     middleName:      { type: DataTypes.STRING },
     lastName:        { type: DataTypes.STRING },
     familyName:      { type: DataTypes.STRING },
     fatherName:      { type: DataTypes.STRING },
- 
-    // ── Demographics ────────────────────────
     gender:          { type: DataTypes.ENUM("Male", "Female", "Other"), allowNull: false },
     bloodGroup:      { type: DataTypes.ENUM("A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"), allowNull: false },
     dob:             { type: DataTypes.DATEONLY },
     age:             { type: DataTypes.INTEGER, allowNull: false, validate: { min: 0, max: 150 } },
-    education:       { type: DataTypes.ENUM("High School", "Bachelor's", "Master's", "PhD") },
-    maritalStatus:   { type: DataTypes.ENUM("Single", "Married", "Divorced", "Widowed") },
+    education:       { type: DataTypes.STRING },
+    maritalStatus:   { type: DataTypes.STRING },
     anniversary:     { type: DataTypes.DATEONLY },
-    religion:        { type: DataTypes.ENUM("Hindu", "Muslim", "Christian", "Sikh", "Other") },
- 
-    // ── Contact ─────────────────────────────
+    religion:        { type: DataTypes.STRING},
     mobile:          { type: DataTypes.STRING, allowNull: false, validate: { isNumeric: true, len: [10, 15] } },
     phone2:          { type: DataTypes.STRING },
-    email:           { type: DataTypes.STRING,  validate: { isEmail: true } },
- 
-    // ── Professional ────────────────────────
+    email:           { type: DataTypes.STRING, },
     occupation:      { type: DataTypes.STRING },
     companyName:     { type: DataTypes.STRING },
- 
-    // ── Identity / misc ─────────────────────
-    idProof:         { type: DataTypes.ENUM("Aadhar", "PAN", "Passport", "Driving License") },
+    idProof:         { type: DataTypes.STRING },
     specialReg:      { type: DataTypes.BOOLEAN, defaultValue: false },
- 
-    // ── Address ─────────────────────────────
     address:         { type: DataTypes.TEXT },
     state:           { type: DataTypes.STRING },
     city:            { type: DataTypes.STRING },
-    country:         { type: DataTypes.STRING, defaultValue: "India" },
- 
-    // ── Status flags ────────────────────────
     isInternational: { type: DataTypes.BOOLEAN, defaultValue: false },
     isVIP:           { type: DataTypes.BOOLEAN, defaultValue: false },
     isEmployee:      { type: DataTypes.BOOLEAN, defaultValue: false },
     isInsured:       { type: DataTypes.BOOLEAN, defaultValue: false },
- 
-    // ── Photo ───────────────────────────────
     patientImage:    { type: DataTypes.STRING },
   },
   { timestamps: true, alter: true, tableName: "patients" }
 );
- 
-// ─────────────────────────────────────────────
-//  2.  SPOUSE DETAILS
-// ─────────────────────────────────────────────
+
 const SpouseDetails = sequelize.define(
   "spouse_details",
   {
     patient_id:       { type: DataTypes.INTEGER, allowNull: false },
- 
-    // ── Name block ──────────────────────────
     prefix:           { type: DataTypes.ENUM("Mr.", "Mrs.", "Ms.", "Dr.") },
     firstName:        { type: DataTypes.STRING },
     middleName:       { type: DataTypes.STRING },
     lastName:         { type: DataTypes.STRING },
     familyName:       { type: DataTypes.STRING },
     motherName:       { type: DataTypes.STRING },
- 
-    // ── Demographics ────────────────────────
     dob:              { type: DataTypes.DATEONLY },
     age:              { type: DataTypes.INTEGER },
-    education:        { type: DataTypes.ENUM("High School", "Bachelor's", "Master's", "PhD") },
-    bloodGroup:       { type: DataTypes.ENUM("A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-") },
- 
-    // ── Professional ────────────────────────
-    occupation:       { type: DataTypes.ENUM("Business", "Service", "Self-employed", "Other") },
+    education:        { type: DataTypes.STRING },
+    bloodGroup:       { type: DataTypes.STRING },
+    occupation:       { type: DataTypes.STRING },
     companyName:      { type: DataTypes.STRING },
-    monthlyIncome:    {
-                        type: DataTypes.ENUM(
-                          "Below ₹25,000",
-                          "₹25,000 - ₹50,000",
-                          "₹50,000 - ₹1,00,000",
-                          "Above ₹1,00,000"
-                        )
-                      },
-    workExperience:   { type: DataTypes.ENUM("0-2 years", "3-5 years", "6-10 years", "10+ years") },
-    skill:            { type: DataTypes.ENUM("Management", "Technical", "Creative", "Other") },
- 
-    // ── Other ───────────────────────────────
-    languages:        { type: DataTypes.JSON },          // ["Hindi","English","Other"]
-    vehicleType:      { type: DataTypes.ENUM("Two-wheeler", "Four-wheeler", "Other") },
- 
-    // ── Photo ───────────────────────────────
+    monthlyIncome:    {type: DataTypes.STRING  },
+    workExperience:   { type: DataTypes.STRING },
+    skill:            { type: DataTypes.STRING },
+    languages:        { type: DataTypes.JSON },      
+    vehicleType:      { type: DataTypes.STRING },
     spouseImage:      { type: DataTypes.STRING },
   },
-  { timestamps: true, alter: true, tableName: "spouse_details" }
+  { timestamps: true, alter: true, tableName: "patient_spouse_details" }
 );
- 
-// ─────────────────────────────────────────────
-//  3.  SPONSOR INFO
-// ─────────────────────────────────────────────
 const SponsorInfo = sequelize.define(
   "sponsor_info",
   {
     patient_id:        { type: DataTypes.INTEGER, allowNull: false },
     referenceNo:       { type: DataTypes.STRING },
-    patientCategory:   { type: DataTypes.ENUM("General", "Corporate", "Insurance") },
+    patientCategory:   { type: DataTypes.STRING },
     associatedCompany: { type: DataTypes.STRING },
-    memberRelation:    { type: DataTypes.ENUM("Self", "Spouse", "Child", "Parent") },
-    patientSource:     { type: DataTypes.ENUM("Referral", "Walk-in", "Online") },
+    memberRelation:    { type: DataTypes.STRING },
+    patientSource:     { type: DataTypes.STRING },
     sponsorCompany:    { type: DataTypes.STRING },
-    tariff:            { type: DataTypes.ENUM("Standard", "Premium", "Corporate") },
+    tariff:            { type: DataTypes.STRING },
     remark:            { type: DataTypes.TEXT },
   },
-  { timestamps: true, alter: true, tableName: "sponsor_info" }
+  { timestamps: true, alter: true, tableName: "patient_sponsor_info" }
 );
- 
-// ─────────────────────────────────────────────
-//  4.  BANK DETAILS
-// ─────────────────────────────────────────────
+
 const BankDetails = sequelize.define(
   "bank_details",
   {
@@ -133,15 +89,11 @@ const BankDetails = sequelize.define(
     ifscCode:       { type: DataTypes.STRING },
     accountNo:      { type: DataTypes.STRING },
     accountHolder:  { type: DataTypes.STRING },
-    accountType:    { type: DataTypes.ENUM("saving", "current") },
+    accountType:    { type: DataTypes.STRING },
   },
-  { timestamps: true, alter: true, tableName: "bank_details" }
+  { timestamps: true, alter: true, tableName: "patient_bank_details" }
 );
  
-// ─────────────────────────────────────────────
-//  Associations
-// ─────────────────────────────────────────────
-
 // Patient.sync({ force: true });
 // SpouseDetails.sync({ force: true });
 // SponsorInfo.sync({ force: true });

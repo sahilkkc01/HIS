@@ -790,7 +790,7 @@ exports.saveLead = async (req, res) => {
     // 2) generate patientId
     const yy        = new Date().getFullYear() % 100;
     const seq       = newLead.id.toString().padStart(2, '0');
-    const patientId = `AV${yy}-${seq}`;
+    const patientId = `VATL${yy}-${seq}`;
 
     // 3) update with patientId
     newLead.patientId = patientId;

@@ -111,7 +111,7 @@ const Lead = sequelize.define("Lead", {
   tableName: "leads",
   timestamps: true   
 });
-// Lead.sync({ alter: true }) 
+// Lead.sync({ force: true }) 
 const LeadFollowUp = sequelize.define('LeadFollowUp', {
   clinic_id: {
     type: DataTypes.INTEGER,
@@ -153,7 +153,7 @@ const LeadFollowUp = sequelize.define('LeadFollowUp', {
   timestamps: true,
   tableName: 'lead_followups',
 });
-
+// LeadFollowUp.sync({ force: true })
 const LeadAppointment = sequelize.define('LeadAppointment', {
   clinic_id: {
     type: DataTypes.INTEGER,
@@ -196,7 +196,7 @@ const LeadAppointment = sequelize.define('LeadAppointment', {
   timestamps: true,
   tableName: 'lead_appointments',
 });
-
+// LeadAppointment.sync({ force: true })
 const LeadVisited = sequelize.define('LeadVisited', {
   clinic_id: {
     type: DataTypes.INTEGER,
@@ -238,6 +238,7 @@ const LeadVisited = sequelize.define('LeadVisited', {
   timestamps: true,
   tableName: 'lead_visiteds', // follows your plural camelCase style
 });
+// LeadVisited.sync({ force: true })
 
 const VisitFollowup = sequelize.define('VisitFollowup', {
     clinic_id: {
@@ -281,6 +282,7 @@ const VisitFollowup = sequelize.define('VisitFollowup', {
     timestamps: true,
     tableName: 'visit_followups' // adjust if you prefer a different naming convention
   });
+// VisitFollowup.sync({ force: true })
 
 const LeadConverted = sequelize.define('LeadConverted', {
   clinic_id: {
@@ -330,7 +332,7 @@ const LeadConverted = sequelize.define('LeadConverted', {
   timestamps: true,
   tableName: 'leadconverteds', // plural camelCase style
 });
-
+// LeadConverted.sync({ force: true })
 const Doctor = sequelize.define('Doctor', {
   clinic_id: {
     type: DataTypes.INTEGER,

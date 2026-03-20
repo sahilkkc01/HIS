@@ -871,7 +871,7 @@
   <!-- Patient ID & Lead Date -->
   <div class="form-row">
     <div class="form-group">
-      <label for="patientId" class="required">Patient ID</label>
+      <label for="patientId" class="required">Lead ID</label>
       <input type="text" readonly id="patientId" name="patientId" placeholder="Auto-generated">
     </div>
     <div class="form-group">
@@ -1035,7 +1035,7 @@
 
   <!-- Submit -->
   <button type="submit" id="submitBtn" class="save-btn">
-    <i class="fas fa-save"></i> Save Patient Information
+    <i class="fas fa-save"></i> Save Lead Information
   </button>
 </form>
 
@@ -3376,7 +3376,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   const patientId = params.get('id');
 
   if (patientId) {
-    document.getElementById('submitBtn').innerHTML = '<i class="fas fa-edit"></i> Update Patient Information';
+    document.getElementById('submitBtn').innerHTML = '<i class="fas fa-edit"></i> Update Lead Information';
     fetchLead(patientId);
   } else {
     // Set agent name from localStorage
