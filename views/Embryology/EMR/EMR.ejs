@@ -12,32 +12,34 @@
   <div class="container-xxl container-p-y flex-grow-1">
 
     <!-- PATIENT INFO -->
-    <div class="mb-4 card">
-      <div class="card-body">
+   <div class="mb-4 card">
+  <div class="card-body">
+    <div class="row align-items-center">
 
-        <div class="row align-items-center">
-
-          <div class="col-md-4">
-            <strong>Couple No.</strong><br>
-            <small>Referred By: SFDKJ</small>
-          </div>
-
-          <div class="col-md-4 text-center">
-            <i class="bx bx-user fs-2"></i><br>
-            <strong>SAHIL GUPTA, MRN: MR_33</strong><br>
-            <small>Age: 23 Y, 0 M, 22 D Male</small>
-          </div>
-
-          <div class="col-md-4 text-end">
-            <i class="bx bx-user fs-2"></i><br>
-            <strong>FIRS</strong><br>
-            <small>Age: 0 Y, 0 M, 0 D</small>
-          </div>
-
-        </div>
-
+      <!-- Left -->
+      <div class="col-md-4">
+        <strong>UHID:</strong> <span id="p_uhid">-</span><br>
+        <strong>Patient Id:</strong> <span id="patientId">-</span><br>
+        <small>Gender: <span id="p_gender">-</span></small>
       </div>
+
+      <!-- Center -->
+      <div class="col-md-4 text-center">
+        <img id="p_image" src="/images/1.png" class="rounded mb-1" width="60" height="60"/>
+        <br>
+        <strong id="p_name">-</strong><br>
+        <small id="p_age">-</small>
+      </div>
+
+      <!-- Right (Father/Spouse) -->
+      <div class="col-md-4 text-end">
+        <strong id="p_family">-</strong><br>
+        <small id="p_contact">-</small>
+      </div>
+
     </div>
+  </div>
+</div>
     </div>
     </div>
 <%- include("./preExisting") %>
@@ -56,6 +58,59 @@
 
 <%- include("../../footer") -%>
 
+<script>
+$(document).ready(function () {
 
+  const urlParams = new URLSearchParams(window.location.search);
+  const id = urlParams.get("id");
+
+  if (id) {
+    loadPatient(id);
+  }
+
+  function loadPatient(id) {
+    $.ajax({
+      url: "/getPatientById?id=" + encodeURIComponent(id),
+      type: "GET",
+      success: function (res) {
+        console.log("Patient:", res);
+
+        const p = res.patient;
+        if (!p) return;
+
+        // 🔹 Full Name
+        const fullName = [
+          p.prefix,
+          p.firstName,
+          p.middleName,
+          p.lastName
+        ].filter(Boolean).join(" ");
+
+        // 🔹 Age text
+        const ageText = p.age ? `${p.age} Years` : "";
+
+        // 🔹 Fill UI
+        $("#p_uhid").text(p.uhid || "-");
+        $("#patientId").text(p.id || "-");
+        $("#p_gender").text(p.gender || "-");
+        $("#p_name").text(fullName || "-");
+        $("#p_age").text(ageText);
+        $("#p_family").text(p.fatherName || "-");
+        $("#p_contact").text(p.mobile || "-");
+
+        // 🔹 Image
+        if (p.patientImage) {
+          $("#p_image").attr("src", "/MyUploads/" + p.patientImage);
+        }
+
+      },
+      error: function (err) {
+        console.error("Error loading patient:", err.responseJSON?.message);
+      }
+    });
+  }
+
+});
+</script>
 </body>
 </html>

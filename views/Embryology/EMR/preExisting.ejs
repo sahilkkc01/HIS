@@ -3,23 +3,32 @@
 
     <div class="mb-4 card">
 
-      <div class="justify-content-between align-items-center card-header d-flex">
-        <h5 class="mb-0 card-title">Pre Existing Conditions</h5>
+     <div class="card-header d-flex justify-content-between align-items-center">
+  <h5 class="mb-0">Pre Existing Conditions</h5>
 
-        <button
-          type="button"
-          id="addCondition"
-          class="btn btn-primary"
-        >
-          <i class="bx bx-plus me-1"></i> Add
-        </button>
-      </div>
+  <div class="d-flex gap-2">
+    <button type="button" id="addCondition" class="btn btn-primary">
+      <i class="bx bx-plus me-1"></i> Add
+    </button>
+
+    <button type="submit" form="conditionForm" class="btn btn-success">
+      <i class="bx bx-save me-1"></i> Save
+    </button>
+  </div>
+</div>
 
       <div class="card-body">
 
-        <div class="Conditions-Info-Divs">
-          <!-- dynamic conditions -->
-        </div>
+        <!-- FORM -->
+        <form id="conditionForm">
+
+          <!-- Dynamic rows -->
+          <div class="Conditions-Info-Divs"></div>
+
+          <!-- Submit -->
+       
+
+        </form>
 
       </div>
 
@@ -27,56 +36,140 @@
 
   </div>
 </div>
-
 <script>
 
-function addConditionEntry() {
+$(document).ready(function () {
 
-  const newDiv = $("<div>", {
-    class: "condition-entry row align-items-center mb-3"
-  });
+  const urlParams = new URLSearchParams(window.location.search);
+  const patientIdFromUrl = urlParams.get("id");
 
-  newDiv.html(`
+  if (patientIdFromUrl) {
+    loadPreExisting(patientIdFromUrl);
+  }
 
-    <div class="col-md-4">
-      <input
-        type="text"
-        class="form-control condition-name-input"
-        placeholder="Enter condition"
-      >
+});
+
+
+// 🔹 Add row
+function addConditionEntry(name = "", since = "") {
+
+  const row = $(`
+    <div class="condition-entry row align-items-center mb-3">
+
+      <div class="col-md-4">
+        <input type="text" class="form-control condition-name-input"
+          placeholder="Enter condition" value="${name}">
+      </div>
+
+      <div class="col-md-4">
+        <input type="text" class="form-control condition-since-input"
+          placeholder="Since" value="${since}">
+      </div>
+
+      <div class="col-md-4 d-flex gap-2">
+        <button type="button" class="btn btn-sm btn-danger delete-icon">
+          <i class="fa-solid fa-trash"></i>
+        </button>
+      </div>
+
     </div>
-
-    <div class="col-md-4">
-      <input
-        type="text"
-        class="form-control condition-since-input"
-        placeholder="Since"
-      >
-    </div>
-
-    <div class="col-md-4 d-flex gap-2">
-
-      <button type="button" class="btn btn-sm btn-danger delete-icon">
-        <i class="fa-solid fa-trash"></i>
-      </button>
-
-    </div>
-
   `);
 
-  $(".Conditions-Info-Divs").append(newDiv);
+  $(".Conditions-Info-Divs").append(row);
 
-  // delete
-  newDiv.find(".delete-icon").click(function () {
+  row.find(".delete-icon").click(function () {
     $(this).closest(".condition-entry").remove();
   });
-
 }
 
 
-// button click
+// 🔹 Add button
 $("#addCondition").click(function () {
   addConditionEntry();
+});
+
+
+// 🔥 FETCH EXISTING DATA
+function loadPreExisting(patientId) {
+
+  if (!patientId) return;
+
+  $.ajax({
+    url: "/embryology/getPreExisting?patientId=" + encodeURIComponent(patientId),
+    type: "GET",
+    success: function (res) {
+
+      const data = res.data || [];
+
+      $(".Conditions-Info-Divs").empty();
+
+      if (data.length === 0) {
+        addConditionEntry();
+        return;
+      }
+
+      data.forEach(item => {
+        addConditionEntry(item.condition_name, item.since);
+      });
+    },
+    error: function (err) {
+      console.error("Fetch error:", err.responseJSON?.message);
+    }
+  });
+}
+
+
+// 🔹 Submit form
+$("#conditionForm").on("submit", function (e) {
+  e.preventDefault();
+
+  // 🔥 Always use URL id (fix)
+  const urlParams = new URLSearchParams(window.location.search);
+  const patientId = urlParams.get("id");
+
+  if (!patientId) {
+    alert("Patient not found in URL");
+    return;
+  }
+
+  const conditions = [];
+
+  $(".condition-entry").each(function () {
+    const name = $(this).find(".condition-name-input").val().trim();
+    const since = $(this).find(".condition-since-input").val().trim();
+
+    if (name) {
+      conditions.push({
+        condition: name,
+        since: since
+      });
+    }
+  });
+
+  if (conditions.length === 0) {
+    alert("Add at least one condition");
+    return;
+  }
+
+  $.ajax({
+    url: "/embryology/savePreExisting",
+    type: "POST",
+    contentType: "application/json",
+    data: JSON.stringify({
+      patientId,
+      conditions
+    }),
+    success: function (res) {
+      alert(res.message || "Saved successfully");
+
+      // 🔥 Reload after save
+      loadPreExisting(patientId);
+    },
+    error: function (err) {
+      alert(err.responseJSON?.message || "Error saving");
+    }
+  });
+
 });
 
 </script>

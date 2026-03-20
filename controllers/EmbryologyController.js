@@ -1,195 +1,265 @@
 const path = require("path");
-const { EmbryologyConsent, EmbryologyCycle } = require("../models/EmbryologySchema");
-const { Patient } = require("../models/HisSchema");
+const { PreExistingCondition, Allergy, ChiefComplaint, InfertilityHistory } = require("../models/EmbryologySchema");
 
-// Simple render helpers following existing HIS/Billing patterns.
-// Each handler renders its corresponding Embryology view.
+exports.savePreExistingConditions = async (req, res) => {
+  const clinicId = req.user?.clinic_id;
+  const createdBy = req.user?.username;
 
+  if (!clinicId) {
+    return res.status(400).json({ message: "Please login" });
+  }
 
-// POST: Handle patient search based on form filters
-exports.searchPatients = async (req, res) => {
   try {
-    // Extract search parameters from form
-    const {
-      uhid,
-      idProof,
-      firstName,
-      lastName,
-      gender,
-      mobile,
-      dob,
-      age,
-      visitedValue,
-      visitedUnit
-    } = req.body;
+    const { patientId, conditions } = req.body;
 
-    // Build search conditions
-    const whereConditions = {};
-    
-    if (uhid) whereConditions.uhid = { [require('sequelize').Op.like]: `%${uhid}%` };
-    if (firstName) whereConditions.name = { [require('sequelize').Op.like]: `%${firstName}%` };
-    if (lastName) whereConditions.name = { [require('sequelize').Op.like]: `%${lastName}%` };
-    if (gender) whereConditions.gender = gender;
-    if (mobile) whereConditions.mobile = { [require('sequelize').Op.like]: `%${mobile}%` };
-    if (age) whereConditions.age = age;
-    
-    // Add date filtering for DOB if provided
-    if (dob) {
-      whereConditions.dob = dob;
+    if (!patientId) {
+      return res.status(400).json({ message: "Patient ID required" });
     }
-    
-    // Add visit timeframe filtering
-    if (visitedValue && visitedUnit) {
-      const visitDate = new Date();
-      switch (visitedUnit) {
-        case 'days':
-          visitDate.setDate(visitDate.getDate() - parseInt(visitedValue));
-          break;
-        case 'weeks':
-          visitDate.setDate(visitDate.getDate() - (parseInt(visitedValue) * 7));
-          break;
-        case 'months':
-          visitDate.setMonth(visitDate.getMonth() - parseInt(visitedValue));
-          break;
-        case 'years':
-          visitDate.setFullYear(visitDate.getFullYear() - parseInt(visitedValue));
-          break;
+
+    if (!Array.isArray(conditions) || conditions.length === 0) {
+      return res.status(400).json({ message: "Conditions required" });
+    }
+
+    // delete old
+    await PreExistingCondition.destroy({
+      where: {
+        patient_id: patientId,
+        clinic_id: clinicId
       }
-      whereConditions.createdAt = {
-        [require('sequelize').Op.gte]: visitDate
-      };
-    }
-
-    // Search patients with conditions
-    const patients = await Patient.findAll({
-      where: whereConditions,
-      attributes: [
-        'id', 'uhid', 'name', 'dob', 'mobile', 'email', 'gender', 
-        'age', 'createdAt', 'updatedAt'
-      ],
-      order: [['createdAt', 'DESC']]
     });
 
-    // Format response data
-    const formattedPatients = patients.map(patient => ({
-      mrNo: patient.uhid || `MR${patient.id}`,
-      name: patient.name,
-      dateOfBirth: patient.dob,
-      babyBirthWeight: "N/A", // This would come from delivery records
-      registrationDate: patient.createdAt?.toISOString().split('T')[0],
-      mobileNo: patient.mobile,
-      email: patient.email || "N/A",
-      gender: patient.gender,
-      maritalStatus: "N/A", // This would come from patient details
-      identityType: "N/A", // This would come from identity documents
-      identityNumber: "N/A", // This would come from identity documents
-      specialRegistration: "No",
-      registeredFrom: "Hospital"
-    }));
+    // prepare data
+    const data = conditions
+      .filter(c => c.condition)
+      .map(c => ({
+        clinic_id: clinicId,
+        patient_id: patientId,
+        condition_name: c.condition,
+        since: c.since || null,
+        created_by: createdBy || "system"
+      }));
 
-    // Return JSON response for AJAX requests
-    if (req.xhr || req.headers.accept.indexOf('json') > -1) {
-      res.json({ success: true, patients: formattedPatients });
-    } else {
-      // Render view with data for regular form submission
-      res.render("Embryology/consent", { 
-        title: "Embryology - Consent", 
-        patients: formattedPatients,
-        searchParams: req.body 
-      });
-    }
+    // insert
+    const saved = await PreExistingCondition.bulkCreate(data);
+
+    return res.json({
+      success: true,
+      message: "Conditions saved successfully",
+      data: saved
+    });
+
   } catch (error) {
-    console.error('Error searching patients:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Error searching patients',
-      error: error.message 
+    console.error("Error saving conditions:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to save conditions"
     });
   }
 };
 
-// POST: Generate barcode for patient
-exports.generateBarcode = async (req, res) => {
+exports.getPreExistingConditions = async (req, res) => {
+  const clinicId = req.user?.clinic_id;
+
+  if (!clinicId) {
+    return res.status(400).json({ message: "Please login" });
+  }
+
   try {
-    const { uhid } = req.body;
-    
-    if (!uhid) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'UHID is required' 
-      });
+    const { patientId } = req.query;
+
+    if (!patientId) {
+      return res.status(400).json({ message: "Patient ID required" });
     }
 
-    // Find patient
-    const patient = await Patient.findOne({ where: { uhid } });
-    
-    if (!patient) {
-      return res.status(404).json({ 
-        success: false, 
-        message: 'Patient not found' 
-      });
-    }
-
-    // Generate unique barcode
-    const barcode = `EMB-${uhid}-${Date.now()}`;
-    
-    // Create or update consent record with barcode
-    await EmbryologyConsent.upsert({
-      patient_id: patient.id,
-      uhid: uhid,
-      barcode: barcode,
-      consent_type: 'IVF_CONSENT',
-      consent_status: 'PENDING'
+    const conditions = await PreExistingCondition.findAll({
+      where: {
+        patient_id: patientId,
+        clinic_id: clinicId
+      },
+      order: [["id", "DESC"]]
     });
 
-    res.json({ 
-      success: true, 
-      barcodeData: {
-        uhid: uhid,
-        barcode: barcode,
-        generatedAt: new Date(),
-        patientName: patient.name
-      }
+    return res.json({
+      success: true,
+      data: conditions
     });
+
   } catch (error) {
-    console.error('Error generating barcode:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Error generating barcode',
-      error: error.message 
+    console.error("Error fetching conditions:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch conditions"
     });
   }
 };
 
-exports.getCycle = (req, res) => {
-  res.render("Embryology/cycle", { title: "Embryology - Cycle" });
+exports.saveAllergies = async (req, res) => {
+  const clinicId = req.user?.clinic_id;
+  const createdBy = req.user?.username;
+
+  if (!clinicId) {
+    return res.status(400).json({ message: "Please login" });
+  }
+
+  try {
+    const { patientId, allergies } = req.body;
+
+    if (!patientId) {
+      return res.status(400).json({ message: "Patient ID required" });
+    }
+
+    // delete old
+    await Allergy.destroy({
+      where: { patient_id: patientId, clinic_id: clinicId }
+    });
+
+    // insert new
+    if (Array.isArray(allergies) && allergies.length > 0) {
+      const payload = allergies.map(a => ({
+        clinic_id: clinicId,
+        patient_id: patientId,
+        allergy_name: a.allergy,
+        severity: a.severity || null,
+        created_by: createdBy
+      }));
+
+      await Allergy.bulkCreate(payload);
+    }
+
+    return res.json({
+      success: true,
+      message: "Allergies saved successfully"
+    });
+
+  } catch (error) {
+    console.error("Save allergy error:", error);
+    return res.status(500).json({ message: "Error saving allergies" });
+  }
 };
 
-exports.getOverview = (req, res) => {
-  res.render("Embryology/overview", { title: "Embryology - Overview" });
+exports.getAllergies = async (req, res) => {
+  const clinicId = req.user?.clinic_id;
+
+  if (!clinicId) {
+    return res.status(400).json({ message: "Please login" });
+  }
+
+  try {
+    const { patientId } = req.query;
+
+    if (!patientId) {
+      return res.status(400).json({ message: "Patient ID required" });
+    }
+
+    const data = await Allergy.findAll({
+      where: {
+        patient_id: patientId,
+        clinic_id: clinicId
+      },
+      attributes: ["id", "allergy_name", "severity"],
+      order: [["id", "DESC"]]
+    });
+
+    return res.json({
+      success: true,
+      data
+    });
+
+  } catch (error) {
+    console.error("Fetch allergy error:", error);
+    return res.status(500).json({ message: "Error fetching allergies" });
+  }
 };
 
-exports.getStimulation = (req, res) => {
-  res.render("Embryology/stimulation", { title: "Embryology - Stimulation" });
+exports.saveChiefComplaints = async (req, res) => {
+
+  const clinicId = req.user?.clinic_id;
+  const createdBy = req.user?.username;
+
+  try {
+    const { patientId, complaints } = req.body;
+
+    await ChiefComplaint.destroy({
+      where: { patient_id: patientId, clinic_id: clinicId }
+    });
+
+    if (complaints?.length) {
+      const payload = complaints.map(c => ({
+        clinic_id: clinicId,
+        patient_id: patientId,
+        description: c.description,
+        duration: c.duration,
+        severity: c.severity,
+        onset: c.onset || null,
+        status: c.status,
+        created_by: createdBy
+      }));
+
+      await ChiefComplaint.bulkCreate(payload);
+    }
+
+    res.json({ success: true, message: "Saved successfully" });
+
+  } catch (err) {
+    res.status(500).json({ message: "Error saving" });
+  }
 };
 
-exports.getOpu = (req, res) => {
-  res.render("Embryology/opu", { title: "Embryology - OPU" });
+exports.getChiefComplaints = async (req, res) => {
+
+  const clinicId = req.user?.clinic_id;
+
+  try {
+    const { patientId } = req.query;
+
+    const data = await ChiefComplaint.findAll({
+      where: {
+        patient_id: patientId,
+        clinic_id: clinicId
+      },
+      order: [["id", "DESC"]]
+    });
+
+    res.json({ success: true, data });
+
+  } catch (err) {
+    res.status(500).json({ message: "Error fetching" });
+  }
 };
 
-exports.getSperm = (req, res) => {
-  res.render("Embryology/sperm", { title: "Embryology - Sperm" });
+exports.saveInfertility = async (req, res) => {
+
+  const clinicId = req.user.clinic_id;
+  const createdBy = req.user.username;
+
+  const { patientId, ...data } = req.body;
+
+  let existing = await InfertilityHistory.findOne({
+    where: { patient_id: patientId, clinic_id: clinicId }
+  });
+
+  if (existing) {
+    await existing.update(data);
+  } else {
+    await InfertilityHistory.create({
+      clinic_id: clinicId,
+      patient_id: patientId,
+      created_by: createdBy,
+      ...data
+    });
+  }
+
+  res.json({ success: true });
 };
 
-exports.getCulture = (req, res) => {
-  res.render("Embryology/culture", { title: "Embryology - Culture" });
-};
+exports.getInfertility = async (req, res) => {
 
-exports.getEt = (req, res) => {
-  res.render("Embryology/et", { title: "Embryology - ET" });
-};
+  const clinicId = req.user.clinic_id;
+  const { patientId } = req.query;
 
-exports.getOutcome = (req, res) => {
-  res.render("Embryology/outcome", { title: "Embryology - Outcome" });
-};
+  const data = await InfertilityHistory.findOne({
+    where: { patient_id: patientId, clinic_id: clinicId }
+  });
 
+  res.json({ success: true, data });
+};

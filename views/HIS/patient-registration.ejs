@@ -85,7 +85,7 @@
                         <option>Dr.</option>
                       </select>
                     </div>
-
+                    <input type="hidden" id="leadId" name="leadId">
                     <!-- First Name -->
                     <div class="col-md-3">
                       <label class="form-label" for="firstName">First Name <span class="text-danger">*</span></label>
@@ -904,7 +904,7 @@ $(document).ready(function () {
         alert(res.message || "Saved successfully");
 
   if (res.patient && res.patient.id) {
-    window.location.href = "/patient-registration?id=" + res.patient.id;
+    window.location.href = "/Patient-List";
   }
       },
       error: function (xhr) {
@@ -960,6 +960,7 @@ $(document).ready(function () {
     $("#familyName").val(p.familyName || "");
     $("#fatherName").val(p.fatherName || "");
     $("#uhid").val(p.uhid || "");
+    $("#leadId").val(p.lead_id || "");
 
     // ── Demographics ──────────────────────────────
     setSelect("gender",        p.gender);
@@ -1089,13 +1090,103 @@ $(document).ready(function () {
     });
   };
 
-  // Auto-load if patientId query param present in URL
-  const urlParams = new URLSearchParams(window.location.search);
-  const editId    = urlParams.get("id");
-  if (editId) {
-    window.loadPatient(editId);
-  }
+  function loadLeadData(leadId) {
+  $.ajax({
+    url: "/crm/getlead/" + encodeURIComponent(leadId),
+    type: "GET",
+    success: function (res) {
+      console.log("Lead data:", res);
 
+      if (!res) return;
+
+   
+
+      // 🔹 Names (you have male/female)
+      $("#firstName").val(res.lead.female_name || "");
+      $("#fatherName").val(res.lead.male_name || ""); // using male as father/husband
+
+      // 🔹 Age
+      $("#age").val(res.lead.female_age || "");
+
+      // 🔹 Contact
+      $("#phone1").val(res.lead.primary_mobile || "");
+      $("#phone2").val(res.lead.secondary_mobile || "");
+      $("#email").val(res.lead.email || "");
+
+      // 🔹 Address
+      $("#address").val(res.lead.full_address || "");
+      $("#state").val(res.lead.state || "");
+      $("#country").val(res.lead.country || "India");
+
+      // 🔹 Marriage
+      if (res.lead.marriageDate) {
+        $("#anniversary").val(res.lead.marriageDate);
+        $("#maritalStatus").val("Married");
+      }
+
+      // 🔹 Optional fields
+      $("#city").val(res.lead.clinic || ""); // or map properly if needed
+
+      // 🔹 Source → can map to remark or ignore
+      $("#remark").val(res.lead.source_primary || "");
+
+      // 🔹 Default values (important for UX)
+      if (!$("#gender").val()) {
+        $("#gender").val("Female"); // assuming female patient
+      }
+
+      // 🔹 Auto open spouse section if male exists
+      if (res.lead.male_name) {
+        $("#defaultCheck4").prop("checked", true).trigger("change");
+        $("#hasSpouseFlag").val("1");
+
+        $("#spouseFirstName").val(res.lead.male_name || "");
+        $("#spouseAge").val(res.lead.male_age || "");
+      }
+
+    },
+    error: function (err) {
+      console.error("Lead fetch error:", err.responseJSON?.message);
+    }
+  });
+}
+function loadVisitedData(patientId) {
+  $.ajax({
+    url: "/crm/leadVisiteds?patientId=" + encodeURIComponent(patientId),
+    type: "GET",
+    success: function (res) {
+      console.log("Visited Data:", res);
+
+      if (!Array.isArray(res.visited) || res.visited.length === 0) return;
+
+       console.log("Using visit data:", res.visited);
+      const visit = res.visited[0];
+ 
+       $("#uhid").val(visit.uhid || "");
+       $("#leadId").val(visit.patient_id || "");
+     
+    },
+    error: function (err) {
+      console.error("Visited fetch error:", err.responseJSON?.message);
+    }
+  });
+}
+
+const urlParams = new URLSearchParams(window.location.search);
+
+const editId = urlParams.get("id");
+const leadId = urlParams.get("leadId");
+
+// 🔹 1. Edit mode (existing patient)
+if (editId) {
+  window.loadPatient(editId);
+}
+
+// 🔹 2. Lead → Patient auto-fill
+if (leadId) {
+  loadLeadData(leadId);
+  loadVisitedData(leadId);
+}
 }); // end document.ready
 </script>
 

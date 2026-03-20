@@ -4,38 +4,38 @@
     <div class="mb-4 card">
 
       <!-- Header -->
-      <div class="justify-content-between align-items-center card-header d-flex">
-        <h5 class="mb-0 card-title">Allergies</h5>
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Allergies</h5>
 
-        <button
-          type="button"
-          id="addAllergy"
-          class="btn btn-primary"
-        >
-          <i class="bx bx-plus me-1"></i> Add 
-        </button>
+        <div class="d-flex gap-2">
+          <button type="button" id="addAllergy" class="btn btn-primary">
+            <i class="bx bx-plus me-1"></i> Add
+          </button>
+
+          <button type="button" id="saveAllergyBtn" class="btn btn-success">
+            <i class="bx bx-save me-1"></i> Save
+          </button>
+        </div>
       </div>
 
       <!-- Body -->
       <div class="card-body">
 
-        <!-- Radio buttons -->
+        <!-- Radio -->
         <div class="mb-3">
           <div class="form-check form-check-inline">
             <input class="form-check-input" type="radio" name="allergies" id="noKnownAllergies">
-            <label class="form-check-label" for="noKnownAllergies">No Known Allergies</label>
+            <label class="form-check-label">No Known Allergies</label>
           </div>
 
           <div class="form-check form-check-inline">
             <input class="form-check-input" type="radio" name="allergies" id="hasAllergies">
-            <label class="form-check-label" for="hasAllergies">Allergies</label>
+            <label class="form-check-label">Allergies</label>
           </div>
         </div>
 
-        <!-- Dynamic Allergies Container -->
-        <div class="Allergies-Info-Divs">
-          <!-- Allergy rows will be added here -->
-        </div>
+        <!-- Dynamic Rows -->
+        <div class="Allergies-Info-Divs"></div>
 
       </div>
 
@@ -44,69 +44,168 @@
   </div>
 </div>
 
-<!-- Script -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 <script>
-function addAllergyEntry() {
-  const newDiv = $("<div>", {
-    class: "allergy-entry row align-items-center mb-3"
-  });
+$(document).ready(function () {
 
-  newDiv.html(`
-    <div class="col-md-6">
-      <input
-        type="text"
-        class="form-control allergy-name-input"
-        placeholder="Enter allergy"
-      >
-    </div>
+  const urlParams = new URLSearchParams(window.location.search);
+  const patientId = urlParams.get("id");
 
-    <div class="col-md-4">
-      <select class="form-select allergy-severity">
-        <option value="">Severity</option>
-        <option value="low">Low</option>
-        <option value="medium">Medium</option>
-        <option value="high">High</option>
-      </select>
-    </div>
+  if (patientId) {
+    loadAllergies(patientId);
+  }
 
-    <div class="col-md-2 d-flex gap-2">
-      <button type="button" class="btn btn-sm btn-danger delete-icon">
-        <i class="fa-solid fa-trash"></i>
-      </button>
+  $("#addAllergy").hide(); // initial hide
+
+});
+
+
+// 🔹 Add Row
+function addAllergyEntry(name = "", severity = "") {
+
+  const row = $(`
+    <div class="allergy-entry row align-items-center mb-3">
+
+      <div class="col-md-6">
+        <input type="text" class="form-control allergy-name-input"
+          placeholder="Enter allergy" value="${name}">
+      </div>
+
+      <div class="col-md-4">
+        <select class="form-select allergy-severity">
+          <option value="">Severity</option>
+          <option value="low" ${severity==="low"?"selected":""}>Low</option>
+          <option value="medium" ${severity==="medium"?"selected":""}>Medium</option>
+          <option value="high" ${severity==="high"?"selected":""}>High</option>
+        </select>
+      </div>
+
+      <div class="col-md-2">
+        <button type="button" class="btn btn-sm btn-danger delete-icon">
+          <i class="fa-solid fa-trash"></i>
+        </button>
+      </div>
+
     </div>
   `);
 
-  $(".Allergies-Info-Divs").append(newDiv);
+  $(".Allergies-Info-Divs").append(row);
 
-  // Delete row
-  newDiv.find(".delete-icon").click(function() {
+  row.find(".delete-icon").click(function () {
     $(this).closest(".allergy-entry").remove();
   });
 }
 
-// Add button click
-$("#addAllergy").click(function() {
+
+// 🔥 LOAD
+function loadAllergies(patientId) {
+
+  $.ajax({
+    url: "/embryology/getAllergies?patientId=" + encodeURIComponent(patientId),
+    type: "GET",
+    success: function (res) {
+
+      const data = res.data || [];
+
+      $(".Allergies-Info-Divs").empty();
+
+      if (data.length === 0) {
+        $("#noKnownAllergies").prop("checked", true);
+        $("#addAllergy").hide();
+        return;
+      }
+
+      $("#hasAllergies").prop("checked", true);
+      $("#addAllergy").show();
+
+      data.forEach(item => {
+        addAllergyEntry(item.allergy_name, item.severity);
+      });
+
+    }
+  });
+}
+
+
+// 🔹 Add
+$("#addAllergy").click(function () {
   addAllergyEntry();
   $("#hasAllergies").prop("checked", true);
 });
 
-// Radio: No Known Allergies
-$("#noKnownAllergies").click(function() {
+
+// 🔹 Radio logic
+$("#noKnownAllergies").click(function () {
   $(".Allergies-Info-Divs").empty();
   $("#addAllergy").hide();
 });
 
-// Radio: Has Allergies
-$("#hasAllergies").click(function() {
-  $(".Allergies-Info-Divs").show();
-  addAllergyEntry();
+$("#hasAllergies").click(function () {
   $("#addAllergy").show();
+
+  if ($(".allergy-entry").length === 0) {
+    addAllergyEntry();
+  }
 });
 
-// Optional: initialize with no allergies
-$(document).ready(function() {
-  $("#addAllergy").hide();
+
+// 🔥 SAVE
+$("#saveAllergyBtn").click(function () {
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const patientId = urlParams.get("id");
+
+  if (!patientId) {
+    alert("Patient not found");
+    return;
+  }
+
+  // No allergies case
+  if ($("#noKnownAllergies").is(":checked")) {
+    $.ajax({
+      url: "/embryology/saveAllergies",
+      type: "POST",
+      contentType: "application/json",
+      data: JSON.stringify({
+        patientId,
+        allergies: []
+      }),
+      success: function () {
+        alert("Saved");
+        loadAllergies(patientId);
+      }
+    });
+    return;
+  }
+
+  const allergies = [];
+
+  $(".allergy-entry").each(function () {
+    const name = $(this).find(".allergy-name-input").val().trim();
+    const severity = $(this).find(".allergy-severity").val();
+
+    if (name) {
+      allergies.push({
+        allergy: name,
+        severity
+      });
+    }
+  });
+
+  $.ajax({
+    url: "/embryology/saveAllergies",
+    type: "POST",
+    contentType: "application/json",
+    data: JSON.stringify({
+      patientId,
+      allergies
+    }),
+    success: function (res) {
+      alert(res.message || "Saved");
+      loadAllergies(patientId);
+    }
+  });
+
 });
+
 </script>
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">

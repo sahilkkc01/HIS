@@ -132,6 +132,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       tbody.innerHTML = "";
       patients.forEach(p => {
+        console.log("Patient:", p);
         const appt = p.latestAppointment || {};
         const date = appt.date
           ? new Date(appt.date).toDateString()
@@ -157,15 +158,17 @@ document.addEventListener("DOMContentLoaded", () => {
               </div>
             </td>
               <td>
-              <button class="btn btn-icon btn-primary item-emr">
+              <button class="btn btn-icon btn-primary item-emr"
+              onclick="window.location.href='/embryology/patient-emr?id=${p.id}'">
                 <i class="bx bx-edit"></i>
               </button>
             </td>
-            <td>
-              <button class="btn btn-icon item-edit">
-                <i class="bx bx-edit"></i>
-              </button>
-            </td>
+           <td>
+  <button class="btn btn-icon item-edit"
+    onclick="window.location.href='/patient-registration?id=${p.id}'">
+    <i class="bx bx-edit"></i>
+  </button>
+</td>
           
            
           </tr>
@@ -217,16 +220,6 @@ document.addEventListener("DOMContentLoaded", () => {
     loadPatients();
   });
 
-  document.getElementById("tblid").addEventListener("click", e => {
-    if (!e.target.closest(".item-edit")) return;
-    const tr = e.target.closest("tr");
-    ViewBtn("Patient-registration", tr.dataset.patientId);
-  });
-  document.getElementById("tblid").addEventListener("click", e => {
-    if (!e.target.closest(".item-emr")) return;
-    const tr = e.target.closest("tr");
-    ViewBtn("emr", tr.dataset.patientId);
-  });
 
   // initial load
   loadPatients();

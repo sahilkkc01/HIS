@@ -428,5 +428,175 @@ $(document).on('click', '.remove-row', function () {
     $(this).closest('tr').remove();
   });
 </script>
+<script>
 
+$(document).ready(function () {
+
+  const id = new URLSearchParams(window.location.search).get("id");
+  if (id) loadData(id);
+
+});
+
+
+// 🔥 BMI
+$('#height, #weight').on('input', function () {
+  let h = $('#height').val() / 100;
+  let w = $('#weight').val();
+  if (h && w) $('#bmi').val((w / (h*h)).toFixed(2));
+});
+
+
+// 🔥 LOAD
+function loadData(patientId) {
+
+  $.get("/embryology/getInfertility?patientId=" + patientId, function (res) {
+
+    const d = res.data;
+    if (!d) return;
+
+    $("#chiefComplaintSelect").val(d.chiefComplaint);
+    $("#height").val(d.height);
+    $("#weight").val(d.weight);
+    $("#bmi").val(d.bmi);
+    $("#pulse").val(d.pulse);
+
+    $("#bpSystolic").val(d.bpSystolic);
+    $("#bpDiastolic").val(d.bpDiastolic);
+
+    $("#gravida").val(d.gravida);
+    $("#preterm").val(d.preterm);
+    $("#abortions").val(d.abortions);
+    $("#living").val(d.living);
+
+    $("#durationYears").val(d.durationYears);
+    $("#durationMonths").val(d.durationMonths);
+
+    $("#oiTi").val(d.oiTi);
+    $("#ivf").val(d.ivf);
+    $("#iui").val(d.iui);
+
+    $("#comments").val(d.comments);
+
+    $("#lmpDate").val(d.lmpDate);
+
+    $(`input[name=menstrualFlow][value="${d.menstrualFlow}"]`).prop("checked", true);
+    $(`input[name=menstrualPain][value="${d.menstrualPain}"]`).prop("checked", true);
+    $(`input[name=menstrualFlowType][value="${d.menstrualFlowType}"]`).prop("checked", true);
+
+    $(`input[name=familyHistory][value="${d.familyHistory}"]`).prop("checked", true);
+
+    $("#recurrentPregnancyLoss").prop("checked", d.recurrentPregnancyLoss);
+
+    $("#partnerHistory").val(d.partnerHistory);
+
+    // 🔥 Obstetric
+    if (d.obstetricHistory) {
+      $("#obstetricHistoryTable tbody").empty();
+
+      d.obstetricHistory.forEach((row, i) => {
+        addObstetricRow(row, i + 1);
+      });
+    }
+
+    // 🔥 Investigations
+    if (d.investigations) {
+      $("#infertilityInvestigationsTable tbody").empty();
+
+      d.investigations.forEach(row => {
+        addInvestigationRow(row);
+      });
+    }
+
+  });
+}
+
+
+// 🔥 SAVE
+$("#infertilityForm").on("submit", function (e) {
+  e.preventDefault();
+
+  const patientId = new URLSearchParams(window.location.search).get("id");
+
+  const obstetricHistory = [];
+  $("#obstetricHistoryTable tbody tr").each(function () {
+    obstetricHistory.push({
+      year: $(this).find("input:eq(0)").val(),
+      conception: $(this).find("select:eq(0)").val(),
+      abortion: $(this).find("select:eq(1)").val(),
+      delivery: $(this).find("select:eq(2)").val(),
+      weight: $(this).find("input:eq(1)").val(),
+      gender: $(this).find("input:eq(2)").val(),
+      remarks: $(this).find("input:eq(3)").val()
+    });
+  });
+
+  const investigations = [];
+  $("#infertilityInvestigationsTable tbody tr").each(function () {
+    investigations.push({
+      date: $(this).find("input:eq(0)").val(),
+      place: $(this).find("input:eq(1)").val(),
+      type: $(this).find("input:eq(2)").val(),
+      remarks: $(this).find("input:eq(3)").val()
+    });
+  });
+
+  const payload = {
+
+    patientId,
+
+    chiefComplaint: $("#chiefComplaintSelect").val(),
+
+    height: $("#height").val(),
+    weight: $("#weight").val(),
+    bmi: $("#bmi").val(),
+    pulse: $("#pulse").val(),
+
+    bpSystolic: $("#bpSystolic").val(),
+    bpDiastolic: $("#bpDiastolic").val(),
+
+    gravida: $("#gravida").val(),
+    preterm: $("#preterm").val(),
+    abortions: $("#abortions").val(),
+    living: $("#living").val(),
+
+    durationYears: $("#durationYears").val(),
+    durationMonths: $("#durationMonths").val(),
+
+    oiTi: $("#oiTi").val(),
+    ivf: $("#ivf").val(),
+    iui: $("#iui").val(),
+
+    comments: $("#comments").val(),
+
+    lmpDate: $("#lmpDate").val(),
+
+    menstrualFlow: $("input[name=menstrualFlow]:checked").val(),
+    menstrualPain: $("input[name=menstrualPain]:checked").val(),
+    menstrualFlowType: $("input[name=menstrualFlowType]:checked").val(),
+
+    familyHistory: $("input[name=familyHistory]:checked").val(),
+
+    recurrentPregnancyLoss: $("#recurrentPregnancyLoss").is(":checked"),
+
+    obstetricHistory,
+    investigations,
+
+    partnerHistory: $("#partnerHistory").val()
+
+  };
+
+  $.ajax({
+    url: "/embryology/saveInfertility",
+    type: "POST",
+    contentType: "application/json",
+    data: JSON.stringify(payload),
+    success: function () {
+      alert("Saved");
+      loadData(patientId);
+    }
+  });
+
+});
+
+</script>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />

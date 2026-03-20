@@ -4,24 +4,26 @@
     <div class="mb-4 card">
 
       <!-- Header -->
-      <div class="justify-content-between align-items-center card-header d-flex">
-        <h5 class="mb-0 card-title">Chief Complaint</h5>
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Chief Complaint</h5>
 
-        <button
-          type="button"
-          id="addChiefComplaint"
-          class="btn btn-primary"
-        >
-          <i class="bx bx-plus me-1"></i> Add
-        </button>
+        <div class="d-flex gap-2">
+          <button type="button" id="addChiefComplaint" class="btn btn-primary">
+            <i class="bx bx-plus me-1"></i> Add
+          </button>
+
+          <button type="submit" form="chiefForm" class="btn btn-success">
+            <i class="bx bx-save me-1"></i> Save
+          </button>
+        </div>
       </div>
 
       <!-- Body -->
       <div class="card-body">
 
-        <div class="ChiefComplaint-Info-Divs">
-          <!-- dynamic rows -->
-        </div>
+        <form id="chiefForm">
+          <div class="ChiefComplaint-Info-Divs"></div>
+        </form>
 
       </div>
 
@@ -31,84 +33,172 @@
 </div>
 <script>
 
-function addChiefComplaintEntry() {
+$(document).ready(function () {
 
-  const newRow = $("<div>", {
-    class: "chief-entry border rounded p-3 mb-3"
-  });
+  const urlParams = new URLSearchParams(window.location.search);
+  const patientId = urlParams.get("id");
 
-  newRow.html(`
+  if (patientId) {
+    loadChiefComplaints(patientId);
+  }
 
-    <div class="row mb-2">
-      <div class="col-md-12">
-        <label class="form-label">Complaint Description</label>
-        <textarea class="form-control complaint-description" rows="2"></textarea>
+});
+
+
+// 🔹 Add row
+function addChiefComplaintEntry(data = {}) {
+
+  const row = $(`
+    <div class="chief-entry border rounded p-3 mb-3">
+
+      <div class="row mb-2">
+        <div class="col-md-12">
+          <label class="form-label">Complaint Description</label>
+          <textarea class="form-control complaint-description">${data.description || ""}</textarea>
+        </div>
       </div>
+
+      <div class="row mb-2">
+
+        <div class="col-md-6">
+          <label class="form-label">Duration</label>
+          <input type="text" class="form-control complaint-duration"
+            value="${data.duration || ""}">
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label">Severity</label>
+          <select class="form-select complaint-severity">
+            <option value="">Select</option>
+            <option value="mild" ${data.severity==="mild"?"selected":""}>Mild</option>
+            <option value="moderate" ${data.severity==="moderate"?"selected":""}>Moderate</option>
+            <option value="severe" ${data.severity==="severe"?"selected":""}>Severe</option>
+          </select>
+        </div>
+
+      </div>
+
+      <div class="row mb-2">
+
+        <div class="col-md-6">
+          <label class="form-label">Onset</label>
+          <input type="date" class="form-control complaint-onset"
+            value="${data.onset || ""}">
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label">Status</label>
+          <select class="form-select complaint-status">
+            <option value="">Select</option>
+            <option value="active" ${data.status==="active"?"selected":""}>Active</option>
+            <option value="resolved" ${data.status==="resolved"?"selected":""}>Resolved</option>
+            <option value="improving" ${data.status==="improving"?"selected":""}>Improving</option>
+            <option value="worsening" ${data.status==="worsening"?"selected":""}>Worsening</option>
+          </select>
+        </div>
+
+      </div>
+
+      <div class="text-end">
+        <button type="button" class="btn btn-sm btn-danger delete-chief">
+          <i class="fa-solid fa-trash"></i>
+        </button>
+      </div>
+
     </div>
-
-    <div class="row mb-2">
-
-      <div class="col-md-6">
-        <label class="form-label">Duration</label>
-        <input type="text" class="form-control complaint-duration" placeholder="e.g. 2 weeks">
-      </div>
-
-      <div class="col-md-6">
-        <label class="form-label">Severity</label>
-        <select class="form-select complaint-severity">
-          <option value="">Select</option>
-          <option value="mild">Mild</option>
-          <option value="moderate">Moderate</option>
-          <option value="severe">Severe</option>
-        </select>
-      </div>
-
-    </div>
-
-    <div class="row mb-2">
-
-      <div class="col-md-6">
-        <label class="form-label">Onset</label>
-        <input type="date" class="form-control complaint-onset">
-      </div>
-
-      <div class="col-md-6">
-        <label class="form-label">Status</label>
-        <select class="form-select complaint-status">
-          <option value="">Select</option>
-          <option value="active">Active</option>
-          <option value="resolved">Resolved</option>
-          <option value="improving">Improving</option>
-          <option value="worsening">Worsening</option>
-        </select>
-      </div>
-
-    </div>
-
-    <div class="text-end">
-      <button type="button" class="btn btn-sm btn-danger delete-chief">
-        <i class="fa-solid fa-trash"></i> 
-      </button>
-    </div>
-
   `);
 
-  $(".ChiefComplaint-Info-Divs").append(newRow);
-
+  $(".ChiefComplaint-Info-Divs").append(row);
 }
 
 
-// Add new row
+// 🔹 Add button
 $("#addChiefComplaint").click(function () {
   addChiefComplaintEntry();
 });
 
 
-// Delete row (works for dynamic elements)
+// 🔹 Delete
 $(document).on("click", ".delete-chief", function () {
   $(this).closest(".chief-entry").remove();
 });
 
 
+// 🔥 LOAD
+function loadChiefComplaints(patientId) {
+
+  $.ajax({
+    url: "/embryology/getChiefComplaints?patientId=" + encodeURIComponent(patientId),
+    type: "GET",
+    success: function (res) {
+
+      const data = res.data || [];
+
+      $(".ChiefComplaint-Info-Divs").empty();
+
+      if (data.length === 0) {
+        addChiefComplaintEntry();
+        return;
+      }
+
+      data.forEach(item => {
+        addChiefComplaintEntry({
+          description: item.description,
+          duration: item.duration,
+          severity: item.severity,
+          onset: item.onset,
+          status: item.status
+        });
+      });
+
+    }
+  });
+}
+
+
+// 🔥 SAVE
+$("#chiefForm").on("submit", function (e) {
+  e.preventDefault();
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const patientId = urlParams.get("id");
+
+  if (!patientId) {
+    alert("Patient not found");
+    return;
+  }
+
+  const complaints = [];
+
+  $(".chief-entry").each(function () {
+
+    const description = $(this).find(".complaint-description").val().trim();
+
+    if (description) {
+      complaints.push({
+        description,
+        duration: $(this).find(".complaint-duration").val(),
+        severity: $(this).find(".complaint-severity").val(),
+        onset: $(this).find(".complaint-onset").val(),
+        status: $(this).find(".complaint-status").val()
+      });
+    }
+  });
+
+  $.ajax({
+    url: "/embryology/saveChiefComplaints",
+    type: "POST",
+    contentType: "application/json",
+    data: JSON.stringify({
+      patientId,
+      complaints
+    }),
+    success: function (res) {
+      alert(res.message || "Saved");
+      loadChiefComplaints(patientId);
+    }
+  });
+
+});
 
 </script>

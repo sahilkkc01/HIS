@@ -100,7 +100,7 @@ router.get("/login", async (req, res) => {
       const user = await UserTokens.findOne({ where: { jwtToken: token } });
       console.log(user);
       if (user) {
-        return res.redirect("/leads");
+        return res.redirect("/crm/leads");
       } else {
         return res.render("HIS/login");
       }
@@ -115,7 +115,7 @@ router.get("/login", async (req, res) => {
   res.render("HIS/login");
 });
 router.get("/", (req, res) => {
-  res.redirect("/leads");
+  res.redirect("/crm/leads");
 });
 router.get("/Patient-Registration", async function (req, res, next) {
   try {

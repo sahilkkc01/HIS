@@ -254,7 +254,7 @@ exports.savePatientData = async (req, res) => {
 
     const {
       patientId,
-      uhid,
+      uhid,leadId,
 
       prefix, firstName, middleName, lastName, familyName, fatherName,
       gender, bloodGroup, dob, age,
@@ -374,6 +374,7 @@ exports.savePatientData = async (req, res) => {
         {
           clinic_id: clinicId,
           uhid: uhid || null,
+          lead_id: leadId || null,
           prefix, firstName, middleName, lastName, familyName, fatherName,
           gender, bloodGroup, dob: dob || null, age,
           education, maritalStatus, anniversary: anniversary || null, religion,
@@ -954,81 +955,105 @@ const convertToTimeString = (totalMinutes) => {
 
 exports.getPatientsWithLatestAppointment = async (req, res) => {
   try {
-    // pagination
     let page  = Math.max(1, parseInt(req.query.page, 10)  || 1);
     let limit = Math.max(1, parseInt(req.query.limit, 10) || 20);
     const offset = (page - 1) * limit;
 
-    // search filters
     const { name = "", email = "", mobile = "" } = req.query;
+
     const where = { clinic_id: req.user.clinic_id };
 
+    // 🔹 NAME SEARCH (first + middle + last)
     if (name.trim()) {
-      where.name = { [Op.like]: `%${name.trim()}%` };
+      where[Op.or] = [
+        { firstName: { [Op.like]: `%${name.trim()}%` } },
+        { middleName: { [Op.like]: `%${name.trim()}%` } },
+        { lastName: { [Op.like]: `%${name.trim()}%` } }
+      ];
     }
+
     if (email.trim()) {
       where.email = { [Op.like]: `%${email.trim()}%` };
     }
+
     if (mobile.trim()) {
       where.mobile = { [Op.like]: `%${mobile.trim()}%` };
     }
 
-    // fetch patients + count
+    // 🔹 FETCH PATIENTS
     const { rows: patients, count: totalPatients } =
       await Patient.findAndCountAll({
         where,
-        attributes: ["id", "uhid", "name", "email", "mobile", "patientImage"],
+        attributes: [
+          "id",
+          "lead_id",
+          "uhid",
+          "prefix",
+          "firstName",
+          "middleName",
+          "lastName",
+          "email",
+          "mobile",
+          "patientImage"
+        ],
         order: [["id", "DESC"]],
         limit,
         offset
       });
 
-    // redirect if page out of bounds
     if (!patients.length && page > 1) {
       const qs = new URLSearchParams({
-        page:  "1",
+        page: "1",
         limit: limit.toString(),
         ...(name.trim()  && { name: name.trim() }),
         ...(email.trim() && { email: email.trim() }),
         ...(mobile.trim()&& { mobile: mobile.trim() })
       }).toString();
+
       return res.redirect(`/patients-with-appointments?${qs}`);
     }
 
-    // attach latest appointment
+    // 🔹 ATTACH APPOINTMENTS
     const patientsWithAppointments = await Promise.all(
       patients.map(async (p) => {
         const appt = await Appointment.findOne({
           where: { patient_id: p.id },
-          order: [
-            ["date", "DESC"],
-            ["time", "DESC"]
-          ],
+          order: [["date", "DESC"], ["time", "DESC"]],
           attributes: ["clinic", "doctor", "date", "time"]
         });
+
+        // 🔥 FULL NAME BUILD
+        const fullName = [
+          p.prefix,
+          p.firstName,
+          p.middleName,
+          p.lastName
+        ].filter(Boolean).join(" ");
+
         return {
-          id:        encryptDataForUrl(p.id.toString()),
-          uhid:      p.uhid,
-          name:      p.name,
-          email:     p.email,
-          mobile:    p.mobile,
+          id: p.id,
+          lead_id: p.lead_id,
+          uhid: p.uhid,
+          name: fullName, // ✅ computed
+          email: p.email,
+          mobile: p.mobile,
           patientImage: p.patientImage,
           latestAppointment: appt || null
         };
       })
     );
 
-    // send JSON
     return res.json({
       success: true,
       patients: patientsWithAppointments,
       pagination: {
         totalPatients,
-        totalPages:  Math.ceil(totalPatients / limit),
+        totalPages: Math.ceil(totalPatients / limit),
         currentPage: page,
-        perPage:     limit
+        perPage: limit
       }
     });
+
   } catch (error) {
     console.error("Error fetching patients with appointments:", error);
     return res.status(500).json({

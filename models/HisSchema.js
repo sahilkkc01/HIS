@@ -3,8 +3,16 @@ const { sequelize } = require("../db");
 
 const Patient = sequelize.define(
   "patients",
-  {
+  {  id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true
+    },
     clinic_id:       { type: DataTypes.INTEGER,      allowNull: false },
+     lead_id: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
     uhid:            { type: DataTypes.STRING },
     prefix:          { type: DataTypes.ENUM("Mr.", "Mrs.", "Ms.", "Dr.") },
     firstName:       { type: DataTypes.STRING, allowNull: false, validate: { notEmpty: true } },
@@ -38,7 +46,7 @@ const Patient = sequelize.define(
   },
   { timestamps: true, alter: true, tableName: "patients" }
 );
-
+// Patient.sync({ alter: true });
 const SpouseDetails = sequelize.define(
   "spouse_details",
   {
