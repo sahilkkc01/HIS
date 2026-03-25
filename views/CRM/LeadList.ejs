@@ -426,6 +426,7 @@ async function loadAllLeads(page = 1) {
     tbody.innerHTML = '';
 
    leads.forEach(l => {
+    console.log('Lead:', l);
   tbody.innerHTML += `
     <tr>
       <td>${l.patientId}</td>
@@ -437,7 +438,7 @@ async function loadAllLeads(page = 1) {
       <td>${l.status || '-'}</td>
 <td>
   <button class="btn btn-sm btn-success"
-    onclick="window.location.href='/patient-registration?leadId=${encodeURIComponent(l.patient_id)}'">
+    onclick="window.location.href='/patient-registration?leadId=${encodeURIComponent(l.patientId)}'">
     Register
   </button>
 </td>
