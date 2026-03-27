@@ -1,5 +1,5 @@
 const express = require("express");
-const { savePreExistingConditions, getPreExistingConditions, saveAllergies, getAllergies, saveChiefComplaints, getChiefComplaints, saveInfertility, getInfertility } = require("../controllers/EmbryologyController");
+const { savePreExistingConditions, getPreExistingConditions, saveAllergies, getAllergies, saveChiefComplaints, getChiefComplaints, saveInfertility, getInfertility, saveExamination, getExaminations } = require("../controllers/EmbryologyController");
 const router = express.Router();
 
 router.get("/patient-emr", (req, res) => {
@@ -26,6 +26,11 @@ router.get("/getChiefComplaints", getChiefComplaints);
 
 router.post("/saveInfertility", saveInfertility);
 router.get("/getInfertility", getInfertility);
+
+router.post("/examination", saveExamination);
+router.get("/examination", getExaminations);
+
+
 
 module.exports = { router };
 

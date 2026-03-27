@@ -1,5 +1,5 @@
 const path = require("path");
-const { PreExistingCondition, Allergy, ChiefComplaint, InfertilityHistory } = require("../models/EmbryologySchema");
+const { PreExistingCondition, Allergy, ChiefComplaint, InfertilityHistory, Examination } = require("../models/EmbryologySchema");
 
 exports.savePreExistingConditions = async (req, res) => {
   const clinicId = req.user?.clinic_id;
@@ -262,4 +262,72 @@ exports.getInfertility = async (req, res) => {
   });
 
   res.json({ success: true, data });
+};
+
+
+//EXAMINATION 
+
+const { Examination } = require("../models");
+
+// 🔥 SAVE (always create new — medical logs should not overwrite)
+exports.saveExamination = async (req, res) => {
+  try {
+    const clinicId = req.user?.clinic_id;
+    const createdBy = req.user?.username;
+
+    const { patientId, ...data } = req.body;
+
+    if (!patientId) {
+      return res.status(400).json({
+        success: false,
+        message: "patientId required"
+      });
+    }
+
+    const record = await Examination.create({
+      clinic_id: clinicId,
+      patient_id: patientId,
+      created_by: createdBy,
+      ...data
+    });
+
+    res.json({ success: true, data: record });
+
+  } catch (err) {
+    console.error("SAVE EXAM ERROR:", err);
+    res.status(500).json({
+      success: false,
+      message: "Server error"
+    });
+  }
+};
+
+
+// 🔥 GET ALL (because multiple examinations possible)
+exports.getExaminations = async (req, res) => {
+  try {
+    const clinicId = req.user?.clinic_id;
+    const { patientId } = req.query;
+
+    if (!patientId) {
+      return res.status(400).json({
+        success: false,
+        message: "patientId required"
+      });
+    }
+
+    const data = await Examination.findAll({
+      where: { patient_id: patientId, clinic_id: clinicId },
+      order: [["createdAt", "DESC"]]
+    });
+
+    res.json({ success: true, data });
+
+  } catch (err) {
+    console.error("GET EXAM ERROR:", err);
+    res.status(500).json({
+      success: false,
+      message: "Server error"
+    });
+  }
 };

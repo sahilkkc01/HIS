@@ -168,3 +168,66 @@ module.exports = {
     ChiefComplaint,
     InfertilityHistory
 }
+
+
+//examination
+
+const Examination = sequelize.define('Examination', {
+
+  clinic_id: { type: DataTypes.INTEGER, allowNull: false },
+  patient_id: { type: DataTypes.INTEGER, allowNull: false },
+
+  // Vitals
+  height: DataTypes.FLOAT,
+  weight: DataTypes.FLOAT,
+  temperature: DataTypes.FLOAT,
+  pulse: DataTypes.INTEGER,
+  bpSystolic: DataTypes.STRING,
+  bpDiastolic: DataTypes.STRING,
+
+  // General signs
+  pallor: DataTypes.STRING,
+  icterus: DataTypes.STRING,
+  edema: DataTypes.STRING,
+  obesity: DataTypes.STRING,
+  acne: DataTypes.STRING,
+  thyroid: DataTypes.STRING,
+
+  notes: DataTypes.TEXT,
+
+  // Radios
+  hirsutism: DataTypes.STRING,
+  respiratory: DataTypes.STRING,
+  respiratoryDetails: DataTypes.TEXT,
+
+  galactorrhoea: DataTypes.STRING,
+  breast: DataTypes.STRING,
+  breastDetails: DataTypes.TEXT,
+
+  speculum: DataTypes.STRING,
+  speculumDetails: DataTypes.TEXT,
+
+  abdomen: DataTypes.STRING,
+  abdomenDetails: DataTypes.TEXT,
+
+  papSmear: DataTypes.STRING,
+
+  vaginal: DataTypes.STRING,
+  vaginalDetails: DataTypes.TEXT,
+
+  appointmentDate: DataTypes.DATEONLY,
+
+  // 🔥 Complex sections → JSON
+  usg: DataTypes.JSON,
+  ovaries: DataTypes.JSON,
+  hydrosalpinx: DataTypes.JSON,
+  adnexal: DataTypes.JSON,
+
+  comments: DataTypes.TEXT,
+
+  created_by: DataTypes.STRING
+
+}, {
+  tableName: "examinations",
+  timestamps: true
+});
