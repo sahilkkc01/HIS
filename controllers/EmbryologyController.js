@@ -267,9 +267,8 @@ exports.getInfertility = async (req, res) => {
 
 //EXAMINATION 
 
-const { Examination } = require("../models");
 
-// 🔥 SAVE (always create new — medical logs should not overwrite)
+//  SAVE (always create new — medical logs should not overwrite)
 exports.saveExamination = async (req, res) => {
   try {
     const clinicId = req.user?.clinic_id;
