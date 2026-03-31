@@ -53,11 +53,11 @@
                                class="mb-4 btn btn-primary me-3" tabindex="0">
                           <span class="bx bxs-webcam"></span>
                         </label>
-                        <button data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top"
+                        <!-- <button data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top"
                                 data-bs-html="true" title="<span>Reset</span>"
                                 type="button" class="mb-4 btn btn-outline-secondary account-image-reset"
                                 id="resetPatientImage">
-                          <span class="bx bx-reset"></span>
+                          <span class="bx bx-reset"></span> -->
                         </button>
                         <div>Allowed JPG, JPEG or PNG. Max size of 800K</div>
                       </div>
@@ -86,6 +86,7 @@
                       </select>
                     </div>
                     <input type="hidden" id="leadId" name="leadId">
+                    
                     <!-- First Name -->
                     <div class="col-md-3">
                       <label class="form-label" for="firstName">First Name <span class="text-danger">*</span></label>
@@ -754,7 +755,10 @@
                 <!-- ── Submit Buttons ──────────────────────── -->
                 <div class="mt-6">
                   <button type="submit" class="btn btn-primary me-3" id="saveBtn">Save</button>
-                  <button type="reset" class="btn btn-outline-secondary" id="cancelBtn">Cancel</button>
+                  <button type="button" class="btn btn-outline-secondary"
+  onclick="if(confirm('Are you sure you want to leave?')) window.location.href='/Patient-List'">
+  Cancel
+</button>
                 </div>
 
               </form>
@@ -945,7 +949,7 @@ $(document).ready(function () {
     }
 
     // ── Patient ID (for update mode) ──────────────
-    if (p.encryptedId) $("#patientId").val(p.encryptedId);
+    if (p.id) $("#patientId").val(p.id);
 
     // ── Patient photo ─────────────────────────────
     if (p.patientImage) {
@@ -1067,29 +1071,39 @@ $(document).ready(function () {
   //     Usage: loadPatient("encryptedId")
   //     or call automatically if ?id= is in URL
   // ═══════════════════════════════════════════════
-  window.loadPatient = function (encryptedId) {
-    $.ajax({
-      url: "/getPatientById?id=" + encodeURIComponent(encryptedId),
-      type: "GET",
-      success: function (res) {
-        console.log("Patient data loaded:", res);
-       if (res) {
-  const data = {
-    ...res.patient,
-    spouse: res.spouse,
-    sponsor: res.sponsor,
-    bank: res.bank
-  };
+ window.loadPatient = function (encryptedId) {
 
-  window.fillPatientForm(data);
-}
-      },
-      error: function (xhr) {
-        console.error("Failed to load patient:", xhr.responseJSON?.message);
+  if (encryptedId) {
+    // Change button to UPDATE
+    $("#saveBtn")
+      .text("Update")
+      .removeClass("btn-primary")
+      .addClass("btn-warning")
+      .attr("data-mode", "update");
+  }
+
+  $.ajax({
+    url: "/getPatientById?id=" + encodeURIComponent(encryptedId),
+    type: "GET",
+    success: function (res) {
+      console.log("Patient data loaded:", res);
+
+      if (res) {
+        const data = {
+          ...res.patient,
+          spouse: res.spouse,
+          sponsor: res.sponsor,
+          bank: res.bank
+        };
+
+        window.fillPatientForm(data);
       }
-    });
-  };
-
+    },
+    error: function (xhr) {
+      console.error("Failed to load patient:", xhr.responseJSON?.message);
+    }
+  });
+};
   function loadLeadData(leadId) {
   $.ajax({
     url: "/crm/getlead/" + encodeURIComponent(leadId),
@@ -1184,8 +1198,30 @@ if (editId) {
 
 // 🔹 2. Lead → Patient auto-fill
 if (leadId) {
-  loadLeadData(leadId);
-  loadVisitedData(leadId);
+  checkPatientAndProceed(leadId);
+}
+
+function checkPatientAndProceed(leadId) {
+  $.ajax({
+    url: "/check-patient/" + leadId,
+    type: "GET",
+    success: function (res) {
+
+      if (res.isPatient) {
+        alert("This lead is already a patient!");
+
+        // redirect after OK
+        window.location.href = "?id=" + res.patientId;
+      } else {
+        // normal flow
+        loadLeadData(leadId);
+        loadVisitedData(leadId);
+      }
+    },
+    error: function (err) {
+      console.error("Error checking patient:", err);
+    }
+  });
 }
 }); // end document.ready
 </script>

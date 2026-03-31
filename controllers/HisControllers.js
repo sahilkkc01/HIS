@@ -242,7 +242,7 @@ exports.getMasterAdmin = async (req, res) => {
 
 
 exports.savePatientData = async (req, res) => {
-  console.log(req.body);
+  console.log("Body",req.body);
   console.log(req.files);
   const transaction = await sequelize.transaction();
 
@@ -321,7 +321,7 @@ exports.savePatientData = async (req, res) => {
     let isNewPatient = false;
 
     if (patientId) {
-      const decryptedId = decryptData(patientId);
+      const decryptedId = patientId;
 
       patient = await Patient.findOne({
         where: { id: decryptedId, clinic_id: clinicId },
@@ -509,6 +509,7 @@ exports.savePatientData = async (req, res) => {
     return res.status(500).json({ message: error.message || "Error" });
   }
 };
+
 exports.getPatientById = async (req, res) => {
   try {
 
@@ -2477,5 +2478,37 @@ exports.updateCounselor = async (req, res) => {
   } catch (err) {
     console.error('Error updating counselor:', err);
     return res.status(500).json({ message: 'Failed to update counselor' });
+  }
+};
+
+
+exports.checkPatientByLeadId = async (req, res) => {
+  const clinicId = req.user?.clinic_id;
+  const { leadId } = req.params;
+
+  if (!clinicId) {
+    return res.status(401).json({ message: "Unauthorized: Please log in" });
+  }
+
+  try {
+    const patient = await Patient.findOne({
+      where: {
+        lead_id: leadId,
+        clinic_id: clinicId
+      }
+    });
+
+    if (!patient) {
+      return res.json({ isPatient: false });
+    }
+
+    return res.json({
+      isPatient: true,
+      patientId: patient.id
+    });
+
+  } catch (err) {
+    console.error("Error checking patient by leadId:", err);
+    return res.status(500).json({ message: "Failed to check patient" });
   }
 };

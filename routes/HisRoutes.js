@@ -50,6 +50,8 @@ const {
   getCounselors,
   getCounselorById,
   getPatientById,
+  verifyToken,
+  checkPatientByLeadId
 } = require("../controllers/HisControllers");
 const { UserTokens, Patient } = require("../models/HisSchema");
 const { updateAgent } = require("../controllers/CrmCtrl");
@@ -231,17 +233,8 @@ router.get('/getMasterAdmin',getMasterAdmin);
 router.post("/login", login);
 router.post("/logout", logout);
 router.post("/logoutFromEverywhere", logoutFromEverywhere);
-// router.post("/patient/save ", upload.single("patientImage"), savePatientData);
+
 // router.post("/doctor-reg", upload.single("doctorImage"), saveDoctorData);
-
-//test
-router.post("/patient/save", upload.fields([
-  { name: "patientImage", maxCount: 1 },
-  { name: "spouseImage", maxCount: 1 }
-]), savePatientData);
-
-//test2
-const { verifyToken } = require("../controllers/HisControllers");
 
 router.post(
   "/patient/save",
@@ -252,6 +245,7 @@ router.post(
   ]),
   savePatientData
 );
+router.get("/check-patient/:leadId", checkPatientByLeadId);
 router.get("/getPatientById", getPatientById);
 
 
