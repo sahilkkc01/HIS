@@ -1538,40 +1538,6 @@ exports.addNewModal = async (req, res) => {
 };
 
 
-exports.PatientFilter = async (req, res) => {
-  try {
-    const clinicId = req.user?.clinic_id; // Get clinic ID from logged-in user
-
-    if (!clinicId) {
-      return res.status(401).json({ message: "Unauthorized: Please log in" });
-    }
-
-    const { uhid, mobile, email } = req.query;
-
-    // Check if no parameters are provided
-    if (!uhid && !mobile && !email) {
-      return res.status(404).json({ message: "No search value provided" });
-    }
-
-    let whereClause = { clinic_id: clinicId };
-
-    if (uhid) whereClause.uhid = uhid;
-    if (mobile) whereClause.mobile = mobile;
-    if (email) whereClause.email = email;
-
-    let patient = await Patient.findOne({ where: whereClause });
-
-    if (patient) {
-      res.json(patient);
-    } else {
-      res.status(404).json({ message: "Patient not found" });
-    }
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Server error" });
-  }
-};
-
 
 exports.getAllDoctors = async (req, res) => {
   try {

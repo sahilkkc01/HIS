@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en" class="light-style layout-menu-fixed layout-compact">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Patient Advance</title>
+
+  <%- include('../header') -%>
+</head>
+
+<body>
+
+<div class="content-wrapper">
+  <div class="container-xxl flex-grow-1 container-p-y">
+
+    <!-- 🔹 Patient Info -->
+    <div class="card mb-3">
+      <div class="card-body">
+        <input type="hidden" id="patientId">
+
+        <h5 class="mb-3">Patient Details</h5>
+
+        <div class="row">
+          <div class="col-md-4">
+            <strong>Name:</strong> <span id="patientName"></span>
+          </div>
+          <div class="col-md-4">
+            <strong>UHID:</strong> <span id="patientUHID"></span>
+          </div>
+          <div class="col-md-4">
+            <strong>Mobile:</strong> <span id="patientMobile"></span>
+          </div>
+        </div>
+
+        <hr>
+
+        <h5>Current Advance: ₹ <span id="currentAdvance">0</span></h5>
+      </div>
+    </div>
+
+    <!-- 🔹 Add Advance -->
+    <div class="card mb-3">
+      <div class="card-body">
+        <h5 class="mb-3">Add Advance</h5>
+
+        <div class="row">
+          <div class="col-md-3">
+            <label>Amount *</label>
+            <input type="number" id="advanceAmount" class="form-control" min="1">
+          </div>
+
+          <div class="col-md-3">
+            <label>Mode of Payment *</label>
+            <select id="modeOfPayment" class="select2 form-select">
+              <option value="">Select</option>
+               <option value="CASH">CASH</option>
+              <option value="UPI">UPI</option>
+             
+            </select>
+          </div>
+
+          <div class="col-md-4">
+            <label>Remark</label>
+            <input type="text" id="advanceRemark" class="form-control">
+          </div>
+
+          <div class="col-md-2 d-flex align-items-end">
+            <button class="btn btn-success w-100" id="addAdvanceBtn">
+              Add Advance
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 🔹 Transactions -->
+    <div class="card">
+      <div class="card-body">
+        <h5 class="mb-3">Advance Transactions</h5>
+
+        <div class="table-responsive">
+          <table class="table table-bordered">
+            <thead class="table-light">
+              <tr>
+                <th>Date</th>
+                <th>Type</th>
+                <th>Amount</th>
+                <th>Balance</th>
+                <th>Mode</th>
+                <th>Remark</th>
+                <th>Created By</th>
+              </tr>
+            </thead>
+            <tbody id="transactionTable"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<%- include('../footer') -%>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+  const patientId = new URLSearchParams(window.location.search).get("patientId");
+
+  if (!patientId) {
+    alert("Invalid patient");
+    return;
+  }
+
+
+  // 🔹 Load Patient Data
+  function loadPatientData() {
+    axios.get(`/billing/getPatientAdvanceById/${patientId}`)
+      .then(res => {
+        const data = res.data;
+
+        document.getElementById("patientId").value = data.id;
+        document.getElementById("patientName").textContent = data.name;
+        document.getElementById("patientUHID").textContent = data.uhid;
+        document.getElementById("patientMobile").textContent = data.mobile;
+        document.getElementById("currentAdvance").textContent = data.advance || 0;
+
+        renderTransactions(data.transactions || []);
+      })
+      .catch(err => {
+        console.error(err);
+      });
+  }
+
+
+  function renderTransactions(transactions) {
+    const tbody = document.getElementById("transactionTable");
+    tbody.innerHTML = "";
+
+    if (!transactions.length) {
+      tbody.innerHTML = `<tr><td colspan="6" class="text-center">No Transactions Found</td></tr>`;
+      return;
+    }
+
+    transactions.forEach(txn => {
+      const row = `
+        <tr>
+          <td>${new Date(txn.createdAt).toLocaleString()}</td>
+          <td>
+            <span class="badge ${txn.type === 'CREDIT' ? 'bg-success' : 'bg-danger'}">
+              ${txn.type}
+            </span>
+          </td>
+          <td>₹ ${txn.amount}</td>
+          <td>₹ ${txn.balanceAfter}</td>
+          <td>${txn.modeOfPayment || '-'}</td>
+          <td>${txn.remark || '-'}</td>
+          <td>${txn.created_by}</td>
+        </tr>
+      `;
+      tbody.innerHTML += row;
+    });
+  }
+
+  // 🔹 Add Advance
+  document.getElementById("addAdvanceBtn").addEventListener("click", function () {
+
+    const amount = parseFloat(document.getElementById("advanceAmount").value);
+    const mode = document.getElementById("modeOfPayment").value;
+    const remark = document.getElementById("advanceRemark").value;
+
+    if (!amount || amount <= 0) {
+      alert("Enter valid amount");
+      return;
+    }
+
+    if (!mode) {
+      alert("Please select Mode of Payment");
+      return;
+    }
+
+    axios.post("/billing/addAdvance", {
+      patientId,
+      amount,
+      modeOfPayment: mode,
+      remark
+    })
+    .then(() => {
+      alert("Advance added successfully");
+
+      document.getElementById("advanceAmount").value = "";
+      document.getElementById("advanceRemark").value = "";
+
+      loadPatientData();
+    })
+    .catch(err => {
+      console.error(err);
+    });
+  });
+
+  loadPatientData();
+});
+</script>
+
+</body>
+</html>

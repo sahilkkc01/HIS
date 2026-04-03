@@ -57,13 +57,73 @@ const { sequelize } = require("../db");
             type: DataTypes.TEXT,
             allowNull: true
         },
-        doctor: {
+        modeOfPayment: {
             type: DataTypes.STRING,
             allowNull: false
-        }
+        },
+        doctor: {
+            type: DataTypes.STRING,
+            allowNull: true
+        },
+         created_by: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
     }, {
         tableName: "bills",
         timestamps: true
     });
 
-module.exports={Bill}
+    const AdvanceTransaction = sequelize.define("AdvanceTransaction", {
+  clinic_id: {
+    type: DataTypes.INTEGER,
+    allowNull: true
+  },
+
+  patientId: {
+    type: DataTypes.INTEGER,
+    allowNull: false
+  },
+
+  billId: {
+    type: DataTypes.INTEGER,
+    allowNull: true 
+  },
+
+  type: {
+    type: DataTypes.ENUM("CREDIT", "DEBIT"),
+    allowNull: false
+  },
+
+  amount: {
+    type: DataTypes.DECIMAL(10, 2),
+    allowNull: false
+  },
+
+  balanceAfter: {
+    type: DataTypes.DECIMAL(10, 2),
+    allowNull: false
+  },
+
+  modeOfPayment: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+
+  remark: {
+    type: DataTypes.TEXT,
+    allowNull: true
+  },
+   created_by: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+}, {
+  tableName: "advance_transactions",
+  timestamps: true
+});
+// AdvanceTransaction.sync({force:true})
+module.exports={
+    Bill,
+    AdvanceTransaction
+}

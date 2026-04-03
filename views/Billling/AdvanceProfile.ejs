@@ -1,0 +1,215 @@
+<!doctype html>
+<html
+  lang="en"
+  class="light-style layout-menu-fixed layout-compact"
+  dir="ltr"
+  data-theme="theme-default"
+  data-assets-path="../assets/"
+  data-template="vertical-menu-template-free"
+  data-style="light"
+>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"
+    />
+    <title>Patients Advance</title>
+   
+    <%- include('../header') -%>
+  </head>
+
+  <body>
+  
+    <div class="content-wrapper">
+      <div class="container-xxl flex-grow-1 container-p-y">
+        <div class="card mb-4">
+          <div class="card-header d-flex flex-column flex-md-row justify-content-between align-items-center">
+            <h5 class="card-title mb-0">Patients Advance</h5>
+           
+          </div>
+
+          <div class="card-body">
+         <!-- in your search form -->
+<form id="searchForm" class="row g-3 mb-3">
+  <div class="col-md-4">
+    <input
+      type="text"
+      class="form-control"
+      id="searchName"
+      placeholder="Search by name"
+    />
+  </div>
+  <div class="col-md-4">
+    <input
+      type="email"
+      class="form-control"
+      id="searchEmail"
+      placeholder="Search by email"
+    />
+  </div>
+  <div class="col-md-4">
+    <input
+      type="text"
+      class="form-control"
+      id="searchMobile"
+      placeholder="Search by mobile"
+    />
+  </div>
+  <div class="col-12 d-grid">
+    <button type="submit" class="btn btn-outline-primary">
+      <i class="bx bx-search me-1"></i> Search
+    </button>
+  </div>
+</form>
+
+
+            <div class="table-responsive text-nowrap">
+              <table class="table" id="tblid">
+                <thead>
+                  <tr>
+                    <th>UHID</th>
+                    <th>Name</th>
+                    <th>Mobile</th>
+                    <th>Amount</th>
+                    <th>Transactions</th>
+                    
+                  </tr>
+                </thead>
+                <tbody id="patientTbody"></tbody>
+              </table>
+            </div>
+
+            <nav aria-label="Patient pages">
+              <ul id="paginationControls" class="pagination justify-content-center"></ul>
+            </nav>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <%- include('../footer') -%>
+
+    <script>
+document.addEventListener("DOMContentLoaded", () => {
+  const tbody    = document.getElementById("patientTbody");
+  const pager    = document.getElementById("paginationControls");
+  const form     = document.getElementById("searchForm");
+  const inpName  = document.getElementById("searchName");
+  const inpEmail = document.getElementById("searchEmail");
+  const inpMobile= document.getElementById("searchMobile");
+
+  let state = {
+    page:   1,
+    limit:  20,
+    totalPages: 1,
+    name:   "",
+    email:  "",
+    mobile: ""
+  };
+
+  function loadPatients() {
+    axios.get("/billing/getPatientsWithAdvance", {
+      params: {
+        page:   state.page,
+        limit:  state.limit,
+        name:   state.name,
+        email:  state.email,
+        mobile: state.mobile
+      }
+    })
+    .then(({ data }) => {
+      if (!data.success) return;
+      const { patients, pagination } = data;
+      state.totalPages  = pagination.totalPages;
+      state.page        = pagination.currentPage;
+
+      tbody.innerHTML = "";
+      patients.forEach(p => {
+        console.log("Patient:", p);
+        const appt = p.latestAppointment || {};
+        const date = appt.date
+          ? new Date(appt.date).toDateString()
+          : "N/A";
+        const time = appt.time || "N/A";
+        const img  = p.patientImage
+          ? `../MyUploads/${p.patientImage}`
+          : "../images/5.png";
+
+        tbody.insertAdjacentHTML("beforeend", `
+          <tr data-patient-id="${p.id}">
+            <td>${p.uhid}</td>
+            <td>
+              <img src="${img}" width="30" class="rounded-circle me-1" />
+              ${p.name}
+            </td>
+            <td>${p.mobile}</td>
+            <td>${p.advance}</td>
+          
+            
+              <td>
+              <button class="btn btn-icon btn-primary item-emr"
+              onclick="window.location.href='/billing/advanceTransactions?patientId=${p.id}'">
+                <i class="bx bx-edit"></i>
+              </button>
+            </td>
+          
+          
+           
+          </tr>
+        `);
+      });
+
+      renderPager();
+    })
+    .catch(err => console.error("Error fetching patients:", err));
+  }
+
+  function renderPager() {
+    const { page, totalPages } = state;
+    pager.innerHTML = "";
+
+    pager.insertAdjacentHTML("beforeend", `
+      <li class="page-item ${page===1?"disabled":""}">
+        <a class="page-link" href="#" data-page="${page-1}">Prev</a>
+      </li>`);
+    for (let i=1; i<=totalPages; i++) {
+      pager.insertAdjacentHTML("beforeend", `
+        <li class="page-item ${i===page?"active":""}">
+          <a class="page-link" href="#" data-page="${i}">${i}</a>
+        </li>`);
+    }
+    pager.insertAdjacentHTML("beforeend", `
+      <li class="page-item ${page===totalPages?"disabled":""}">
+        <a class="page-link" href="#" data-page="${page+1}">Next</a>
+      </li>`);
+  }
+
+  pager.addEventListener("click", e => {
+    e.preventDefault();
+    const a = e.target.closest("a");
+    if (!a) return;
+    const pg = parseInt(a.dataset.page, 10);
+    if (pg>=1 && pg<=state.totalPages) {
+      state.page = pg;
+      loadPatients();
+    }
+  });
+
+  form.addEventListener("submit", e => {
+    e.preventDefault();
+    state.name   = inpName.value.trim();
+    state.email  = inpEmail.value.trim();
+    state.mobile = inpMobile.value.trim();
+    state.page   = 1;
+    loadPatients();
+  });
+
+
+  // initial load
+  loadPatients();
+});
+</script>
+
+  </body>
+</html>

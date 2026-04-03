@@ -90,7 +90,7 @@ const loadDropdown = (elementId, FieldId, key, selectedValue = null) => {
       });
 
       // Add "Add New" option **only if elementId is "Specialization"**
-      if (elementId === "Specialization" || "Department") {
+      if (elementId === "Specialization" ||elementId == "Department") {
         const addNewOption = document.createElement("option");
         addNewOption.value = "add-new";
         addNewOption.textContent = "Add New";

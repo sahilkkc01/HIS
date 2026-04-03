@@ -24,7 +24,6 @@ const {
   addDepartment,
   saveEmployeeData,
   addNewModal,
-  PatientFilter,
   getPatientsWithLatestAppointment,
   getAllDoctors,
   getDoctorById,
@@ -267,7 +266,7 @@ router.get("/getDataFromField", getDataFromField);
 router.get("/patients-with-appointments",getPatientsWithLatestAppointment);
 router.post("/getAvailableSlots", getAvailableSlots);
 router.get("/patient/:patientId", getPatientData);
-router.get("/patientFilter", PatientFilter);
+
 router.get("/getDoctorAppointments", getDoctorAppointments);
 
 router.post("/save-item", upload.single("itemImage"), saveItems);
