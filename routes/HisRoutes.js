@@ -50,7 +50,10 @@ const {
   getCounselorById,
   getPatientById,
   verifyToken,
-  checkPatientByLeadId
+  checkPatientByLeadId,
+  getServiceById,
+  updateService,
+  getServices
 } = require("../controllers/HisControllers");
 const { UserTokens, Patient } = require("../models/HisSchema");
 const { updateAgent } = require("../controllers/CrmCtrl");
@@ -166,36 +169,36 @@ router.get("/add-item", function (req, res, next) {
   res.render("HIS/add-item",{id});
 });
 
-router.get("/add-package", function (req, res, next) {
-  res.render("HIS/add-package");
+router.get("/packages", function (req, res, next) {
+  res.render("Masters/add-package");
 });
 
-router.get("/add-service", function (req, res, next) {
-  res.render("HIS/add-services");
+router.get("/services", function (req, res, next) {
+  res.render("Masters/add-services");
 });
-router.get("/add-employee", function (req, res, next) {
-  res.render("HIS/add-employee");
+router.get("/employees", function (req, res, next) {
+  res.render("Masters/add-employee");
 });
 router.get("/purchase-order", function (req, res, next) {
   res.render("HIS/PurchaseOrder");
 });
-router.get("/add-prefix", function (req, res, next) {
-  res.render("HIS/add-prefix");
+router.get("/prefixes", function (req, res, next) {
+  res.render("Masters/add-prefix");
 });
 router.get("/emr", function (req, res, next) {
   res.render("HIS/emr");
 });
 
-router.get("/clinic", function (req, res, next) {
-  res.render("HIS/ClinicMaster");
+router.get("/clinics", function (req, res, next) {
+  res.render("Masters/ClinicMaster");
 });
 router.post('/clinics/create',  saveClinic);
 router.get('/clinics/list', getClinics);
 router.get('/getClinicById/:id', getClinicById);
 router.post('/clinics/update/:id', updateClinic);
 
-router.get("/source", function (req, res, next) {
-  res.render("HIS/SourceMaster");
+router.get("/sources", function (req, res, next) {
+  res.render("Masters/SourceMaster");
 });
 router.post('/sources/create',  saveSource);
 router.get('/sources/list', getSources);
@@ -203,7 +206,7 @@ router.get('/getSourcesById/:id', getSourceById);
 router.post('/sources/update/:id', updateSource);
 
 router.get("/doctors", function (req, res, next) {
-  res.render("HIS/DoctorMaster");
+  res.render("Masters/DoctorMaster");
 });
 router.post('/doctors/create',  saveDoctor);
 router.get('/doctors/list', getDoctors);
@@ -211,7 +214,7 @@ router.get('/getDoctorById/:id', getDoctorById);
 router.post('/doctors/update/:id', updateDoctor);
 
 router.get("/counselors", function (req, res, next) {
-  res.render("HIS/CounselorMaster");
+  res.render("Masters/CounselorMaster");
 });
 router.post('/counselors/create',  saveCounselor);
 router.get('/counselors/list', getCounselors);
@@ -219,7 +222,7 @@ router.get('/getCounselorsById/:id', getCounselorById);
 router.post('/counselors/update/:id', updateAgent);
 
 router.get("/treatments", function (req, res, next) {
-  res.render("HIS/TreatmentMaster");
+  res.render("Masters/TreatmentMaster");
 });
 router.post('/treatments/create',  saveTreatment);
 router.get('/treatments/list', getTreatments);
@@ -270,7 +273,13 @@ router.get("/patient/:patientId", getPatientData);
 router.get("/getDoctorAppointments", getDoctorAppointments);
 
 router.post("/save-item", upload.single("itemImage"), saveItems);
+
 router.post("/save-service", saveService);
+router.get('/services/list',  getServices);
+router.get('/services/:id',  getServiceById);
+router.post('/services/update/:id',  updateService);
+
+
 router.post("/save-package", savePackage);
 router.post("/addModal", addNewModal);
 router.get("/getdoctors", getAllDoctors);

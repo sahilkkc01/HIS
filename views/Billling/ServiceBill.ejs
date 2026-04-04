@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="en" class="light-style layout-menu-fixed layout-compact" dir="ltr">
+
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Service Billing</title>
+
+<%- include('../header') -%>
+
+<style>
+#nwp{display:none}
+</style>
+
+<div class="content-wrapper">
+<div class="container-xxl flex-grow-1 container-p-y">
+
+<h5 class="card-header mb-2">Service Billing</h5>
+
+<div class="row" id="extp">
+
+<div class="col-md-6 mb-4">
+<div class="card">
+<div class="card-body">
+<div class="row">
+
+<div class="col-md-5">
+<select id="categoryDropdown" class="select2 form-select">
+<option value="mobile">Mobile No</option>
+<option value="uhid">UHID</option>
+<option value="email">Mail Id</option>
+</select>
+</div>
+
+<div class="col-md-6">
+<input class="form-control" id="searhcValue">
+</div>
+
+<div class="col-md-1">
+<button class="btn btn-icon" id="searchPatient" type="button">
+<i class="bx bx-search bx-md"></i>
+</button>
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="col-md-6 mb-4">
+<div class="card">
+<div class="card-body">
+
+<input type="hidden" id="patientId">
+
+<label class="form-label mr-2"><strong>Patient Name:</strong> <span id="patientName"></span></label>
+<label class="form-label mr-2"><strong>Gender:</strong> <span id="patientGender"></span></label>
+<label class="form-label mr-2"><strong>Age:</strong> <span id="patientAge"></span></label>
+<label class="form-label mr-2"><strong>Blood Group:</strong> <span id="patientBloodGroup"></span></label>
+<label class="form-label mr-2"><strong>UHID:</strong> <span id="patientUHID"></span></label>
+<label class="form-label mr-2"><strong>Mobile:</strong> <span id="patientMobile"></span></label>
+
+<div>
+<label class="form-label mr-2"><strong>Advance:</strong> <span id="patientAdvance">0</span></label>
+</div>
+
+</div>
+</div>
+</div>
+
+</div>
+
+<div class="card">
+<div class="card pt-4">
+<div class="card-body pt-2">
+
+<h5>Bill Summary</h5>
+
+<div class="col-md-12 mb-2">
+<input class="form-control" id="searchBox" placeholder="Search service to Add">
+<ul id="searchResults" class="list-group mt-2" style="display:none"></ul>
+</div>
+
+<div class="table-responsive">
+<table class="table table-bordered">
+<thead class="table-light">
+<tr>
+<th>S No.</th>
+<th>Name</th>
+<th>Amount</th>
+<th></th>
+</tr>
+</thead>
+<tbody id="mainTblBody"></tbody>
+</table>
+</div>
+
+<div class="mt-2">
+<div class="row">
+
+<div class="col-md-3">
+<h5 class="mb-2 mt-3">Discount</h5>
+<select id="discountCat" class="select2 form-select">
+<option value="P">Percentage</option>
+<option value="A">Amount</option>
+</select>
+</div>
+
+<div class="col-md-3">
+<h5 class="mb-2 mt-3">% / Amt.</h5>
+<input class="form-control" type="number" id="discountVal">
+</div>
+
+<div class="col-md-6">
+<h5 class="mb-2 mt-3">Prescribing Doctor</h5>
+<select id="doctor" class="select2 form-select">
+<option value="">Select</option>
+</select>
+</div>
+
+</div>
+</div>
+
+<div class="mt-2">
+<div class="row">
+
+<div class="col-md-6">
+<h5 class="mb-2 mt-3">Mode of Payment</h5>
+<select id="modeOfPayment" class="select2 form-select">
+<option value="">Select</option>
+<option value="CASH">CASH</option>
+<option value="UPI">UPI</option>
+</select>
+</div>
+
+<div class="col-md-6">
+<h5 class="mb-2 mt-3">Remarks</h5>
+<input class="form-control" id="remark">
+</div>
+
+</div>
+</div>
+
+<div class="table-responsive mt-4 mb-4">
+<table class="table table-bordered">
+<tr>
+<td>Discount</td>
+<td id="dicountAmount">0</td>
+</tr>
+<tr>
+<td>GST</td>
+<td id="totalGst">0</td>
+</tr>
+<tr class="table-active">
+<td><h5 class="mb-0">Net Amount</h5></td>
+<td><h5 class="mb-0">₹ <span id="netAmount">0</span></h5></td>
+</tr>
+</table>
+</div>
+
+<div class="text-center mb-3">
+<button class="btn btn-primary btn-lg" id="generateBill">
+Generate Bill
+</button>
+</div>
+
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<%- include('../footer') -%>
+
+<script>
+let servicesData=[]
+
+axios.get("/services/list").then(res=>{
+servicesData=res.data.services
+})
+
+$("#searchPatient").click(function(){
+
+const cat=$("#categoryDropdown").val()
+const val=$("#searhcValue").val().trim()
+
+if(!val)return alert("Enter value")
+
+axios.get(`/billing/getPatientDetailsForBill`,{params:{[cat]:val}})
+.then(res=>{
+
+const p=res.data
+
+$("#patientId").val(p.id)
+$("#patientName").text([p.firstName,p.middleName,p.lastName].filter(Boolean).join(" "))
+$("#patientGender").text(p.gender)
+$("#patientAge").text(p.age)
+$("#patientBloodGroup").text(p.bloodGroup)
+$("#patientUHID").text(p.uhid)
+$("#patientMobile").text(p.mobile)
+$("#patientAdvance").text(p.advance||0)
+
+const dd=document.getElementById("modeOfPayment")
+const old=dd.querySelector('option[value="ADVANCE"]')
+if(old) old.remove()
+
+const opt=document.createElement("option")
+opt.value="ADVANCE"
+opt.textContent="ADVANCE"
+dd.appendChild(opt)
+
+})
+
+})
+
+searchBox.addEventListener("input",function(){
+
+const q=this.value.toLowerCase().trim()
+if(!q)return searchResults.style.display="none"
+
+const filtered=servicesData.filter(s=>s.service_name.toLowerCase().includes(q))
+
+searchResults.innerHTML=""
+
+filtered.forEach(s=>{
+const li=document.createElement("li")
+li.className="list-group-item"
+li.textContent=`${s.service_name} - ₹${s.cost}`
+li.onclick=()=>addService(s)
+searchResults.appendChild(li)
+})
+
+searchResults.style.display="block"
+})
+
+function addService(s){
+
+if(document.querySelector(`#mainTblBody tr[data-id="${s.id}"]`)) return
+
+const row=document.createElement("tr")
+row.setAttribute("data-id",s.id)
+
+row.innerHTML=`
+<td></td>
+<td>${s.service_name}</td>
+<td><input class="form-control amt" value="${s.cost}"></td>
+<td><button class="btn btn-danger btn-sm rm">X</button></td>
+`
+
+mainTblBody.appendChild(row)
+
+row.querySelector(".rm").onclick=()=>{row.remove();calc()}
+row.querySelector(".amt").oninput=calc
+
+searchResults.style.display="none"
+searchBox.value=""
+
+calc()
+}
+
+function calc(){
+
+let total=0
+
+document.querySelectorAll("#mainTblBody tr").forEach((r,i)=>{
+r.children[0].textContent=i+1
+total+=parseFloat(r.querySelector(".amt").value)||0
+})
+
+let disc=parseFloat(discountVal.value)||0
+
+if(discountCat.value==="P"){
+if(disc>100) disc=100
+disc=(total*disc)/100
+}else{
+if(disc>total) disc=total
+}
+
+dicountAmount.textContent=disc.toFixed(2)
+totalGst.textContent="0"
+netAmount.textContent=(total-disc).toFixed(2)
+}
+
+discountVal.addEventListener("input",calc)
+discountCat.addEventListener("change",calc)
+
+generateBill.addEventListener("click",function(){
+
+const patientId=$("#patientId").val()
+if(!patientId)return alert("Select patient")
+
+const mode=$("#modeOfPayment").val()
+if(!mode)return alert("Select mode")
+
+const netAmt=parseFloat(netAmount.textContent)
+const adv=parseFloat($("#patientAdvance").text())
+
+if(mode==="ADVANCE" && adv<netAmt) return alert("Insufficient advance")
+
+const services=[]
+
+document.querySelectorAll("#mainTblBody tr").forEach(r=>{
+services.push({
+id:r.dataset.id,
+name:r.children[1].textContent,
+amount:r.querySelector(".amt").value
+})
+})
+
+axios.post("/billing/generateServiceBill",{
+patientId,
+patientName:$("#patientName").text(),
+services,
+discountCategory:discountCat.value,
+discountValue:discountVal.value,
+discountAmount:dicountAmount.textContent,
+netAmount:netAmt,
+doctor:doctor.value,
+remark:remark.value,
+modeOfPayment:mode,
+useAdvance:mode==="ADVANCE",
+advanceUsedAmount:mode==="ADVANCE"?netAmt:0
+})
+.then(res=>{
+window.location.href=`/billing/PrintServiceBill?id=${res.data.billId}`
+})
+
+})
+
+loadDropdown('doctor','Doctor','name','')
+</script>
+
+</body>
+</html>

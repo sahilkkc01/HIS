@@ -1,5 +1,6 @@
 const { DataTypes, Sequelize } = require("sequelize");
 const { sequelize } = require("../db");
+const { SERIALIZABLE } = require("sequelize/lib/table-hints");
 
     const Bill = sequelize.define("Bill", {
         clinic_id: {
@@ -73,6 +74,65 @@ const { sequelize } = require("../db");
         tableName: "bills",
         timestamps: true
     });
+    
+    const ServiceBill = sequelize.define("ServiceBill", {
+  clinic_id: {
+    type: DataTypes.INTEGER,
+    allowNull: true
+  },
+  patientId: {
+    type: DataTypes.INTEGER,
+    allowNull: false
+  },
+  services: {
+    type: DataTypes.JSON,
+    allowNull: false
+  },
+  discountCategory: {
+    type: DataTypes.STRING(1),
+    allowNull: true
+  },
+  discountValue: {
+    type: DataTypes.DECIMAL(10, 2),
+    allowNull: true,
+    defaultValue: 0.00
+  },
+  discountAmount: {
+    type: DataTypes.DECIMAL(10, 2),
+    allowNull: true,
+    defaultValue: 0.00
+  },
+  taxAmount: {
+    type: DataTypes.DECIMAL(10, 2),
+    allowNull: true,
+    defaultValue: 0.00
+  },
+  netAmount: {
+    type: DataTypes.DECIMAL(10, 2),
+    allowNull: false
+  },
+  remark: {
+    type: DataTypes.TEXT,
+    allowNull: true
+  },
+  modeOfPayment: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  doctor: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  created_by: {
+    type: DataTypes.STRING,
+    allowNull: false
+  }
+}, {
+  tableName: "service_bills",
+  timestamps: true
+});
+
+
 
     const AdvanceTransaction = sequelize.define("AdvanceTransaction", {
   clinic_id: {
@@ -122,8 +182,9 @@ const { sequelize } = require("../db");
   tableName: "advance_transactions",
   timestamps: true
 });
-// AdvanceTransaction.sync({force:true})
+
 module.exports={
     Bill,
+    ServiceBill,
     AdvanceTransaction
 }

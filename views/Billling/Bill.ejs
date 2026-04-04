@@ -24,7 +24,7 @@
                     <!-- Vertical & Horizontal Scrollbars -->
                     <div class="col-12">
                         <div class="overflow-hidden">
-                            <h5 class="card-header mb-2">OP Billing</h5>
+                            <h5 class="card-header mb-2">Pharmacy Billing</h5>
                             <div class="form-check-inline mb-3">
                                 <input type="radio" class="form-check-input" id="extpat" name="opbill" value="existing"
                                     checked="">
@@ -293,7 +293,22 @@
                                         $("#patientUHID").text(patient.uhid);
                                         $("#patientMobile").text(patient.mobile);
                                         $("#patientAdvance").text(patient.advance || 0);
-                                        
+
+                                        $("#patientAdvance").text(patient.advance || 0);
+
+const modeDropdown = document.getElementById("modeOfPayment");
+
+// remove existing ADVANCE option if already added
+const existingAdvanceOption = modeDropdown.querySelector('option[value="ADVANCE"]');
+if (existingAdvanceOption) existingAdvanceOption.remove();
+
+// add ADVANCE option only if patient exists
+if (patient.id) {
+  const opt = document.createElement("option");
+  opt.value = "ADVANCE";
+  opt.textContent = "ADVANCE";
+  modeDropdown.appendChild(opt);
+}
                                     } else {
                                         alert("Patient not found.");
                                     }
@@ -466,17 +481,30 @@
                         discountCat.addEventListener("change", updateTotalValues);
                         discountVal.addEventListener("input", updateTotalValues);
 
-                     generateBillBtn.addEventListener("click", function () {
+             generateBillBtn.addEventListener("click", function () {
   const isExistingPatient = document.getElementById("extpat").checked;
   let patientId = document.getElementById("patientId").value.trim();
   let patientName, patientGender, patientAge, patientMobile;
 
   const modeOfPayment = document.getElementById("modeOfPayment").value;
+  const availableAdvance = parseFloat(document.getElementById("patientAdvance").textContent) || 0;
+  const netAmt = parseFloat(netAmount.textContent) || 0;
 
-  // ✅ Mode of Payment validation
   if (!modeOfPayment) {
     alert("Please select Mode of Payment.");
     return;
+  }
+
+  if (modeOfPayment === "ADVANCE") {
+    if (!patientId) {
+      alert("Advance can only be used for existing patient.");
+      return;
+    }
+
+    if (availableAdvance < netAmt) {
+      alert("Insufficient advance balance.");
+      return;
+    }
   }
 
   if (isExistingPatient) {
@@ -506,7 +534,6 @@
   document.querySelectorAll("#mainTblBody tr").forEach(row => {
     const qty = parseInt(row.querySelector(".indentQty").value) || 0;
 
-    // ✅ Check qty >= 1
     if (qty >= 1) {
       validItemExists = true;
     }
@@ -522,7 +549,6 @@
     });
   });
 
-  // ✅ At least 1 valid item check
   if (items.length === 0 || !validItemExists) {
     alert("Please add at least one item with quantity ≥ 1.");
     return;
@@ -539,10 +565,13 @@
     discountValue: discountVal.value,
     discountAmount: dicountAmount.textContent,
     taxAmount: totalGst.textContent,
-    netAmount: netAmount.textContent,
+    netAmount: netAmt,
     remark: remark.value,
     modeOfPayment: modeOfPayment,
-    doctor: doctor.value
+    doctor: doctor.value,
+
+    useAdvance: modeOfPayment === "ADVANCE",
+    advanceUsedAmount: modeOfPayment === "ADVANCE" ? netAmt : 0
   };
 
   console.log(billData);
@@ -550,14 +579,13 @@
   axios.post("/billing/generateBill", billData)
     .then(response => {
       alert("Bill generated successfully!");
-      const route = 'billing/PrintBill';
-     window.location.href = `/billing/PrintBill?id=${response.data.billId}`;
+      window.location.href = `/billing/PrintBill?id=${response.data.billId}`;
     })
     .catch(error => {
       console.error("Error generating bill:", error);
     });
 });
-                    });
+});
 
                     loadDropdown('doctor', 'Doctor', 'name', '')
                 </script>

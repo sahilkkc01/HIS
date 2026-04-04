@@ -1349,6 +1349,85 @@ exports.saveService = async (req, res) => {
   }
 };
 
+exports.getServices = async (req, res) => {
+  const clinicId = req.user?.clinic_id;
+
+  if (!clinicId) return res.status(401).json({ message: 'Unauthorized: Please log in' });
+
+  try {
+    const services = await Service.findAll({
+      where: { clinic_id: clinicId },
+      order: [['service_name', 'ASC']]
+    });
+
+    return res.json({ services });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: 'Failed to fetch services' });
+  }
+};
+
+exports.getServiceById = async (req, res) => {
+  const clinicId = req.user?.clinic_id;
+  const { id } = req.params;
+
+  if (!clinicId) return res.status(401).json({ message: 'Unauthorized: Please log in' });
+
+  try {
+    const service = await Service.findOne({
+      where: { id, clinic_id: clinicId }
+    });
+
+    if (!service) return res.status(404).json({ message: 'Service not found' });
+
+    return res.json({
+      id: service.id,
+      service_name: service.service_name,
+      service_category: service.service_category,
+      cost: service.cost,
+      special_inst: service.special_inst
+    });
+
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: 'Failed to fetch service' });
+  }
+};
+
+exports.updateService = async (req, res) => {
+  const clinicId = req.user?.clinic_id;
+  const { id } = req.params;
+  const { service_name, service_category, cost, special_inst } = req.body;
+
+  if (!clinicId) return res.status(401).json({ message: 'Unauthorized: Please log in' });
+
+  try {
+    const service = await Service.findOne({
+      where: { id, clinic_id: clinicId }
+    });
+
+    if (!service) return res.status(404).json({ message: 'Service not found' });
+
+    const updatedData = {
+      service_name: service_name ?? service.service_name,
+      service_category: service_category ?? service.service_category,
+      cost: cost ?? service.cost,
+      special_inst: special_inst ?? service.special_inst
+    };
+
+    await service.update(updatedData);
+
+    return res.json({
+      message: 'Service updated successfully',
+      service: updatedData
+    });
+
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: 'Failed to update service' });
+  }
+};
+
 exports.savePackage = async (req, res) => {
   try {
     const {

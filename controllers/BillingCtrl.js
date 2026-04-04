@@ -1,4 +1,4 @@
-const { Bill, AdvanceTransaction } = require("../models/BillingSchema");
+const { Bill, AdvanceTransaction, ServiceBill } = require("../models/BillingSchema");
 const sjcl = require("sjcl");
 const { Patient } = require("../models/HisSchema");
 
@@ -26,102 +26,157 @@ function decryptData(encodedEncryptedData) {
     }
 }
 
-exports.createBill = async (req, res) => {
-    console.log(req.body)
+    exports.createBill = async (req, res) => {
     try {
         const clinicId = req.user.clinic_id;
         const username = req.user.username;
 
         if (!clinicId || !username) {
-            return res.status(403).json({ message: "Unauthorized: Clinic ID and username are required." });
+        return res.status(403).json({ message: "Unauthorized" });
         }
 
         const {
-            patientId,
-            patientName,
-            patientGender,
-            patientAge,
-            patientMobile,
-            items,
-            discountCategory,
-            discountValue,
-            discountAmount,
-            taxAmount,
-            netAmount,
-            remark,
-            modeOfPayment,
-            doctor
+        patientId,
+        patientName,
+        patientGender,
+        patientAge,
+        patientMobile,
+        items,
+        discountCategory,
+        discountValue,
+        discountAmount,
+        taxAmount,
+        netAmount,
+        remark,
+        modeOfPayment,
+        doctor,
+        useAdvance,
+        advanceUsedAmount
         } = req.body;
 
-        // Validate items
         if (!items || !Array.isArray(items) || items.length === 0) {
-            return res.status(400).json({ message: "Bill must have at least one item." });
-        }
-        if (!patientName) {
-            return res.status(400).json({ message: "Please select a Patient." });
+        return res.status(400).json({ message: "Bill must have at least one item." });
         }
 
-        // Save bill
+        if (!patientName) {
+        return res.status(400).json({ message: "Please select a Patient." });
+        }
+
         const newBill = await Bill.create({
+        clinic_id: clinicId,
+        patientId: patientId || null,
+        patientName,
+        patientGender: patientGender || null,
+        patientAge: patientAge || null,
+        patientMobile: patientMobile || null,
+        items,
+        discountCategory: discountCategory || null,
+        discountValue: discountValue || 0.00,
+        discountAmount: discountAmount || 0.00,
+        taxAmount: taxAmount || 0.00,
+        netAmount: netAmount || 0.00,
+        remark: remark || null,
+        modeOfPayment: modeOfPayment || null,
+        doctor,
+        created_by: username
+        });
+
+        if (useAdvance && patientId && advanceUsedAmount > 0) {
+        const lastTxn = await AdvanceTransaction.findOne({
+            where: { patientId },
+            order: [["createdAt", "DESC"]],
+            attributes: ["balanceAfter"]
+        });
+
+        const prevBalance = lastTxn ? parseFloat(lastTxn.balanceAfter) : 0;
+
+        if (prevBalance < advanceUsedAmount) {
+            return res.status(400).json({ message: "Insufficient advance balance" });
+        }
+
+        const newBalance = prevBalance - parseFloat(advanceUsedAmount);
+
+        await AdvanceTransaction.create({
             clinic_id: clinicId,
-            patientId: patientId || null,
-            patientName,
-            patientGender: patientGender || null,
-            patientAge: patientAge || null,
-            patientMobile: patientMobile || null,
-            items,
-            discountCategory: discountCategory || null,
-            discountValue: discountValue || 0.00,
-            discountAmount: discountAmount || 0.00,
-            taxAmount: taxAmount || 0.00,
-            netAmount: netAmount || 0.00,
-            remark: remark || null,
-            modeOfPayment: modeOfPayment || null,
-            doctor,
-            create_by: username
+            patientId,
+            billId: newBill.id,
+            type: "DEBIT",
+            amount: advanceUsedAmount,
+            balanceAfter: newBalance,
+            modeOfPayment: "ADVANCE",
+            remark: `Used in bill #${newBill.id}`,
+            created_by: username
         });
-        const encBillId = encryptDataForUrl(newBill.id.toString())
+        }
+
+        const encBillId = encryptDataForUrl(newBill.id.toString());
+
         return res.status(201).json({
-            message: "Bill created successfully",
-            billId: encBillId
+        message: "Bill created successfully",
+        billId: encBillId
         });
+
     } catch (error) {
-        console.error("Error saving bill:", error);
-        return res.status(500).json({ message: "Internal server error", error: error.message });
+        console.error(error);
+        return res.status(500).json({ message: "Internal server error" });
     }
-};
+    };
 
 exports.getBillById = async (req, res) => {
-    try {
-        console.log(req.params)
+  try {
+    const { id } = req.params;
+    const clinicId = req.user.clinic_id;
 
-
-        const { id } = req.params;
-        const clinicId = req.user.clinic_id;
-        const username = req.user.username;
-
-        if (!clinicId || !username) {
-            return res.status(403).json({ message: "Unauthorized: Clinic ID and username are required." });
-        }
-
-        if (!id) {
-            return res.status(400).json({ message: "Bill ID is required." });
-        }
-        const decId = decryptData(id);
-        console.log(decId)
-        const bill = await Bill.findOne({
-            where: { id: decId, clinic_id: clinicId }
-        });
-        console.log(bill)
-        if (!bill) {
-            return res.status(404).json({ message: "Bill not found." });
-        }
-
-        return res.status(200).json(bill);
-    } catch (error) {
-        console.error("Error fetching bill:", error);
-        return res.status(500).json({ message: "Internal server error", error: error.message });
+    if (!clinicId) {
+      return res.status(403).json({ message: "Unauthorized" });
     }
+
+    if (!id) {
+      return res.status(400).json({ message: "Bill ID is required" });
+    }
+
+    const decId = decryptData(id);
+
+    const bill = await Bill.findOne({
+      where: { id: decId, clinic_id: clinicId }
+    });
+
+    if (!bill) {
+      return res.status(404).json({ message: "Bill not found" });
+    }
+
+    let patient = null;
+
+    if (bill.patientId) {
+      patient = await Patient.findOne({
+        where: { id: bill.patientId },
+        attributes: [
+          "uhid",
+          "prefix",
+          "firstName",
+          "middleName",
+          "lastName",
+          "gender",
+          "age",
+          "mobile",
+          "email",
+          "address",
+          "city",
+          "state",
+          "bloodGroup"
+        ]
+      });
+    }
+
+    return res.json({
+      ...bill.toJSON(),
+      patient
+    });
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
 };
 
 exports.getAllBills = async (req, res) => {
@@ -149,6 +204,197 @@ exports.getAllBills = async (req, res) => {
     }
 };
 
+exports.createServiceBill = async (req, res) => {
+  try {
+    const clinicId = req.user.clinic_id;
+    const username = req.user.username;
+    console.log(req.body)
+    if (!clinicId || !username) {
+      return res.status(403).json({ message: "Unauthorized" });
+    }
+
+    const {
+      patientId,
+      services,
+      discountCategory,
+      discountValue,
+      discountAmount,
+      taxAmount,
+      netAmount,
+      remark,
+      modeOfPayment,
+      doctor,
+      useAdvance,
+      advanceUsedAmount
+    } = req.body;
+
+    if (!patientId) {
+      return res.status(400).json({ message: "Patient is required" });
+    }
+
+    if (!doctor) {
+      return res.status(400).json({ message: "Doctor is required" });
+    }
+
+    if (!services || !Array.isArray(services) || services.length === 0) {
+      return res.status(400).json({ message: "At least one service required" });
+    }
+
+    const newBill = await ServiceBill.create({
+      clinic_id: clinicId,
+      patientId,
+      services,
+      discountCategory: discountCategory || null,
+      discountValue: discountValue || 0.00,
+      discountAmount: discountAmount || 0.00,
+      taxAmount: taxAmount || 0.00,
+      netAmount: netAmount || 0.00,
+      remark: remark || null,
+      modeOfPayment,
+      doctor,
+      created_by: username
+    });
+
+    if (useAdvance && advanceUsedAmount > 0) {
+      const lastTxn = await AdvanceTransaction.findOne({
+        where: { patientId },
+        order: [["createdAt", "DESC"]],
+        attributes: ["balanceAfter"]
+      });
+
+      const prevBalance = lastTxn ? parseFloat(lastTxn.balanceAfter) : 0;
+
+      if (prevBalance < advanceUsedAmount) {
+        return res.status(400).json({ message: "Insufficient advance balance" });
+      }
+
+      const newBalance = prevBalance - parseFloat(advanceUsedAmount);
+
+      await AdvanceTransaction.create({
+        clinic_id: clinicId,
+        patientId,
+        billId: newBill.id,
+        type: "DEBIT",
+        amount: advanceUsedAmount,
+        balanceAfter: newBalance,
+        modeOfPayment: "ADVANCE",
+        remark: `Used in service bill #${newBill.id}`,
+        created_by: username
+      });
+    }
+
+    const encBillId = encryptDataForUrl(newBill.id.toString());
+
+    return res.status(201).json({
+      message: "Service bill created successfully",
+      billId: encBillId
+    });
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+exports.getServiceBillById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const clinicId = req.user.clinic_id;
+
+    if (!clinicId) {
+      return res.status(403).json({ message: "Unauthorized" });
+    }
+
+    if (!id) {
+      return res.status(400).json({ message: "Bill ID is required" });
+    }
+
+    const decId = decryptData(id);
+
+    const bill = await ServiceBill.findOne({
+      where: { id: decId, clinic_id: clinicId }
+    });
+
+    if (!bill) {
+      return res.status(404).json({ message: "Service bill not found" });
+    }
+
+    let patient = null;
+
+    if (bill.patientId) {
+      patient = await Patient.findOne({
+        where: { id: bill.patientId },
+        attributes: [
+          "uhid",
+          "prefix",
+          "firstName",
+          "middleName",
+          "lastName",
+          "gender",
+          "age",
+          "mobile",
+          "email",
+          "address",
+          "city",
+          "state",
+          "bloodGroup"
+        ]
+      });
+    }
+
+    return res.json({
+      ...bill.toJSON(),
+      patient
+    });
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+exports.getAllServiceBills = async (req, res) => {
+  try {
+    const clinicId = req.user.clinic_id;
+    const username = req.user.username;
+
+    if (!clinicId || !username) {
+      return res.status(403).json({ message: "Unauthorized" });
+    }
+
+    const bills = await ServiceBill.findAll({
+      where: { clinic_id: clinicId },
+      order: [['createdAt', 'DESC']]
+    });
+
+    const patientIds = bills.map(b => b.patientId).filter(Boolean);
+
+    let patientsMap = {};
+
+    if (patientIds.length) {
+      const patients = await Patient.findAll({
+        where: { id: patientIds },
+        attributes: ["id", "prefix", "firstName", "middleName", "lastName"]
+      });
+
+      patients.forEach(p => {
+        const name = [p.prefix, p.firstName, p.middleName, p.lastName].filter(Boolean).join(" ");
+        patientsMap[p.id] = name;
+      });
+    }
+
+    const result = bills.map(bill => ({
+      ...bill.toJSON(),
+      patientName: patientsMap[bill.patientId] || "N/A",
+      encryptedId: encryptDataForUrl(bill.id.toString())
+    }));
+
+    return res.status(200).json({ bills: result });
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
 exports.getPatientsWithAdvance = async (req, res) => {
     try {
 

@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en" class="light-style layout-menu-fixed layout-compact" dir="ltr">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Service Master</title>
+  <%- include('../header') -%>
+
+  <style>
+    .service-list{max-height:70vh;overflow-y:auto}
+    .service-item{cursor:pointer;padding:.6rem .8rem;border-bottom:1px solid #f1f1f1}
+    .service-item:hover{background:#f8f9fa}
+    .service-item.active{background:#e9f2ff;font-weight:600}
+    .no-services{text-align:center;padding:1rem;color:#6c757d}
+    .small-muted{font-size:.85rem;color:#6c757d}
+  </style>
+</head>
+
+<body>
+<div class="container-fluid vh-100 d-flex flex-column">
+<div class="container-fluid py-4">
+<div class="card">
+<h5 class="card-header">Service Master</h5>
+
+<div class="card-body">
+<div class="row gx-4">
+
+<div class="col-md-4 mb-3">
+<div class="d-flex justify-content-between align-items-center mb-2">
+<input id="serviceSearch" class="form-control form-control-sm" placeholder="Search services...">
+<button id="newServiceBtn" class="btn btn-sm btn-outline-primary ms-2">New</button>
+</div>
+
+<div class="card shadow-sm">
+<div class="card-body p-2 service-list" id="serviceListContainer">
+<div class="no-services">Loading services...</div>
+</div>
+</div>
+</div>
+
+<div class="col-md-8">
+<form id="formAccountSettings">
+<input type="hidden" id="serviceId" name="id">
+<div id="errordiv" style="display:none;"></div>
+
+<div class="row mb-3">
+<div class="col-md-6 mb-2">
+<label class="form-label">Service Name*</label>
+<input class="form-control form-control-sm" id="serviceName" name="service_name" required>
+</div>
+
+<div class="col-md-6 mb-2">
+<label class="form-label">Category*</label>
+<select id="ServiceCategory" name="service_category" class="select2 form-select">
+<option value="">Select</option>
+
+</select>
+</div>
+
+<div class="col-md-6 mb-2">
+<label class="form-label">Cost*</label>
+<input type="number" id="cost" name="cost" class="form-control form-control-sm" required>
+</div>
+
+<div class="col-md-6 mb-2">
+<label class="form-label">Instruction</label>
+<input id="inst" name="special_inst" class="form-control form-control-sm">
+</div>
+</div>
+
+<button type="submit" class="btn btn-primary btn-sm me-2">Save</button>
+</form>
+</div>
+
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<%- include('../footer') -%>
+
+<script>
+$(function(){
+
+let cache=[]
+let activeId=null
+
+function renderList(list,filter=''){
+const container=$("#serviceListContainer")
+container.empty()
+
+const filtered=list.filter(s=>(s.service_name||'').toLowerCase().includes(filter.toLowerCase()))
+
+if(!filtered.length){
+container.html('<div class="no-services">No services found</div>')
+return
+}
+
+filtered.forEach(s=>{
+const el=$(`
+<div class="service-item" data-id="${s.id}">
+<div>${s.service_name}</div>
+<div class="small-muted">₹${s.cost||0}</div>
+</div>
+`)
+
+if(s.id==activeId) el.addClass("active")
+
+el.on("click",()=>{
+$(".service-item").removeClass("active")
+el.addClass("active")
+activeId=s.id
+loadService(s.id)
+})
+
+container.append(el)
+})
+}
+
+async function loadList(){
+try{
+const res=await axios.get("/services/list")
+cache=res.data.services||res.data
+renderList(cache)
+}catch(e){
+$("#serviceListContainer").html('<div class="no-services">Failed to load</div>')
+}
+}
+
+async function loadService(id){
+try{
+const res=await axios.get(`/services/${id}`)
+const s=res.data
+
+$("#serviceId").val(s.id)
+$("#serviceName").val(s.service_name)
+$("#cost").val(s.cost)
+$("#inst").val(s.special_inst||"")
+$("#ServiceCategory").val(s.service_category)
+
+}catch(e){
+$("#errordiv").addClass("alert alert-danger").text("Failed to load").show()
+}
+}
+
+$("#newServiceBtn").on("click",()=>{
+activeId=null
+$(".service-item").removeClass("active")
+$("#formAccountSettings")[0].reset()
+$("#serviceId").val("")
+$("#errordiv").hide()
+})
+
+$("#serviceSearch").on("input",function(){
+renderList(cache,$(this).val())
+})
+
+$("#formAccountSettings").on("submit",async function(e){
+e.preventDefault()
+
+const data={
+service_name:$("#serviceName").val(),
+service_category:$("#ServiceCategory").val(),
+cost:$("#cost").val(),
+special_inst:$("#inst").val()
+}
+
+const id=$("#serviceId").val()
+
+try{
+let res
+if(id){
+res=await axios.post(`/services/update/${id}`,data)
+}else{
+res=await axios.post(`/services/create`,data)
+}
+
+$("#errordiv").removeClass("alert-danger").addClass("alert alert-success").text(res.data.message).show()
+
+await loadList()
+
+}catch(err){
+$("#errordiv").removeClass("alert-success").addClass("alert alert-danger").text("Error saving").show()
+}
+})
+
+$('#ServiceCategory').on('change', function () {
+if ($(this).val() === 'add-new') {
+createSmallModal("smallModal", "Category", "/addModal", "ServiceCategory","ServiceCategory")
+}
+})
+
+loadDropdown('ServiceCategory','ServiceCategory','name','')
+
+loadList()
+
+})
+</script>
+
+</body>
+</html>

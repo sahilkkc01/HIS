@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Invoice</title>
+<title>Service Invoice</title>
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
@@ -28,7 +28,7 @@ body{background:#f4f6f9}
 <img src="../images/crmlogo.png" class="logo">
 </div>
 <div class="text-end">
-<h4>Invoice</h4>
+<h4>Service Invoice</h4>
 <div id="invoiceMeta"></div>
 </div>
 </div>
@@ -66,14 +66,11 @@ body{background:#f4f6f9}
 <thead>
 <tr>
 <th>#</th>
-<th>Description</th>
-<th>Qty</th>
-<th>MRP</th>
-<th>Total</th>
-<th>GST</th>
+<th>Service</th>
+<th>Amount</th>
 </tr>
 </thead>
-<tbody id="itemsTableBody"></tbody>
+<tbody id="servicesTableBody"></tbody>
 </table>
 </div>
 
@@ -99,7 +96,7 @@ document.addEventListener("DOMContentLoaded",function(){
 
 const billIdParam='<%=billId%>';
 
-axios.get(`/billing/getBill/${billIdParam}`)
+axios.get(`/billing/getServiceBill/${billIdParam}`)
 .then(res=>{
 
 const bill=res.data;
@@ -123,25 +120,22 @@ document.getElementById("patientName").textContent=name;
 document.getElementById("patientAddress").textContent=[p.address,p.city,p.state].filter(Boolean).join(", ");
 }
 
-const tbody=document.getElementById("itemsTableBody");
+const tbody=document.getElementById("servicesTableBody");
 tbody.innerHTML="";
 
-bill.items.forEach((item,i)=>{
+bill.services.forEach((s,i)=>{
 tbody.innerHTML+=`
 <tr>
 <td>${i+1}</td>
-<td>${item.name}</td>
-<td>${item.quantity}</td>
-<td>₹${item.mrp}</td>
-<td>₹${item.total}</td>
-<td>₹${item.gstAmount}</td>
+<td>${s.name}</td>
+<td>₹${s.amount}</td>
 </tr>`;
 });
 
 })
 .catch(err=>{
 console.error(err);
-alert("Failed to load bill");
+alert("Failed to load service bill");
 });
 
 });
